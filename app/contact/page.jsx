@@ -4,24 +4,36 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/Contactform";
 import { Building, Phone, Mail } from "lucide-react";
+import { useLanguage } from "@/components/LanguageContext";
 
 export default function ContactSection() {
+  const { language } = useLanguage(); // Use the language context
+
   const contactItems = [
     {
-      icon: <Building className="h-6 w-6 text-blue-700 transition-transform duration-500 group-hover:rotate-12" />,
-      title: "Visit Us",
-      content: "Dange Associates office, beside ICICI Bank, Kalmeshwar - 441501",
+      icon: (
+        <Building className="h-6 w-6 text-blue-700 transition-transform duration-500 group-hover:rotate-12" />
+      ),
+      title: language === "en" ? "Visit Us" : "आमच्याकडे या",
+      content:
+        language === "en"
+          ? "Dange Associates office, beside ICICI Bank, Kalmeshwar - 441501"
+          : "डांगे असोसिएट्स कार्यालय, आयसीआयसीआय बँकेजवळ, कळमेश्वर - ४४१५०१",
       href: "https://www.google.com/maps?q=Dange+Associates,+Kalmeshwar",
     },
     {
-      icon: <Phone className="h-6 w-6 text-green-600 transition-transform duration-500 group-hover:rotate-12" />,
-      title: "Call Us",
+      icon: (
+        <Phone className="h-6 w-6 text-green-600 transition-transform duration-500 group-hover:rotate-12" />
+      ),
+      title: language === "en" ? "Call Us" : "आम्हाला कॉल करा",
       content: "+91 7774882844",
       href: "tel:+917774882844",
     },
     {
-      icon: <Mail className="h-6 w-6 text-red-600 transition-transform duration-500 group-hover:rotate-12" />,
-      title: "Email Us",
+      icon: (
+        <Mail className="h-6 w-6 text-red-600 transition-transform duration-500 group-hover:rotate-12" />
+      ),
+      title: language === "en" ? "Email Us" : "आम्हाला ईमेल करा",
       content: "vedantdange18@gmail.com",
       href: "mailto:vedantdange18@gmail.com",
     },
@@ -34,9 +46,13 @@ export default function ContactSection() {
         <div className="max-w-7xl mx-auto grid gap-8 md:grid-cols-2 mt-20">
           {/* Contact Info */}
           <div className="flex flex-col gap-6">
-            <h3 className="text-3xl font-semibold text-blue-900">Reach Us</h3>
+            <h3 className="text-3xl font-semibold text-blue-900">
+              {language === "en" ? "Reach Us" : "आमच्याशी संपर्क साधा"}
+            </h3>
             <p className="text-gray-700 mb-4">
-              We're just a message or call away. Reach out and let's connect!
+              {language === "en"
+                ? "We're just a message or call away. Reach out and let's connect!"
+                : "आम्ही फक्त एक संदेश किंवा कॉल दूर आहोत. संपर्क साधा आणि कनेक्ट होऊया!"}
             </p>
             <div className="space-y-4">
               {contactItems.map((item, index) => (

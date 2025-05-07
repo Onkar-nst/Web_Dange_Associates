@@ -2,28 +2,48 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "/components/LanguageContext";
+import samplepic1 from "../public/samplepic1.png";
 
 const HeroSection = () => {
+  const { language } = useLanguage(); // Use the language context
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
     {
-      title: "Invest in Your Future",
-      subtitle: "NTPA-Approved Projects with Clear Title Guarantee",
-      image: "https://images.unsplash.com/photo-1581093448793-5dfc6e2c81f4?auto=format&fit=crop&w=1600&q=80",
-      cta: "Learn More",
+      title:
+        language === "en"
+          ? "Invest in Your Future"
+          : "तुमच्या भविष्यामध्ये गुंतवणूक करा",
+      subtitle:
+        language === "en"
+          ? "NATP-Approved Projects with Clear Title Guarantee"
+          : "NATP-मंजूर प्रकल्प स्पष्ट शीर्षक हमीसह",
+      image: samplepic1, // Imported image from the public folder
+      cta: language === "en" ? "Learn More" : "अधिक जाणून घ्या",
     },
     {
-      title: "Premium Amenities",
-      subtitle: "Modern Infrastructure for Contemporary Living",
-      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80",
-      cta: "View Amenities",
+      title:
+        language === "en"
+          ? "Premium Amenities"
+          : "उच्च दर्जाच्या सुविधांचा समावेश",
+      subtitle:
+        language === "en"
+          ? "Modern Infrastructure for Contemporary Living"
+          : "आधुनिक जीवनासाठी आधुनिक पायाभूत सुविधा",
+      image: "/fd9f1b98bd765ffb9a2d62df2740f999.jpg",
+      cta: language === "en" ? "View Amenities" : "सुविधा पहा",
     },
     {
-      title: "Luxury Living Spaces",
-      subtitle: "Experience Comfort & Style Like Never Before",
-      image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1600&q=80",
-      cta: "Discover More",
+      title:
+        language === "en" ? "Luxury Living Spaces" : "आडव्या आरामदायक जागा",
+      subtitle:
+        language === "en"
+          ? "Experience Comfort & Style Like Never Before"
+          : "कधीही न अनुभवलेला आराम आणि शैली अनुभवाः",
+      image:
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1600&q=80",
+      cta: language === "en" ? "Discover More" : "अधिक शोधा",
     },
   ];
 
@@ -44,7 +64,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative h-[70vh] w-full overflow-hidden">
+    <section className="relative h-screen w-full overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={index}
@@ -59,8 +79,12 @@ const HeroSection = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
           <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{slide.title}</h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl">{slide.subtitle}</p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {slide.title}
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl">
+              {slide.subtitle}
+            </p>
             <a
               href="#why-invest"
               className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-all duration-300"
@@ -94,7 +118,9 @@ const HeroSection = () => {
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              currentSlide === index ? "bg-orange-500 w-10" : "bg-white/50 hover:bg-white"
+              currentSlide === index
+                ? "bg-orange-500 w-10"
+                : "bg-white/50 hover:bg-white"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           ></button>

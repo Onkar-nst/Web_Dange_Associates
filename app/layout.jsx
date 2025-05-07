@@ -1,13 +1,14 @@
-import { Inter } from "next/font/google"
-import "./globals.css"
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { LanguageProvider } from "../components/LanguageContext";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Land Associate by Dange Associate",
   description: "Premium land development and investment opportunities",
-    generator: 'v0.dev'
-}
+  generator: "v0.dev",
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -18,11 +19,11 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="font-poppins">{children}</body>
+      <body className="font-poppins">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
-  )
+  );
 }
 
-
-
-import './globals.css'
+import "./globals.css";
