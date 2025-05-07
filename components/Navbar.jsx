@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "./LanguageContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { language, toggleLanguage } = useLanguage(); // Use the language context
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,10 +24,13 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Our Story", href: "/about-us" }, // Ensure this matches the file path
-    { name: "Projects", href: "/projects" }, // Corrected to lowercase
-    { name: "Reach Us", href: "/contact" },
+    { name: language === "en" ? "Home" : "मुखपृष्ठ", href: "/" },
+    { name: language === "en" ? "Our Story" : "आमची कथा", href: "/about-us" },
+    { name: language === "en" ? "Projects" : "प्रकल्प", href: "/projects" },
+    {
+      name: language === "en" ? "Reach Us" : "आमच्याशी संपर्क साधा",
+      href: "/contact",
+    },
   ];
 
   return (
@@ -67,6 +72,14 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+            <div className="mt-4 md:mt-0">
+              <button
+                onClick={toggleLanguage}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300"
+              >
+                {language === "en" ? "मराठी" : "English"}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation Toggle */}
@@ -103,6 +116,8 @@ const Navbar = () => {
             </div>
           </div>
         )}
+
+        {/* Language Toggle Button */}
       </div>
     </nav>
   );

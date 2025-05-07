@@ -1,19 +1,53 @@
 import React from "react";
 import CountUp from "react-countup";
+import { useLanguage } from "./LanguageContext";
 
-const statsData = [
-  { number: 8, suffix: "+", label: "Landmark Projects" },
-  { number: 973, suffix: "+", label: "Happy Families" },
-  { number: 18, suffix: "+", label: "Years Of Building Trust" },
-  { number: 740520, suffix: "+", label: "Sq. Ft. Under Planning" },
-  { number: 609840, suffix: "+", label: "Sq. Ft. Under Development" },
-  { number: 1524600, suffix: "+", label: "Sq. Ft. sold" },
-];
+const Stats = () => {
+  const { language } = useLanguage(); // Use the language context
 
-export default function Home() {
+  const statsData = [
+    {
+      number: 8,
+      suffix: "+",
+      label: language === "en" ? "Landmark Projects" : "महत्त्वाचे प्रकल्प",
+    },
+    {
+      number: 973,
+      suffix: "+",
+      label: language === "en" ? "Happy Families" : "आनंदी कुटुंबे",
+    },
+    {
+      number: 18,
+      suffix: "+",
+      label:
+        language === "en"
+          ? "Years Of Building Trust"
+          : "विश्वास निर्माणाची वर्षे",
+    },
+    {
+      number: 740520,
+      suffix: "+",
+      label:
+        language === "en" ? "Sq. Ft. Under Planning" : "चौरस फूट नियोजनाखाली",
+    },
+    {
+      number: 609840,
+      suffix: "+",
+      label:
+        language === "en" ? "Sq. Ft. Under Development" : "चौरस फूट विकासाखाली",
+    },
+    {
+      number: 1524600,
+      suffix: "+",
+      label: language === "en" ? "Sq. Ft. Sold" : "चौरस फूट विकले",
+    },
+  ];
+
   return (
-    <div className="flex items-center justify-center bg-white
-    -50 py-12 px-4 border-t border-b border-black-200">
+    <div
+      className="flex items-center justify-center bg-white
+    -50 py-12 px-4 border-t border-b border-black-200"
+    >
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 text-center">
         {statsData.map((item, index) => (
           <div key={index}>
@@ -32,4 +66,6 @@ export default function Home() {
       </div>
     </div>
   );
-}
+};
+
+export default Stats;
