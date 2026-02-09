@@ -1,141 +1,99 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useLanguage } from "./LanguageContext";
+import { Route, Droplets, Zap, Trees, DoorOpen, Waves, Square, Gamepad2, Compass, BadgeCheck } from "lucide-react";
 
 const AmenitiesSection = () => {
-  const { language } = useLanguage(); // Use the language context
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && sectionRef.current) {
-            const cards = sectionRef.current.querySelectorAll(".amenity-card");
-            if (cards.length > 0) {
-              cards.forEach((card, index) => {
-                setTimeout(() => {
-                  card.classList.add("opacity-100");
-                  card.classList.remove("translate-y-10");
-                }, index * 100);
-              });
-            }
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-      observer.disconnect();
-    };
-  }, []);
+  const { language } = useLanguage();
 
   const amenities = [
     {
-      title: language === "en" ? "Cement Roads" : "सिमेंट रस्ते",
-      description:
-        language === "en"
-          ? "Durable and smooth cement roads for easy travel."
-          : "सुलभ प्रवासासाठी टिकाऊ आणि गुळगुळीत सिमेंट रस्ते.",
+      title: language === "en" ? "Cement Concrete Roads" : "सिमेंट काँक्रीट रस्ते",
+      icon: <Route className="w-8 h-8 text-slate-700" />,
+      description: language === "en" ? "Long-lasting internal roads" : "दीर्घकाळ टिकणारे अंतर्गत रस्ते",
     },
     {
-      title: language === "en" ? "Main Gate" : "मुख्य प्रवेशद्वार",
-      description:
-        language === "en"
-          ? "A grand entrance with a secure and aesthetic main gate."
-          : "सुरक्षित आणि सौंदर्यपूर्ण मुख्य प्रवेशद्वारासह भव्य प्रवेश.",
+      title: language === "en" ? "Water Pipeline" : "पाणी पाईपलाईन",
+      icon: <Droplets className="w-8 h-8 text-blue-500" />,
+      description: language === "en" ? "Connection to every plot" : "प्रत्येक प्लॉटला कनेक्शन",
     },
     {
-      title: language === "en" ? "Electric Poles" : "विद्युत खांब",
-      description:
-        language === "en"
-          ? "Well-planned electric poles for uninterrupted power."
-          : "अखंडित वीजेसाठी चांगले नियोजित विद्युत खांब.",
+      title: language === "en" ? "Electrification" : "विद्य विद्युतीकरण",
+      icon: <Zap className="w-8 h-8 text-yellow-500" />,
+      description: language === "en" ? "Transformer & street lights" : "ट्रान्सफॉर्मर आणि पथदिवे",
     },
     {
-      title: language === "en" ? "Sewage System" : "सांडपाणी व्यवस्थापन",
-      description:
-        language === "en"
-          ? "Modern sewage system ensuring proper waste management."
-          : "योग्य कचरा व्यवस्थापन सुनिश्चित करणारी आधुनिक सांडपाणी प्रणाली.",
+      title: language === "en" ? "Drainage System" : "ड्रेनेज सिस्टम",
+      icon: <Waves className="w-8 h-8 text-cyan-600" />,
+      description: language === "en" ? "Underground sewage line" : "भूमिगत मलनिस्सारण ​​रेषा",
     },
     {
-      title: language === "en" ? "Water Connection" : "पाणी कनेक्शन",
-      description:
-        language === "en"
-          ? "Reliable water supply with efficient pipelines."
-          : "कार्यक्षम पाईपलाइनसह विश्वासार्ह पाणीपुरवठा.",
+      title: language === "en" ? "Grand Entrance" : "भव्य प्रवेशद्वार",
+      icon: <DoorOpen className="w-8 h-8 text-orange-600" />,
+      description: language === "en" ? "Gated community security" : "गेटेड कम्युनिटी सुरक्षितता",
     },
     {
-      title: language === "en" ? "Open Space" : "मोकळी जागा",
-      description:
-        language === "en"
-          ? "Spacious open areas for relaxation and recreation."
-          : "विश्रांती आणि मनोरंजनासाठी प्रशस्त मोकळ्या जागा.",
+      title: language === "en" ? "Garden & Greenery" : "बाग आणि हिरवळ",
+      icon: <Trees className="w-8 h-8 text-green-600" />,
+      description: language === "en" ? "Open space for recreation" : "मनोरंजनासाठी मोकळी जागा",
     },
     {
-      title: language === "en" ? "Green Gym" : "ग्रीन जिम",
-      description:
-        language === "en"
-          ? "Eco-friendly gym equipment for a healthy lifestyle."
-          : "निरोगी जीवनशैलीसाठी पर्यावरणपूरक जिम उपकरणे.",
+      title: language === "en" ? "Demarcated Plots" : "सीमांकन केलेले प्लॉट",
+      icon: <Square className="w-8 h-8 text-indigo-600" />,
+      description: language === "en" ? "Clear boundary stones for each plot" : "प्रत्येक प्लॉटसाठी स्पष्ट सीमा दगड",
     },
     {
-      title: language === "en" ? "Connect with Nature" : "निसर्गाशी जोडणी",
-      description:
-        language === "en"
-          ? "Beautiful landscapes to help you reconnect with nature."
-          : "तुम्हाला निसर्गाशी पुन्हा जोडण्यासाठी सुंदर लँडस्केप्स.",
+      title: language === "en" ? "Children's Play Area" : "मुलांचे खेळण्याचे क्षेत्र",
+      icon: <Gamepad2 className="w-8 h-8 text-pink-500" />,
+      description: language === "en" ? "Safe play zone for kids" : "मुलांना खेळण्यासाठी सुरक्षित झोन",
+    },
+    {
+      title: language === "en" ? "Vastu Compliant" : "वास्तुशास्त्रानुसार",
+      icon: <Compass className="w-8 h-8 text-violet-600" />,
+      description: language === "en" ? "Designed for positive energy" : "सकारात्मक ऊर्जेसाठी डिझाइन केलेले",
     },
   ];
 
   return (
-    <section id="amenities" className="py-20 relative" ref={sectionRef}>
-      <div className="container mx-auto px-4">
-        <h2 className="section-title">
-          {language === "en" ? "Amenities" : "सुविधा"}
-        </h2>
-        <p className="text-center text-gray-600 max-w-2xl mx-auto mt-2">
-          {language === "en"
-            ? "We provide world-class amenities to make your living experience truly exceptional."
-            : "तुमचा राहण्याचा अनुभव खरोखरच अपवादात्मक बनवण्यासाठी आम्ही जागतिक दर्जाच्या सुविधा प्रदान करतो."}
-        </p>
-        <br />
-        <div className="gradient-line"></div>
+    <section className="py-24 bg-slate-50">
+      <div className="container mx-auto px-6">
+        
+        <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8 text-center md:text-left">
+          <div className="max-w-2xl">
+            <span className="text-blue-700 font-extrabold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
+               {language === "en" ? "Standard Infrastructure" : "मानक पायाभूत सुविधा"}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mt-4 tracking-tight">
+               {language === "en" ? "Technical Specifications We Deliver" : "आम्ही दिलेली तांत्रिक वैशिष्ट्ये"}
+            </h2>
+          </div>
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <p className="text-slate-600 text-sm font-bold flex items-center gap-2">
+               <BadgeCheck className="w-5 h-5 text-green-600" />
+               {language === "en" ? "Part of the Sanctioned NATP Layout" : "NATP मंजूर लेआउटचा भाग"}
+            </p>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-          {amenities.map((amenity, index) => (
-            <div
-              key={index}
-              className="amenity-card opacity-0 translate-y-10 transition-all duration-500 ease-out bg-white rounded-xl shadow-lg hover:shadow-xl p-6 border border-black-200 relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative z-10">
-                <h3 className="text-xl font-semibold text-center mb-2">
-                  {amenity.title}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+          {amenities.map((item, index) => (
+            <div key={index} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 group flex items-start gap-6">
+              <div className="bg-slate-50 p-4 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shrink-0">
+                {item.icon}
+              </div>
+              <div className="flex flex-col">
+                <h3 className="text-xl font-extrabold text-slate-900 mb-1 group-hover:text-blue-700 transition-colors">
+                  {item.title}
                 </h3>
-                <p className="text-gray-600 text-center text-sm">
-                  {amenity.description}
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">
+                  {item.description}
                 </p>
               </div>
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-700 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Background Elements */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 left-10 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl"></div>
+      </div>
     </section>
   );
 };

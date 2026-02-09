@@ -1,130 +1,85 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useLanguage } from "/components/LanguageContext";
-import samplepic1 from "../public/samplepic1.png";
+import { useLanguage } from "./LanguageContext";
+import { ArrowRight, Phone } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 const HeroSection = () => {
-  const { language } = useLanguage(); // Use the language context
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const slides = [
-    {
-      title:
-        language === "en"
-          ? "Invest in Your Future"
-          : "तुमच्या भविष्यामध्ये गुंतवणूक करा",
-      subtitle:
-        language === "en"
-          ? "NATP-Approved Projects with Clear Title Guarantee"
-          : "NATP-मंजूर प्रकल्प स्पष्ट शीर्षक हमीसह",
-      image: samplepic1, // Imported image from the public folder
-      cta: language === "en" ? "Learn More" : "अधिक जाणून घ्या",
-    },
-    {
-      title:
-        language === "en"
-          ? "Premium Amenities"
-          : "उच्च दर्जाच्या सुविधांचा समावेश",
-      subtitle:
-        language === "en"
-          ? "Modern Infrastructure for Contemporary Living"
-          : "आधुनिक जीवनासाठी आधुनिक पायाभूत सुविधा",
-      image: "/fd9f1b98bd765ffb9a2d62df2740f999.jpg",
-      cta: language === "en" ? "View Amenities" : "सुविधा पहा",
-    },
-    {
-      title:
-        language === "en" ? "Luxury Living Spaces" : "आडव्या आरामदायक जागा",
-      subtitle:
-        language === "en"
-          ? "Experience Comfort & Style Like Never Before"
-          : "कधीही न अनुभवलेला आराम आणि शैली अनुभवाः",
-      image:
-        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1600&q=80",
-      cta: language === "en" ? "Discover More" : "अधिक शोधा",
-    },
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [slides.length]);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-  };
+  const { language } = useLanguage();
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      {slides.map((slide, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            currentSlide === index ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${slide.image})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30"></div>
-          <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              {slide.title}
+    <section className="relative min-h-[80vh] w-full overflow-hidden bg-slate-50 pt-14">
+      {/* Background with Subtle Pattern and Image */}
+      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:24px_24px]"></div>
+      </div>
+      
+      <div className="container mx-auto px-6 h-full pt-8 pb-12 md:pt-16 md:pb-24 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          
+          {/* Text Content */}
+          <div className="max-w-2xl animate-fade-in text-left">
+
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-[1.15] mb-6">
+              {language === "en" ? (
+                <>
+                  Build Your Future on <br className="hidden md:block" />
+                  <span className="text-blue-700 font-extrabold italic font-serif">Clear-Title</span> Residential Plots
+                </>
+              ) : (
+                <>
+                  तुमच्या भविष्याचा पाया <br className="hidden md:block" />
+                  <span className="text-blue-700 font-extrabold italic font-serif">स्पष्ट-शीर्षक</span> प्लॉट्ससह रचा
+                </>
+              )}
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl">
-              {slide.subtitle}
+            
+            <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed font-medium">
+              {language === "en"
+                ? "Dange Associates brings you 18+ years of trust in Nagpur's real estate. Fully developed layouts with immediate possession and registry."
+                : "डांगे असोसिएट्स तुमच्यासाठी नागपूरच्या रिअल इस्टेटमधील १८+ वर्षांचा विश्वास घेऊन येत आहे. तात्काळ ताबा आणि नोंदणीसह पूर्ण विकसित लेआउट."}
             </p>
-            <a
-              href="#why-invest"
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-all duration-300"
-            >
-              {slide.cta}
-            </a>
+
+            <div className="flex flex-col sm:flex-row gap-5">
+              <Link
+                href="/projects"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-xl hover:shadow-orange-200 flex items-center justify-center gap-2 group text-lg"
+              >
+                {language === "en" ? "Explore Projects" : "प्रकल्प पहा"}
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+              
+              <Link
+                href="#contact-section"
+                className="bg-white border-2 border-slate-200 text-slate-700 hover:border-blue-600 hover:text-blue-700 px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 text-lg"
+              >
+                <Phone className="w-5 h-5" />
+                {language === "en" ? "Book Free Site Visit" : "मोफत साइट भेट बुक करा"}
+              </Link>
+            </div>
+
+
+          </div>
+
+          {/* Impact Image / Visual Section */}
+          <div className="relative hidden lg:block h-[600px] w-full">
+            <div className="absolute inset-0 translate-x-20 overflow-hidden rounded-l-[50px]">
+               <Image
+                src="/hero-bg.png" 
+                alt="Land for Sale Showcase"
+                fill
+                className="object-cover"
+                priority
+              />
+              {/* Gradient Overlay for seamless blending */}
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-transparent to-transparent"></div>
+            </div>
+            {/* Decorative Elements */}
+            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-orange-600/10 rounded-full blur-2xl z-0"></div>
           </div>
         </div>
-      ))}
-
-      {/* Navigation Arrows */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300"
-        aria-label="Previous slide"
-      >
-        <ChevronLeft className="h-6 w-6" />
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition-all duration-300"
-        aria-label="Next slide"
-      >
-        <ChevronRight className="h-6 w-6" />
-      </button>
-
-      {/* Slide Indicators */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              currentSlide === index
-                ? "bg-orange-500 w-10"
-                : "bg-white/50 hover:bg-white"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          ></button>
-        ))}
       </div>
     </section>
   );
