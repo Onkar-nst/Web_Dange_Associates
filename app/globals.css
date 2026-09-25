@@ -15,8 +15,30 @@
   box-sizing: border-box;
 }
 
-html {
+html:not(.lenis) {
   scroll-behavior: smooth;
+}
+
+/* Lenis smooth scrolling */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
@@ -115,4 +137,7 @@ body {
 
 .group:hover .group-hover\:rotate-y-180 {
   transform: rotateY(180deg);
+}
+html {
+  position: relative;
 }

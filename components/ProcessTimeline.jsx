@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { useLanguage } from "./LanguageContext";
 import { MapPin, MousePointerClick, FileSearch, PenTool, Key } from "lucide-react";
@@ -74,7 +76,13 @@ const ProcessTimeline = () => {
     <section className="py-24 bg-white border-t border-slate-100 overflow-hidden">
       <div className="container mx-auto px-6">
         
-        <div className="text-center mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-16"
+        >
           <span className="text-blue-700 font-extrabold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
             {language === "en" ? "How it Works" : "प्रक्रिया कशी आहे"}
           </span>
@@ -86,17 +94,31 @@ const ProcessTimeline = () => {
               ? "We believe in a transparent and structured buying journey with no surprises." 
               : "आम्ही पारदर्शक आणि संरचित खरेदी प्रवासावर विश्वास ठेवतो."}
           </p>
-        </div>
+        </motion.div>
 
         <div className="relative">
           {/* Connecting Line (Desktop) */}
           <div 
             className="hidden md:block absolute top-[2.5rem] left-[10%] right-[10%] h-0.5 bg-slate-200 z-0"
           ></div>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            className="hidden md:block absolute top-[2.5rem] left-[10%] right-[10%] h-0.5 origin-left bg-gradient-to-r from-blue-700 via-orange-500 to-blue-700 z-0"
+          ></motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-5 gap-10"
+          >
             {steps.map((step) => (
-              <div 
+              <motion.div 
+                variants={itemVariants}
                 key={step.id} 
                 className="relative z-10 flex flex-col items-center text-center group"
               >
@@ -106,8 +128,8 @@ const ProcessTimeline = () => {
                 </div>
                 
                 {/* Icon Circle */}
-                <div className="w-20 h-20 rounded-2xl bg-white border-2 border-slate-200 group-hover:border-blue-600 group-hover:shadow-xl transition-all duration-300 flex items-center justify-center mb-8 relative z-10">
-                    <step.icon className="w-8 h-8 text-blue-700" />
+                <div className="w-20 h-20 rounded-2xl bg-white border-2 border-slate-200 group-hover:border-blue-600 group-hover:shadow-xl group-hover:-translate-y-1.5 transition-all duration-300 flex items-center justify-center mb-8 relative z-10">
+                    <step.icon className="w-8 h-8 text-blue-700 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6" />
                 </div>
                 
                 <h3 className="text-xl font-extrabold text-slate-900 mb-4 group-hover:text-blue-700 transition-colors">
@@ -117,9 +139,9 @@ const ProcessTimeline = () => {
                 <p className="text-slate-500 font-medium leading-relaxed text-sm">
                   {step.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
       </div>

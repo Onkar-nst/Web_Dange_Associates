@@ -1,10 +1,12 @@
 "use client";
 
 import { useLanguage } from "./LanguageContext";
-import { BadgeCheck, MapPin, Ruler, ArrowRight, ExternalLink } from "lucide-react";
+import { MapPin, ArrowRight, Rotate3d } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import TiltCard from "./motion/TiltCard";
+import Reveal from "./motion/Reveal";
 
 const ProjectShowcase = () => {
   const { language } = useLanguage();
@@ -12,6 +14,8 @@ const ProjectShowcase = () => {
   const projects = [
     {
       id: 1,
+      slug: "shree-ram-nagri-1",
+      has3D: true,
       name: language === "en" ? "Shree Ram Nagri-1" : "श्री राम नगरी-१",
       location: language === "en" ? "State Highway 250, Kalemshwar, Bramni" : "राज्य महामार्ग २५०, कळमेश्वर, ब्रामणी",
       status: language === "en" ? "Current Project" : "सध्याचा प्रकल्प",
@@ -24,6 +28,7 @@ const ProjectShowcase = () => {
     },
     {
       id: 2,
+      slug: "ready-to-move-homes",
       name: language === "en" ? "Ready to Move Homes" : "तयार घरे",
       location: language === "en" ? "Beside Tahsil Office, Kalemshwar, Nagpur" : "तहसील कार्यालयाजवळ, कळमेश्वर, नागपूर",
       status: language === "en" ? "Ready to Move" : "तयार",
@@ -36,6 +41,7 @@ const ProjectShowcase = () => {
     },
     {
       id: 3,
+      slug: "om-sai-ram-nagar-1",
       name: language === "en" ? "Om Sai Ram Nagar 1" : "ओम साई राम नगर १",
       location: language === "en" ? "National Highway 353J, Kohli" : "राष्ट्रीय महामार्ग ३५३जे, कोहली",
       status: language === "en" ? "Few Plots Left" : "काही प्लॉट शिल्लक",
@@ -54,7 +60,7 @@ const ProjectShowcase = () => {
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-          <div className="max-w-3xl">
+          <Reveal className="max-w-3xl">
             <span className="text-blue-700 font-extrabold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
               {language === "en" ? "Our Active Projects" : "आमचे सक्रिय प्रकल्प"}
             </span>
@@ -66,7 +72,7 @@ const ProjectShowcase = () => {
                 ? "Reliable land development across Nagpur's fastest-growing areas. Every project comes with a 100% legal guarantee and immediate registration."
                 : "नागपूरच्या वेगाने वाढणाऱ्या क्षेत्रांमध्ये विश्वसनीय जमीन विकास. प्रत्येक प्रकल्प १००% कायदेशीर हमी आणि तात्काळ नोंदणीसह येतो."}
             </p>
-          </div>
+          </Reveal>
           
           <Link 
             href="/projects" 
@@ -79,27 +85,36 @@ const ProjectShowcase = () => {
 
         {/* Project Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {projects.map((project) => (
+          {projects.map((project, i) => (
             <motion.div 
               key={project.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-slate-200 group flex flex-col h-full"
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.9, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+              className="h-full"
             >
+            <TiltCard max={5} className="group h-full rounded-2xl">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-500 border border-slate-200 flex flex-col h-full">
               {/* Image Container */}
-              <div className="relative h-60 overflow-hidden shrink-0">
+              <Link href={`/projects/${project.slug}`} className="relative block h-60 overflow-hidden shrink-0">
                 <div className={`absolute top-4 left-4 z-10 px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider shadow-sm ${project.statusColor}`}>
                   {project.status}
                 </div>
+                {project.has3D && (
+                  <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-md bg-white/95 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-blue-700 shadow-sm">
+                    <Rotate3d className="h-3.5 w-3.5 animate-[spin_6s_linear_infinite]" />
+                    {language === "en" ? "3D Tour" : "3D सफर"}
+                  </div>
+                )}
                 <Image
                   src={project.image}
                   alt={project.name}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-              </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </Link>
 
               {/* Content */}
               <div className="p-8 flex flex-col flex-grow">
@@ -120,10 +135,11 @@ const ProjectShowcase = () => {
 
                 <div className="grid grid-cols-2 gap-3 mt-auto">
                    <Link
-                    href={`/projects`}
-                    className="flex items-center justify-center bg-slate-100 text-slate-800 font-bold py-3.5 rounded-xl hover:bg-slate-200 transition-all text-sm"
+                    href={`/projects/${project.slug}`}
+                    className="group/d flex items-center justify-center gap-1.5 bg-slate-100 text-slate-800 font-bold py-3.5 rounded-xl hover:bg-slate-900 hover:text-white transition-all text-sm"
                   >
                     {language === "en" ? "Details" : "तपशील"}
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover/d:translate-x-1" />
                   </Link>
                   <Link
                     href={`/contact`}
@@ -133,6 +149,8 @@ const ProjectShowcase = () => {
                   </Link>
                 </div>
               </div>
+            </div>
+            </TiltCard>
             </motion.div>
           ))}
         </div>

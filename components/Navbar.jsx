@@ -3,12 +3,16 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "./LanguageContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { language, toggleLanguage } = useLanguage(); // Use the language context
+  const pathname = usePathname();
+  const isActive = (href) => (href === "/" ? pathname === "/" : pathname?.startsWith(href));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,7 +34,14 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed w-full z-50 bg-white shadow-sm border-b border-gray-100 py-4 transition-all duration-300">
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className={`fixed w-full z-50 border-b py-4 transition-all duration-300 ${
+        isScrolled ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border-slate-100" : "bg-white shadow-sm border-gray-100"
+      }`}
+    >
       <div className="w-full px-4 md:px-10">
         <div className="flex justify-between items-center relative">
           
@@ -41,7 +52,7 @@ const Navbar = () => {
                 <img
                   src="/navbar-logo-removebg-preview.png" 
                   alt="Dange Associates"
-                  className="h-16 w-auto object-contain" 
+                  className="h-16 w-auto object-contain transition-transform duration-700 group-hover:rotate-[20deg]" 
                 />
                 <span className="ml-2 text-2xl font-black text-slate-900 tracking-tighter italic">
                   Dange<span className="text-orange-600 group-hover:text-blue-600 transition-colors">Associates</span>
@@ -56,10 +67,10 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 href={link.href}
-                className="relative font-semibold text-base text-slate-700 hover:text-orange-600 transition-all duration-300 group"
+                className={`relative font-semibold text-base hover:text-orange-600 transition-all duration-300 group ${isActive(link.href) ? "text-orange-600" : "text-slate-700"}`}
               >
                 {link.name}
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+                <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full ${isActive(link.href) ? "w-full" : "w-0"}`}></span>
               </Link>
             ))}
           </div>
@@ -105,19 +116,27 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Navigation Menu */}
+        <AnimatePresence>
         {isOpen && (
-          <div className="md:hidden mt-4 bg-white shadow-xl p-6 absolute left-0 right-0 w-full top-16 z-50 border-t border-gray-100 animate-in fade-in slide-in-from-top-4 duration-300">
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="md:hidden mt-4 bg-white shadow-xl p-6 absolute left-0 right-0 w-full top-16 z-50 border-t border-gray-100"
+          >
             <div className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
+              {navLinks.map((link, i) => (
+                <motion.div key={link.name} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + i * 0.06 }}>
                 <Link
-                  key={link.name}
                   href={link.href}
-                  className="flex items-center justify-between font-semibold text-slate-800 hover:text-blue-700 text-lg py-2 border-b border-slate-50"
+                  className={`flex items-center justify-between font-semibold hover:text-blue-700 text-lg py-2 border-b border-slate-50 ${isActive(link.href) ? "text-orange-600" : "text-slate-800"}`}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
                   <Menu className="w-4 h-4 text-slate-300" />
                 </Link>
+                </motion.div>
               ))}
               <div className="pt-2">
                  <Link 
@@ -129,10 +148,11 @@ const Navbar = () => {
                  </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

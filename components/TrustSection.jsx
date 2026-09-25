@@ -3,6 +3,9 @@
 import { useLanguage } from "./LanguageContext";
 import { FileText, ShieldCheck, MapPin, Handshake } from "lucide-react";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import Reveal, { stagger, rise } from "./motion/Reveal";
+import CountUp from "./motion/CountUp";
 
 const TrustSection = () => {
   const { language } = useLanguage();
@@ -45,7 +48,7 @@ const TrustSection = () => {
         <div className="flex flex-col lg:flex-row gap-20 items-center">
           
           {/* Text Content */}
-          <div className="lg:w-1/2">
+          <Reveal className="lg:w-1/2">
             <span className="text-blue-700 font-extrabold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
                {language === "en" ? "Our Foundation of Trust" : "विश्वासाचा भक्कम पाया"}
             </span>
@@ -68,23 +71,29 @@ const TrustSection = () => {
                 : "जमीन खरेदी तणावमुक्त असावी. आम्ही १००% कायदेशीर सुरक्षिततेवर लक्ष केंद्रित करतो जेणेकरून तुम्ही तुमचे घर बांधण्यावर लक्ष केंद्रित करू शकाल."}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 mt-12">
+            <motion.div variants={stagger(0.12, 0.2)} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} className="grid grid-cols-1 sm:grid-cols-2 gap-10 mt-12">
               {trustFactors.map((factor, index) => (
-                <div key={index} className="flex flex-col items-start group">
-                  <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 group-hover:border-blue-200 group-hover:bg-blue-50 transition-all duration-300 mb-5">
+                <motion.div variants={rise} key={index} className="flex flex-col items-start group">
+                  <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 group-hover:border-blue-200 group-hover:bg-blue-50 group-hover:-translate-y-1 group-hover:rotate-3 group-hover:shadow-lg transition-all duration-300 mb-5">
                     {factor.icon}
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 mb-3">{factor.title}</h3>
                     <p className="text-slate-600 leading-relaxed font-medium text-sm">{factor.description}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </Reveal>
 
           {/* Image/Visual */}
-          <div className="lg:w-1/2 relative group">
+          <motion.div
+            initial={{ opacity: 0, x: 60, rotate: 2 }}
+            whileInView={{ opacity: 1, x: 0, rotate: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:w-1/2 relative group"
+          >
              <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl border-[12px] border-white">
                 <Image 
                   src="/hero-transparency.png" 
@@ -97,13 +106,13 @@ const TrustSection = () => {
             {/* Floating Badge */}
             <div className="absolute -bottom-8 -left-8 bg-blue-700 p-8 rounded-3xl shadow-2xl border-4 border-white max-w-xs animate-float">
                <div className="flex items-center gap-5">
-                  <div className="text-5xl font-black text-white italic">18+</div>
+                  <div className="text-5xl font-black text-white italic"><CountUp value="18+" /></div>
                   <div className="text-xs text-blue-100 font-bold uppercase tracking-widest leading-6">
                      Successful <br/>Project Delivery
                   </div>
                </div>
             </div>
-          </div>
+          </motion.div>
 
         </div>
 
