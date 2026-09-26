@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "./LanguageContext";
+import Magnetic from "./fx/Magnetic";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +55,7 @@ const Navbar = () => {
                   alt="Dange Associates"
                   className="h-16 w-auto object-contain transition-transform duration-700 group-hover:rotate-[20deg]" 
                 />
-                <span className="ml-2 text-2xl font-black text-slate-900 tracking-tighter italic">
+                <span className="ml-2 text-2xl font-bold text-slate-900 tracking-tighter italic">
                   Dange<span className="text-orange-600 group-hover:text-blue-600 transition-colors">Associates</span>
                 </span>
               </div>
@@ -77,9 +78,10 @@ const Navbar = () => {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center space-x-4">
+            <Magnetic strength={0.25}>
             <Link 
               href="/contact"
-              className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-full font-bold transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 group"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 group"
             >
               {language === "en" ? "Get in Touch" : "संपर्क साधा"}
               <svg 
@@ -91,6 +93,7 @@ const Navbar = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </Link>
+            </Magnetic>
 
             <button
               onClick={toggleLanguage}
@@ -141,7 +144,7 @@ const Navbar = () => {
               <div className="pt-2">
                  <Link 
                   href="/contact"
-                  className="w-full bg-emerald-700 text-white py-3 rounded-lg font-bold flex justify-center items-center"
+                  className="w-full bg-emerald-700 text-white py-3 rounded-lg font-medium flex justify-center items-center"
                   onClick={() => setIsOpen(false)}
                  >
                    {language === "en" ? "Get in Touch" : "संपर्क साधा"}

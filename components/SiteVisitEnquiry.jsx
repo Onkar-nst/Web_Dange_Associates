@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useLanguage } from "./LanguageContext";
 import { MapPin, Phone, MessageSquare, ArrowRight, Check } from "lucide-react";
+import { motion } from "framer-motion";
+import Magnetic from "./fx/Magnetic";
 
 const SiteVisitEnquiry = () => {
   const { language } = useLanguage();
@@ -27,57 +29,72 @@ const SiteVisitEnquiry = () => {
       </div>
 
       <div className="relative z-10 w-full px-4 md:px-12">
-        <div className="w-full flex flex-col md:flex-row items-center gap-12 bg-white rounded-[3rem] p-10 md:p-16 shadow-[0_20px_60px_rgba(0,0,0,0.05)] border border-slate-100">
+        <motion.div
+          initial={{ opacity: 0, y: 50, rotateX: 12 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformPerspective: 1200 }}
+          className="w-full flex flex-col md:flex-row items-center gap-12 bg-white rounded-[3rem] p-10 md:p-16 shadow-[0_20px_60px_rgba(0,0,0,0.05)] border border-slate-100"
+        >
           
           <div className="flex-1 space-y-8">
             <div>
-              <span className="text-blue-700 font-extrabold tracking-widest uppercase text-xs bg-blue-50 px-4 py-2 rounded-full border border-blue-100 italic">
+              <span className="text-blue-700 font-semibold tracking-widest uppercase text-xs bg-blue-50 px-4 py-2 rounded-full border border-blue-100 italic">
                 {language === "en" ? "Experience the Reality" : "प्रत्यक्ष अनुभव"}
               </span>
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900 mt-6 leading-tight tracking-tight">
+              <h2 className="text-4xl md:text-5xl font-medium text-slate-900 mt-6 leading-tight tracking-tight">
                 {language === "en" ? "Plan your site visit now" : "तुमच्या साईट व्हिजिटचे नियोजन करा"}
               </h2>
             </div>
 
-            <p className="text-slate-600 text-lg leading-relaxed font-medium italic">
+            <p className="text-slate-600 text-lg leading-relaxed italic">
               {language === "en"
                 ? "Call or visit our executive to book your site visit. Explore our developed layouts and pick the perfect spot for your family."
                 : "तुमची साईट व्हिजिट बुक करण्यासाठी आमच्या एक्झिक्युटिव्हला कॉल करा किंवा भेट द्या. आमचे विकसित लेआउट एक्सप्लोर करा आणि तुमच्या कुटुंबासाठी योग्य जागा निवडा."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <Magnetic className="block">
               <a
                 href="tel:+917774882844"
-                className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-5 rounded-2xl font-black transition-all shadow-xl shadow-blue-600/10 group text-lg"
+                className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-5 rounded-2xl font-semibold transition-all shadow-xl shadow-blue-600/10 group text-lg"
               >
                 <Phone className="w-6 h-6 group-hover:rotate-12 transition-transform" />
                 {language === "en" ? "Call Executive" : "एक्झिक्युटिव्हला कॉल करा"}
               </a>
+              </Magnetic>
+              <Magnetic className="block">
               <a
                 href="https://wa.me/917774882844"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-5 rounded-2xl font-black transition-all shadow-xl shadow-emerald-600/10 group text-lg"
+                className="flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-5 rounded-2xl font-semibold transition-all shadow-xl shadow-emerald-600/10 group text-lg"
               >
                 <MessageSquare className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 {language === "en" ? "WhatsApp Us" : "व्हॉट्सॲप करा"}
               </a>
+              </Magnetic>
             </div>
           </div>
 
           <div className="flex-1 w-full max-w-sm">
             <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 space-y-6">
-              <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
                 <MapPin className="text-blue-600 w-6 h-6" />
                 {language === "en" ? "Select a Project" : "प्रकल्प निवडा"}
               </h3>
               
               <div className="space-y-3 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
-                {projects.map((project) => (
-                  <button
+                {projects.map((project, i) => (
+                  <motion.button
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 + i * 0.05 }}
                     key={project.id}
                     onClick={() => setSelectedProject(project.id)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all font-bold flex justify-between items-center group/item ${
+                    className={`w-full text-left p-4 rounded-xl border transition-all font-medium flex justify-between items-center group/item ${
                       selectedProject === project.id
                         ? "bg-blue-600 border-blue-600 text-white shadow-lg scale-[1.02]"
                         : "bg-white border-slate-200 text-slate-700 hover:border-blue-500 hover:shadow-md hover:text-blue-700"
@@ -89,13 +106,13 @@ const SiteVisitEnquiry = () => {
                     ) : (
                       <ArrowRight className="w-4 h-4 opacity-0 group-hover/item:opacity-100 -translate-x-2 group-hover/item:translate-x-0 transition-all" />
                     )}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
           </div>
 
-        </div>
+        </motion.div>
       </div>
 
       <style jsx>{`

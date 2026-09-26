@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import TiltCard from "./motion/TiltCard";
 import Reveal from "./motion/Reveal";
+import Spotlight from "./fx/Spotlight";
 
 const ProjectShowcase = () => {
   const { language } = useLanguage();
@@ -23,7 +24,7 @@ const ProjectShowcase = () => {
       description: language === "en"
         ? "Premium residential plots with clear titles and immediate possession. Fully developed layout with all modern amenities."
         : "स्पष्ट शीर्षक आणि तात्काळ ताबा असलेले प्रीमियम निवासी प्लॉट. सर्व आधुनिक सुविधांसह पूर्णपणे विकसित लेआउट.",
-      image: "/project-imgg.jpg", 
+      image: "/project-imgg-md.webp", 
       sold: 70,
     },
     {
@@ -49,22 +50,22 @@ const ProjectShowcase = () => {
       description: language === "en"
         ? "Highway-facing residential plots with excellent road connectivity. Ideal for modern living."
         : "उत्कृष्ट रस्ता कनेक्टिव्हिटीसह महामार्गासमोरील निवासी प्लॉट. आधुनिक राहणीसाठी आदर्श.",
-      image: "/project-imgg.jpg",
+      image: "/project-imgg-md.webp",
       sold: 90,
     }
   ];
 
   return (
-    <section className="py-24 bg-white">
-      <div className="container mx-auto px-6">
+    <section className="relative py-24 bg-white overflow-hidden">
+      <div className="container relative mx-auto px-6">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <Reveal className="max-w-3xl">
-            <span className="text-blue-700 font-extrabold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
+            <span className="text-blue-700 font-semibold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
               {language === "en" ? "Our Active Projects" : "आमचे सक्रिय प्रकल्प"}
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mt-4">
+            <h2 className="text-3xl md:text-5xl font-medium text-slate-900 mt-4">
               {language === "en" ? "Invest in Verified & Sanctioned Layouts" : "सत्यापित आणि मंजूर लेआउट्समध्ये गुंतवणूक करा"}
             </h2>
             <p className="text-slate-600 mt-6 text-lg leading-relaxed">
@@ -76,7 +77,7 @@ const ProjectShowcase = () => {
           
           <Link 
             href="/projects" 
-            className="hidden md:flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg"
+            className="hidden md:flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-slate-800 transition-all shadow-lg"
           >
             {language === "en" ? "View All Projects" : "सर्व प्रकल्प पहा"}
             <ArrowRight className="w-5 h-5" />
@@ -95,14 +96,14 @@ const ProjectShowcase = () => {
               className="h-full"
             >
             <TiltCard max={5} className="group h-full rounded-2xl">
-            <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-500 border border-slate-200 flex flex-col h-full">
+            <Spotlight className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-500 border border-slate-200 flex flex-col h-full">
               {/* Image Container */}
               <Link href={`/projects/${project.slug}`} className="relative block h-60 overflow-hidden shrink-0">
-                <div className={`absolute top-4 left-4 z-10 px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider shadow-sm ${project.statusColor}`}>
+                <div className={`absolute top-4 left-4 z-10 px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider shadow-sm ${project.statusColor}`}>
                   {project.status}
                 </div>
                 {project.has3D && (
-                  <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-md bg-white/95 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-blue-700 shadow-sm">
+                  <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-md bg-white/95 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-blue-700 shadow-sm">
                     <Rotate3d className="h-3.5 w-3.5 animate-[spin_6s_linear_infinite]" />
                     {language === "en" ? "3D Tour" : "3D सफर"}
                   </div>
@@ -117,8 +118,8 @@ const ProjectShowcase = () => {
               </Link>
 
               {/* Content */}
-              <div className="p-8 flex flex-col flex-grow">
-                <h3 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight group-hover:text-blue-700 transition-colors">
+              <div className="relative z-10 p-8 flex flex-col flex-grow">
+                <h3 className="text-2xl font-semibold text-slate-900 mb-2 tracking-tight group-hover:text-blue-700 transition-colors">
                   {project.name}
                 </h3>
                 
@@ -129,27 +130,27 @@ const ProjectShowcase = () => {
                 <div className="space-y-4 mb-8">
                   <div className="flex items-start">
                     <MapPin className="w-5 h-5 mr-3 text-red-500 mt-0.5 shrink-0" />
-                    <span className="font-bold text-slate-700 text-sm">{project.location}</span>
+                    <span className="font-medium text-slate-700 text-sm">{project.location}</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-auto">
                    <Link
                     href={`/projects/${project.slug}`}
-                    className="group/d flex items-center justify-center gap-1.5 bg-slate-100 text-slate-800 font-bold py-3.5 rounded-xl hover:bg-slate-900 hover:text-white transition-all text-sm"
+                    className="group/d flex items-center justify-center gap-1.5 bg-slate-100 text-slate-800 font-medium py-3.5 rounded-xl hover:bg-slate-900 hover:text-white transition-all text-sm"
                   >
                     {language === "en" ? "Details" : "तपशील"}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/d:translate-x-1" />
                   </Link>
                   <Link
                     href={`/contact`}
-                    className="flex items-center justify-center bg-orange-600 text-white font-bold py-3.5 rounded-xl hover:bg-orange-700 transition-all shadow-md hover:shadow-orange-200 text-sm"
+                    className="flex items-center justify-center bg-orange-600 text-white font-medium py-3.5 rounded-xl hover:bg-orange-700 transition-all shadow-md hover:shadow-orange-200 text-sm"
                   >
                     {language === "en" ? "Enquire" : "चौकशी करा"}
                   </Link>
                 </div>
               </div>
-            </div>
+            </Spotlight>
             </TiltCard>
             </motion.div>
           ))}
@@ -158,7 +159,7 @@ const ProjectShowcase = () => {
         <div className="mt-16 text-center md:hidden">
             <Link 
             href="/projects" 
-            className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-xl font-bold w-full justify-center"
+            className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-xl font-medium w-full justify-center"
           >
             {language === "en" ? "View All Projects" : "सर्व प्रकल्प पहा"}
             <ArrowRight className="w-5 h-5" />

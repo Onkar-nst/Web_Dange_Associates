@@ -141,3 +141,18 @@ body {
 html {
   position: relative;
 }
+
+@keyframes travel {
+  0% { left: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.text-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-pan 8s ease-in-out infinite;
+}

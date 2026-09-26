@@ -201,7 +201,13 @@ export default function LayoutFlythrough() {
       return;
     }
 
-    (async () => {
+    // Don't compete with the page's first paint: only start preparing the 3D scene
+    // once the visitor scrolls within ~1.5 screens of the fly-through.
+    let started = false;
+    const boot = async () => {
+      if (started || disposed) return;
+      started = true;
+      nearIo.disconnect();
       try {
         const { default: LayoutScene } = await import("./LayoutScene");
         if (disposed) return;
@@ -224,12 +230,29 @@ export default function LayoutFlythrough() {
         if (visibleRef.current) scene.start();
       } catch (err) {
         console.error("3D layout failed to start", err);
+        scene?.dispose();
+        sceneRef.current = null;
         if (!disposed) setFailed(true);
       }
-    })();
+    };
+    const nearIo = new IntersectionObserver(([e]) => e.isIntersecting && boot(), { rootMargin: "35% 0px 35% 0px" });
+    nearIo.observe(sectionRef.current);
+    // Warm the HTTP cache with the tour's textures while the visitor reads the page (network only, no main-thread work).
+    const prefetch = () => {
+      if (started || disposed) return;
+      const files = [
+        "sky/day.jpg", "sky/dusk.jpg", "sky/day.hdr", "sky/dusk.hdr", "trees/jacaranda.webp", "trees/searsia.webp", "trees/trees.json",
+        ...["grass", "lawn", "dirt", "dirt_nor", "asphalt", "paver", "soil", "plaster", "concrete", "brick", "wood", "stone", "pooltile", "deck", "wall"].map((n) => `tex/${n}.webp`),
+      ];
+      files.forEach((f) => fetch(`/flythrough/${f}`, { priority: "low" }).catch(() => {}));
+    };
+    const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1200));
+    const prefetchTimer = setTimeout(() => idle(prefetch, { timeout: 4000 }), 1500);
 
     return () => {
       disposed = true;
+      nearIo.disconnect();
+      clearTimeout(prefetchTimer);
       scene?.dispose();
       sceneRef.current = null;
     };
@@ -282,7 +305,7 @@ export default function LayoutFlythrough() {
     return (
       <section className="relative py-24 bg-slate-50">
         <div className="container mx-auto px-6 max-w-5xl text-center">
-          <img src="/project-imgg.jpg" alt="Shree Ram Nagri-1 master layout" className="w-full rounded-[2rem] shadow-2xl border-8 border-white" />
+          <img src="/project-imgg.webp" alt="Shree Ram Nagri-1 master layout" className="w-full rounded-[2rem] shadow-2xl border-8 border-white" />
           <p className="mt-6 text-slate-500 font-medium">
             {language === "en"
               ? "Your browser can't show the 3D fly-through, so here is the master layout instead."
@@ -308,7 +331,7 @@ export default function LayoutFlythrough() {
             <div key={i} ref={(el) => (labelRefs.current[i] = el)} className="absolute left-0 top-0" style={{ opacity: 0, willChange: "transform, opacity" }}>
               <div className="flex -translate-x-1/2 -translate-y-full flex-col items-center">
                 <div
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[10px] md:text-[11px] font-black uppercase tracking-[0.18em] shadow-xl ${
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.18em] shadow-xl ${
                     l.accent ? "bg-orange-600 text-white" : "bg-white/95 text-slate-900 border border-white"
                   }`}
                 >
@@ -326,7 +349,7 @@ export default function LayoutFlythrough() {
         <div className="absolute left-4 md:left-10 top-28 md:top-32 flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-md px-4 py-2 shadow-lg border border-white">
             <Rotate3d className="h-4 w-4 text-blue-700" />
-            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-900">
+            <span className="text-[10px] md:text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">
               {language === "en" ? "3D Fly-through" : "3D सफर"}
             </span>
           </div>
@@ -335,7 +358,7 @@ export default function LayoutFlythrough() {
         {/* Scroll hint */}
         <div ref={hintRef} className="pointer-events-none absolute left-1/2 top-28 md:top-auto md:bottom-32 -translate-x-1/2 flex flex-col items-center gap-2 text-white drop-shadow-lg transition-opacity">
           <Mouse className="h-6 w-6 animate-bounce" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em]">{language === "en" ? "Scroll to fly in" : "स्क्रोल करा"}</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">{language === "en" ? "Scroll to fly in" : "स्क्रोल करा"}</span>
         </div>
 
         {/* Chapter rail */}
@@ -347,7 +370,7 @@ export default function LayoutFlythrough() {
                   <span className={`relative flex h-2.5 w-2.5 items-center justify-center rounded-full transition-all duration-500 ${i === chapter ? "bg-orange-500 scale-125" : i < chapter ? "bg-blue-700" : "bg-slate-300"}`}>
                     {i === chapter && <span className="absolute inset-0 rounded-full bg-orange-500 animate-ping" />}
                   </span>
-                  <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors ${i === chapter ? "text-slate-900" : "text-slate-400 group-hover:text-blue-700"}`}>
+                  <span className={`text-[11px] font-medium uppercase tracking-wider transition-colors ${i === chapter ? "text-slate-900" : "text-slate-400 group-hover:text-blue-700"}`}>
                     {L(r)}
                   </span>
                 </button>
@@ -368,14 +391,14 @@ export default function LayoutFlythrough() {
               className="rounded-[1.75rem] bg-white/90 backdrop-blur-xl p-6 md:p-8 shadow-[0_30px_80px_rgba(15,23,42,0.35)] border border-white"
             >
               <div className="mb-4 flex items-center gap-3">
-                <span className="text-3xl md:text-4xl font-black italic text-orange-600 leading-none">0{chapter + 1}</span>
-                <span className="text-xs font-black text-slate-300">/ 0{CHAPTERS.length}</span>
-                <span className="ml-auto text-blue-700 font-extrabold tracking-widest uppercase text-[10px] bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
+                <span className="text-3xl md:text-4xl font-medium italic text-orange-600 leading-none">0{chapter + 1}</span>
+                <span className="text-xs font-semibold text-slate-300">/ 0{CHAPTERS.length}</span>
+                <span className="ml-auto text-blue-700 font-semibold tracking-widest uppercase text-[10px] bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
                   {L(ch.eyebrow)}
                 </span>
               </div>
-              <h3 className="text-2xl md:text-[2rem] font-black leading-tight tracking-tight text-slate-900">{L(ch.title)}</h3>
-              <p className="mt-3 text-sm md:text-base font-medium leading-relaxed text-slate-600">{L(ch.body)}</p>
+              <h3 className="text-2xl md:text-[2rem] font-semibold leading-tight tracking-tight text-slate-900">{L(ch.title)}</h3>
+              <p className="mt-3 text-sm md:text-base leading-relaxed text-slate-600">{L(ch.body)}</p>
 
               {ch.chips && (
                 <div className="mt-5 flex flex-wrap gap-2">
@@ -385,7 +408,7 @@ export default function LayoutFlythrough() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.25 + i * 0.08 }}
-                      className="rounded-full bg-slate-900 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white"
+                      className="rounded-full bg-slate-900 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-white"
                     >
                       {L(c)}
                     </motion.span>
@@ -401,7 +424,7 @@ export default function LayoutFlythrough() {
                         <div className="flex w-full items-center">
                           <div className={`h-0.5 flex-1 ${i === 0 ? "opacity-0" : i <= stage ? "bg-orange-500" : "bg-slate-200"} transition-colors duration-500`} />
                           <div
-                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-black transition-all duration-500 ${
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-semibold transition-all duration-500 ${
                               i < stage ? "border-blue-700 bg-blue-700 text-white" : i === stage ? "border-orange-500 bg-orange-500 text-white scale-110 shadow-lg shadow-orange-500/30" : "border-slate-200 bg-white text-slate-400"
                             }`}
                           >
@@ -409,7 +432,7 @@ export default function LayoutFlythrough() {
                           </div>
                           <div className={`h-0.5 flex-1 ${i === STAGES.length - 1 ? "opacity-0" : i < stage ? "bg-orange-500" : "bg-slate-200"} transition-colors duration-500`} />
                         </div>
-                        <span className={`text-center text-[9px] md:text-[10px] font-bold uppercase tracking-wider leading-tight ${i === stage ? "text-slate-900" : "text-slate-400"}`}>
+                        <span className={`text-center text-[9px] md:text-[10px] font-medium uppercase tracking-wider leading-tight ${i === stage ? "text-slate-900" : "text-slate-400"}`}>
                           {L(s.label)}
                         </span>
                       </div>
@@ -420,11 +443,11 @@ export default function LayoutFlythrough() {
 
               {ch.cta && (
                 <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                  <a href="tel:+917774882844" className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-black text-white shadow-xl shadow-blue-600/20 transition-all hover:bg-blue-700 hover:-translate-y-0.5">
+                  <a href="tel:+917774882844" className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white shadow-xl shadow-blue-600/20 transition-all hover:bg-blue-700 hover:-translate-y-0.5">
                     <Phone className="h-4 w-4" />
                     {language === "en" ? "Book Site Visit" : "साइट भेट बुक करा"}
                   </a>
-                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3.5 text-sm font-black text-white shadow-xl shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:-translate-y-0.5">
+                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3.5 text-sm font-semibold text-white shadow-xl shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:-translate-y-0.5">
                     <MessageCircle className="h-4 w-4" />
                     WhatsApp
                   </a>
@@ -462,7 +485,7 @@ export default function LayoutFlythrough() {
                   />
                 ))}
               </div>
-              <p className="relative text-xs font-black uppercase tracking-[0.3em] text-slate-900">
+              <p className="relative text-xs font-semibold uppercase tracking-[0.3em] text-slate-900">
                 {language === "en" ? "Laying out the plots" : "प्लॉटची आखणी सुरू आहे"}
               </p>
               <div className="relative mt-4 h-1 w-48 overflow-hidden rounded-full bg-slate-200">
