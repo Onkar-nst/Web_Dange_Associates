@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageContext";
+import { motion } from "framer-motion";
+import Parallax from "./fx/Parallax";
 
 const Footer = () => {
   const { language } = useLanguage();
@@ -32,8 +34,18 @@ const Footer = () => {
   return (
     <footer className="bg-slate-950 text-slate-300 pt-24 pb-12 border-t border-slate-900 overflow-hidden relative">
       {/* Subtle Background Detail */}
-      <div className="absolute bottom-0 right-0 w-1/3 h-1/2 bg-blue-600/5 blur-[120px] rounded-full translate-y-1/2 translate-x-1/4"></div>
-      <div className="absolute top-0 left-0 w-1/4 h-1/3 bg-orange-600/5 blur-[100px] rounded-full -translate-y-1/2 -translate-x-1/4"></div>
+      <motion.div
+        aria-hidden
+        animate={{ x: [0, -80, 0], y: [0, 40, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-0 right-0 w-1/3 h-1/2 bg-blue-600/15 blur-[120px] rounded-full"
+      />
+      <motion.div
+        aria-hidden
+        animate={{ x: [0, 90, 0], y: [0, -30, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-0 left-0 w-1/4 h-1/3 bg-orange-600/10 blur-[100px] rounded-full"
+      />
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 mb-20 items-start">
@@ -41,13 +53,13 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="space-y-10">
             <Link href="/" className="inline-block group">
-              <h3 className="text-4xl font-black text-white tracking-tighter italic">
+              <h3 className="text-4xl font-bold text-white tracking-tighter italic">
                 Dange<span className="text-orange-500 group-hover:text-blue-500 transition-colors">Associates</span>
               </h3>
               <div className="h-1 w-12 bg-orange-500 mt-2 rounded-full transition-all group-hover:w-24 group-hover:bg-blue-500"></div>
             </Link>
             
-            <p className="text-slate-500 text-sm font-bold uppercase tracking-widest leading-relaxed">
+            <p className="text-slate-500 text-sm font-medium uppercase tracking-widest leading-relaxed">
               Nagpur's Trusted Partner <br/> in Land Development
             </p>
 
@@ -57,7 +69,7 @@ const Footer = () => {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center justify-center text-slate-500 hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-300 transform hover:-translate-y-1"
+                  className="w-10 h-10 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center justify-center text-slate-500 hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-500 transform hover:-translate-y-1 hover:rotate-[360deg] hover:shadow-lg hover:shadow-orange-600/30"
                 >
                   {social.icon}
                 </a>
@@ -67,7 +79,7 @@ const Footer = () => {
 
           {/* Contact Details Column */}
           <div className="space-y-10">
-            <h4 className="text-white text-xs font-black uppercase tracking-[0.3em] flex items-center gap-3">
+            <h4 className="text-white text-xs font-semibold uppercase tracking-[0.3em] flex items-center gap-3">
               <span className="w-8 h-px bg-blue-600"></span>
               {language === "en" ? "Direct Contact" : "थेट संपर्क"}
             </h4>
@@ -78,12 +90,12 @@ const Footer = () => {
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Call Us" : "कॉल करा"}</p>
+                  <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Call Us" : "कॉल करा"}</p>
                   <div className="flex flex-col space-y-2">
-                    <a href="tel:+919112379641" className="text-white font-black text-lg hover:text-orange-500 transition-colors leading-none">
+                    <a href="tel:+919112379641" className="text-white font-semibold text-lg hover:text-orange-500 transition-colors leading-none">
                       +91 9112379641
                     </a>
-                    <a href="tel:+917774882844" className="text-white font-black text-lg hover:text-orange-500 transition-colors leading-none">
+                    <a href="tel:+917774882844" className="text-white font-semibold text-lg hover:text-orange-500 transition-colors leading-none">
                       +91 7774882844
                     </a>
                   </div>
@@ -95,8 +107,8 @@ const Footer = () => {
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Email Us" : "ईमेल करा"}</p>
-                  <span className="text-white font-black text-sm group-hover:text-blue-500 transition-colors">info@dangedevelopers.com</span>
+                  <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Email Us" : "ईमेल करा"}</p>
+                  <span className="text-white font-semibold text-sm group-hover:text-blue-500 transition-colors">info@dangedevelopers.com</span>
                 </div>
               </a>
             </div>
@@ -104,7 +116,7 @@ const Footer = () => {
 
           {/* Location & Hours Column */}
           <div className="space-y-10">
-            <h4 className="text-white text-xs font-black uppercase tracking-[0.3em] flex items-center gap-3">
+            <h4 className="text-white text-xs font-semibold uppercase tracking-[0.3em] flex items-center gap-3">
               <span className="w-8 h-px bg-emerald-600"></span>
               {language === "en" ? "Find Us" : "आम्हाला शोधा"}
             </h4>
@@ -120,8 +132,8 @@ const Footer = () => {
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Office Location" : "कार्यालयाचे ठिकाण"}</p>
-                  <span className="text-slate-300 text-sm font-bold leading-relaxed group-hover:text-emerald-500 transition-colors">
+                  <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Office Location" : "कार्यालयाचे ठिकाण"}</p>
+                  <span className="text-slate-300 text-sm font-medium leading-relaxed group-hover:text-emerald-500 transition-colors">
                     Block No. 7, Khadi Gram Sankul, <br/> beside ICICI Bank, Kalmeshwar, <br/> Maharashtra 441501
                   </span>
                 </div>
@@ -132,13 +144,13 @@ const Footer = () => {
                   <Clock className="h-5 w-5 animate-pulse" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.25em] mb-1.5 flex items-center gap-2">
+                  <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-[0.25em] mb-1.5 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
                     {language === "en" ? "Working Hours" : "कामाची वेळ"}
                   </p>
                   <div className="flex flex-col">
-                    <span className="text-white font-black text-base uppercase tracking-tight leading-tight">Mon - Sat</span>
-                    <span className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">09:00 AM - 06:00 PM</span>
+                    <span className="text-white font-semibold text-base uppercase tracking-tight leading-tight">Mon - Sat</span>
+                    <span className="text-slate-400 text-xs font-medium uppercase tracking-widest mt-1">09:00 AM - 06:00 PM</span>
                   </div>
                 </div>
               </div>
@@ -147,7 +159,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-slate-900 pt-10 flex flex-col md:flex-row justify-between items-center text-xs font-bold uppercase tracking-[0.1em] text-slate-600">
+        <div className="border-t border-slate-900 pt-10 flex flex-col md:flex-row justify-between items-center text-xs font-medium uppercase tracking-[0.1em] text-slate-600">
           <p className="mb-6 md:mb-0">
             © {currentYear} Dange Associates Nagpur. All rights reserved.
           </p>
@@ -158,6 +170,11 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      <Parallax speed={0.12} className="pointer-events-none relative mt-10 select-none overflow-hidden" >
+        <div aria-hidden className="whitespace-nowrap text-center text-[10vw] font-semibold italic leading-[0.85] tracking-tighter text-transparent [-webkit-text-stroke:1px_rgba(148,163,184,0.16)]">
+          Dange Associates
+        </div>
+      </Parallax>
     </footer>
   );
 };

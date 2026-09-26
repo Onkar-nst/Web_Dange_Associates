@@ -8,6 +8,7 @@ import { useLanguage } from "./LanguageContext";
 import { MapPin, Rocket, CheckCircle2, Home, ArrowRight, Rotate3d } from "lucide-react";
 import SiteVisitEnquiry from "./SiteVisitEnquiry";
 import TiltCard from "./motion/TiltCard";
+import Spotlight from "./fx/Spotlight";
 import { projects, t } from "@/lib/projects";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -62,7 +63,7 @@ export default function ProjectsPage() {
         <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
           <motion.div style={{ y: y1 }} className="absolute inset-0 z-0">
             <motion.img
-              src="/hero-legacy.png"
+              src="/hero-legacy.webp"
               alt="Hero"
               initial={{ scale: 1.2 }}
               animate={{ scale: 1 }}
@@ -79,7 +80,7 @@ export default function ProjectsPage() {
             animate="visible"
             className="container mx-auto px-6 relative z-10 text-center"
           >
-            <h1 className="text-5xl md:text-8xl font-black text-white mb-6 tracking-tight">
+            <h1 className="text-5xl md:text-8xl font-medium text-white mb-6 tracking-tight">
               {title.split(" ").map((w, i) => (
                 <span key={`${language}-${i}`} className="inline-block overflow-hidden align-bottom pb-2 mr-[0.25em] last:mr-0">
                   <motion.span
@@ -110,20 +111,6 @@ export default function ProjectsPage() {
           </div>
         </section>
 
-        {/* Ambient Background Elements */}
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          <motion.div
-            animate={{ x: [0, 50, 0], y: [0, 100, 0], rotate: [0, 180, 360] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-100/30 rounded-full blur-[120px]"
-          />
-          <motion.div
-            animate={{ x: [0, -50, 0], y: [0, -100, 0], rotate: [360, 180, 0] }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-orange-100/20 rounded-full blur-[150px]"
-          />
-        </div>
-
         <main className="container mx-auto px-6 py-20 max-w-7xl relative z-10">
           {/* Section Navigation / Filter Tabs */}
           <div className="flex flex-wrap justify-center gap-4 mb-20 border-b border-slate-100 pb-12">
@@ -131,7 +118,7 @@ export default function ProjectsPage() {
               <button
                 key={tab.id}
                 onClick={() => setFilter(tab.id)}
-                className={`relative px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${
+                className={`relative px-8 py-4 rounded-2xl font-semibold text-sm uppercase tracking-widest transition-all ${
                   filter === tab.id
                     ? "text-white scale-105"
                     : "bg-slate-50 text-slate-400 hover:bg-slate-100 border border-slate-100"
@@ -158,13 +145,13 @@ export default function ProjectsPage() {
                   key={project.slug}
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.92 }}
+                  exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.25 } }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.8, delay: (i % 3) * 0.08, ease: "easeOut" }}
                   className="h-full"
                 >
                   <TiltCard max={5} className="group h-full rounded-[2rem]">
-                    <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 border border-slate-100 flex flex-col h-full">
+                    <Spotlight className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 border border-slate-100 flex flex-col h-full">
                       {/* Project Image with Status Badge */}
                       <Link href={`/projects/${project.slug}`} className="relative block overflow-hidden">
                         <img
@@ -174,14 +161,14 @@ export default function ProjectsPage() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         {project.has3D && (
-                          <span className="absolute top-4 left-4 z-10 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-blue-700 shadow-xl">
+                          <span className="absolute top-4 left-4 z-10 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-blue-700 shadow-xl">
                             <Rotate3d className="h-3.5 w-3.5 animate-[spin_6s_linear_infinite]" />
                             {language === "en" ? "3D Tour" : "3D सफर"}
                           </span>
                         )}
                         <div className="absolute top-4 right-4 z-10">
                           <span
-                            className={`px-4 py-2 rounded-full text-xs font-black text-white shadow-xl backdrop-blur-md flex items-center gap-2 ${
+                            className={`px-4 py-2 rounded-full text-xs font-semibold text-white shadow-xl backdrop-blur-md flex items-center gap-2 ${
                               project.statusType === "current"
                                 ? "bg-blue-600/90"
                                 : project.statusType === "ready"
@@ -199,12 +186,12 @@ export default function ProjectsPage() {
 
                       <div className="p-8 flex flex-col flex-grow">
                         <Link href={`/projects/${project.slug}`}>
-                          <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight group-hover:text-blue-700 transition-colors">
+                          <h3 className="text-2xl font-semibold text-slate-900 mb-3 tracking-tight group-hover:text-blue-700 transition-colors">
                             {t(project.name, language)}
                           </h3>
                         </Link>
 
-                        <p className="text-slate-500 mb-8 line-clamp-2 leading-relaxed font-medium">{t(project.description, language)}</p>
+                        <p className="text-slate-500 mb-8 line-clamp-2 leading-relaxed">{t(project.description, language)}</p>
 
                         <div className="mt-auto space-y-6">
                           <a
@@ -220,14 +207,14 @@ export default function ProjectsPage() {
                             >
                               <MapPin className="w-5 h-5 text-[#ea580c] group-hover/address:text-blue-600 transition-colors duration-300" />
                             </motion.div>
-                            <span className="text-slate-600 font-bold uppercase tracking-wider text-[11px] transition-colors">
+                            <span className="text-slate-600 font-medium uppercase tracking-wider text-[11px] transition-colors">
                               {t(project.location, language)}
                             </span>
                           </a>
 
                           <Link
                             href={`/projects/${project.slug}`}
-                            className="relative flex items-center justify-between overflow-hidden rounded-2xl bg-slate-900 px-6 py-4 font-bold text-white transition-colors hover:bg-blue-700 group/btn"
+                            className="relative flex items-center justify-between overflow-hidden rounded-2xl bg-slate-900 px-6 py-4 font-medium text-white transition-colors hover:bg-blue-700 group/btn"
                           >
                             <span className="relative">{language === "en" ? "Explore Project" : "प्रकल्प पहा"}</span>
                             <ArrowRight className="relative h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
@@ -235,7 +222,7 @@ export default function ProjectsPage() {
                           </Link>
                         </div>
                       </div>
-                    </div>
+                    </Spotlight>
                   </TiltCard>
                 </motion.div>
               ))}

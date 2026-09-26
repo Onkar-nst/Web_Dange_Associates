@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageContext";
+import Diorama from "./fx/Diorama";
+import PlotWave from "./fx/PlotWave";
+import Magnetic from "./fx/Magnetic";
+import TiltCard from "./motion/TiltCard";
 
 const CountUp = ({ value, duration = 2 }) => {
   const [count, setCount] = useState(0);
@@ -112,13 +116,14 @@ const AboutUs = () => {
       {/* 1. Hero Section: SINCE 2007 & Legacy */}
       <section className="relative min-h-screen flex items-center bg-slate-900 overflow-hidden py-24">
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
+        <PlotWave className="opacity-60 [mask-image:linear-gradient(to_top,black_30%,transparent_85%)]" />
         <div className="container mx-auto px-6 relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="mb-8"
           >
-            <span className="inline-flex items-center px-6 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-blue-400 text-xs md:text-sm font-bold tracking-[0.3em] uppercase">
+            <span className="inline-flex items-center px-6 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-blue-400 text-xs md:text-sm font-medium tracking-[0.3em] uppercase">
               <span className="w-2 h-2 rounded-full bg-blue-500 mr-3 animate-pulse"></span>
               {language === "en" ? "Established 2007" : "२००७ पासून स्थापित"}
             </span>
@@ -127,7 +132,7 @@ const AboutUs = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-7xl font-bold text-white mb-8 leading-[1.2] tracking-tight"
+            className="text-4xl md:text-7xl font-medium text-white mb-8 leading-[1.2] tracking-tight"
           >
             {language === "en" ? "Foundations for" : "भावी पिढ्यांसाठी"}{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-orange-400">
@@ -168,6 +173,7 @@ const AboutUs = () => {
                 <div className="absolute -inset-8 bg-gradient-to-br from-blue-50 to-orange-50 rounded-[3rem] opacity-40"></div>
                 
                 {/* Portrait Card */}
+                <TiltCard max={7} className="group rounded-[2rem]">
                 <div className="relative bg-white rounded-[2rem] p-3 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)]">
                   <img 
                     src={team[0].image} 
@@ -175,6 +181,7 @@ const AboutUs = () => {
                     className="w-full h-[600px] object-cover rounded-[1.5rem]"
                   />
                 </div>
+                </TiltCard>
               </div>
             </motion.div>
             
@@ -188,13 +195,13 @@ const AboutUs = () => {
             >
               {/* Label */}
               <div className="inline-block">
-                <span className="text-xs font-bold tracking-[0.25em] uppercase text-slate-400 bg-slate-100 px-4 py-2 rounded-full">
+                <span className="text-xs font-medium tracking-[0.25em] uppercase text-slate-400 bg-slate-100 px-4 py-2 rounded-full">
                   {language === "en" ? "Leadership" : "नेतृत्व"}
                 </span>
               </div>
               
               {/* Name */}
-              <h2 className="text-5xl lg:text-6xl font-black text-slate-900 leading-tight tracking-tight">
+              <h2 className="text-5xl lg:text-6xl font-medium text-slate-900 leading-tight tracking-tight">
                 {team[0].name}
               </h2>
               
@@ -244,7 +251,7 @@ const AboutUs = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 leading-tight">
+              <h2 className="text-4xl md:text-5xl font-medium text-slate-900 mb-8 leading-tight">
                 {language === "en" ? "My Journey in" : "माझा प्रवास"}<br />
                 <span className="text-blue-700 italic font-serif">Nagpur Real Estate</span>
               </h2>
@@ -252,9 +259,9 @@ const AboutUs = () => {
               
               <div className="space-y-8">
                 <div className="flex gap-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-bold text-xl uppercase tracking-tighter">07</div>
+                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-medium text-xl uppercase tracking-tighter">07</div>
                   <div>
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">{language === "en" ? "The Beginning" : "सुरुवात"}</h4>
+                    <h4 className="text-xl font-medium text-slate-900 mb-2">{language === "en" ? "The Beginning" : "सुरुवात"}</h4>
                     <p className="text-slate-600 leading-relaxed">
                       {language === "en" 
                         ? "Starting in 2007, I envisioned a company built on absolute transparency and legal clarity."
@@ -263,9 +270,9 @@ const AboutUs = () => {
                   </div>
                 </div>
                 <div className="flex gap-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-bold text-xl uppercase tracking-tighter">12</div>
+                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-medium text-xl uppercase tracking-tighter">12</div>
                   <div>
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">{language === "en" ? "The Milestone" : "एक टप्पा"}</h4>
+                    <h4 className="text-xl font-medium text-slate-900 mb-2">{language === "en" ? "The Milestone" : "एक टप्पा"}</h4>
                     <p className="text-slate-600 leading-relaxed">
                       {language === "en" 
                         ? "Successfully delivered 12+ premier layouts that have now become thriving residential communities."
@@ -274,9 +281,9 @@ const AboutUs = () => {
                   </div>
                 </div>
                 <div className="flex gap-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-bold text-xl uppercase tracking-tighter">24</div>
+                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-medium text-xl uppercase tracking-tighter">24</div>
                   <div>
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">{language === "en" ? "The Future" : "भविष्य"}</h4>
+                    <h4 className="text-xl font-medium text-slate-900 mb-2">{language === "en" ? "The Future" : "भविष्य"}</h4>
                     <p className="text-slate-600 leading-relaxed">
                       {language === "en" 
                         ? "Today, we continue to lead with innovation, ensuring every plot we sell is a gold standard for investment."
@@ -293,12 +300,8 @@ const AboutUs = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
             >
-              <div className="absolute -inset-4 bg-orange-500/10 rounded-[3rem] blur-xl"></div>
-              <img 
-                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1973&auto=format&fit=crop" 
-                alt="Our Projects" 
-                className="relative rounded-[2.5rem] shadow-2xl w-full h-[500px] object-cover"
-              />
+              <div className="absolute inset-6 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.18),rgba(249,115,22,0.1)_50%,transparent_72%)] blur-2xl"></div>
+              <Diorama variant="layout" className="relative h-[420px] w-full md:h-[520px]" fallback="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1973&auto=format&fit=crop" />
             </motion.div>
           </div>
         </div>
@@ -314,12 +317,13 @@ const AboutUs = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             {/* Mission Card */}
+            <TiltCard max={5} className="group h-full rounded-[3rem]">
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="group relative p-10 md:p-14 rounded-[3rem] bg-white/5 backdrop-blur-md border border-white/10 hover:border-blue-500/50 transition-all duration-500 flex flex-col justify-between overflow-hidden"
+              className="group relative p-10 md:p-14 rounded-[3rem] bg-white/5 backdrop-blur-md border border-white/10 hover:border-blue-500/50 transition-all duration-500 flex flex-col justify-between overflow-hidden h-full"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-blue-600/20 transition-all duration-500"></div>
               
@@ -327,7 +331,7 @@ const AboutUs = () => {
                 <div className="w-16 h-16 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center mb-10 border border-blue-500/30 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
                   <Target className="w-8 h-8" />
                 </div>
-                <h3 className="text-3xl md:text-4xl font-black text-white mb-6 tracking-tight">
+                <h3 className="text-3xl md:text-4xl font-medium text-white mb-6 tracking-tight">
                   {language === "en" ? "Our Mission" : "आमचे ध्येय"}
                 </h3>
                 <p className="text-xl text-slate-300 leading-relaxed font-light italic relative z-10">
@@ -339,17 +343,19 @@ const AboutUs = () => {
               
               <div className="mt-12 flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-blue-500/50 to-transparent"></div>
-                <span className="text-blue-500/50 font-bold text-xs uppercase tracking-[0.3em]">Integrity</span>
+                <span className="text-blue-500/50 font-medium text-xs uppercase tracking-[0.3em]">Integrity</span>
               </div>
             </motion.div>
+            </TiltCard>
 
             {/* Vision Card */}
+            <TiltCard max={5} className="group h-full rounded-[3rem]">
             <motion.div 
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-              className="group relative p-10 md:p-14 rounded-[3rem] bg-white/5 backdrop-blur-md border border-white/10 hover:border-orange-500/50 transition-all duration-500 flex flex-col justify-between overflow-hidden"
+              className="group relative p-10 md:p-14 rounded-[3rem] bg-white/5 backdrop-blur-md border border-white/10 hover:border-orange-500/50 transition-all duration-500 flex flex-col justify-between overflow-hidden h-full"
             >
               <div className="absolute top-0 left-0 w-32 h-32 bg-orange-600/10 rounded-full -ml-16 -mt-16 blur-2xl group-hover:bg-orange-600/20 transition-all duration-500"></div>
               
@@ -357,7 +363,7 @@ const AboutUs = () => {
                 <div className="w-16 h-16 bg-orange-600/20 text-orange-400 rounded-2xl flex items-center justify-center mb-10 border border-orange-500/30 group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
                   <Eye className="w-8 h-8" />
                 </div>
-                <h3 className="text-3xl md:text-4xl font-black text-white mb-6 tracking-tight">
+                <h3 className="text-3xl md:text-4xl font-medium text-white mb-6 tracking-tight">
                   {language === "en" ? "Our Vision" : "आमची दृष्टी"}
                 </h3>
                 <p className="text-xl text-slate-300 leading-relaxed font-light italic relative z-10">
@@ -369,9 +375,10 @@ const AboutUs = () => {
 
               <div className="mt-12 flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-orange-500/50 to-transparent"></div>
-                <span className="text-orange-500/50 font-bold text-xs uppercase tracking-[0.3em]">Innovation</span>
+                <span className="text-orange-500/50 font-medium text-xs uppercase tracking-[0.3em]">Innovation</span>
               </div>
             </motion.div>
+            </TiltCard>
           </div>
         </div>
       </section>
@@ -386,10 +393,10 @@ const AboutUs = () => {
             transition={{ duration: 0.6 }}
             className="mb-16"
           >
-            <span className="text-orange-600 font-black tracking-widest uppercase text-xs mb-4 block">
+            <span className="text-orange-600 font-semibold tracking-widest uppercase text-xs mb-4 block">
               {language === "en" ? "The Dange Advantage" : "डांगे असोसिएटचे फायदे"}
             </span>
-            <h2 className="text-5xl md:text-6xl font-black text-slate-900">
+            <h2 className="text-5xl md:text-6xl font-medium text-slate-900">
               {language === "en" ? "Why Nagpur Trusts My Vision" : "नागपूर माझ्या दृष्टीवर का विश्वास ठेवते"}
             </h2>
           </motion.div>
@@ -422,10 +429,12 @@ const AboutUs = () => {
                 whileHover={{ y: -10 }}
                 className="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 hover:border-orange-200 transition-all duration-300 shadow-sm hover:shadow-xl hover:bg-white group"
               >
-                <div className="text-slate-900 mb-6 flex justify-center group-hover:text-orange-600 group-hover:scale-110 transition-all duration-300">
+                <div className="text-slate-900 mb-6 flex justify-center [perspective:600px] group-hover:text-orange-600">
+                  <div className="transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(360deg)_scale(1.15)]">
                   {item.icon}
+                  </div>
                 </div>
-                <h3 className="text-xl font-black text-slate-900 mb-2">{item.title}</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">{item.title}</h3>
                 <div className="w-12 h-1 bg-slate-200 group-hover:bg-orange-500 transition-all duration-300 mx-auto rounded-full"></div>
               </motion.div>
             ))}
@@ -439,7 +448,7 @@ const AboutUs = () => {
           <div className="absolute top-0 center-0 w-full h-full bg-gradient-to-b from-blue-600/10 to-transparent"></div>
         </div>
         <div className="container mx-auto px-6 relative z-10 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tighter">
+          <h2 className="text-4xl md:text-5xl font-medium text-white mb-8 tracking-tighter">
             {language === "en" ? "Ready to Build Your Dream?" : "तुमचे स्वप्न पूर्ण करण्यास तयार आहात?"}
           </h2>
           <p className="text-slate-400 mb-12 max-w-2xl mx-auto text-xl font-light leading-relaxed">
@@ -447,13 +456,15 @@ const AboutUs = () => {
               ? "Contact us today to explore our latest projects and find the perfect plot for your future."
               : "आमचे नवीनतम प्रकल्प एक्सप्लोर करण्यासाठी आणि तुमच्या भविष्यासाठी योग्य प्लॉट शोधण्यासाठी आजच आमच्याशी संपर्क साधा."}
           </p>
+          <Magnetic>
           <Link 
             href="/contact" 
-            className="inline-flex items-center bg-orange-600 hover:bg-orange-700 text-white font-black py-5 px-12 rounded-2xl transition-all duration-300 hover:shadow-[0_0_40px_rgba(234,88,12,0.3)] hover:-translate-y-1 text-lg"
+            className="inline-flex items-center bg-orange-600 hover:bg-orange-700 text-white font-semibold py-5 px-12 rounded-2xl transition-all duration-300 hover:shadow-[0_0_40px_rgba(234,88,12,0.3)] hover:-translate-y-1 text-lg"
           >
             {language === "en" ? "Get in Touch" : "संपर्क साधा"}
             <ArrowRight className="ml-3 w-6 h-6" />
           </Link>
+          </Magnetic>
         </div>
       </section>
 

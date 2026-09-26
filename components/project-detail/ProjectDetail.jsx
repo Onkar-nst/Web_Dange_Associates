@@ -16,6 +16,8 @@ import { useLanguage } from "../LanguageContext";
 import Reveal, { stagger, rise } from "../motion/Reveal";
 import CountUp from "../motion/CountUp";
 import TiltCard from "../motion/TiltCard";
+import Spotlight from "../fx/Spotlight";
+import Magnetic from "../fx/Magnetic";
 import { projects, getProject, t } from "@/lib/projects";
 
 const LayoutFlythrough = dynamic(() => import("../project3d/LayoutFlythrough"), {
@@ -41,7 +43,7 @@ const STATUS_STYLE = {
 function Eyebrow({ children, light }) {
   return (
     <span
-      className={`inline-block font-extrabold tracking-widest uppercase text-xs px-3 py-1.5 rounded-md border italic ${
+      className={`inline-block font-semibold tracking-widest uppercase text-xs px-3 py-1.5 rounded-md border italic ${
         light ? "text-white bg-white/10 border-white/20 backdrop-blur" : "text-blue-700 bg-blue-50 border-blue-100"
       }`}
     >
@@ -81,7 +83,7 @@ function Hero({ project, language }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="mb-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60"
+            className="mb-6 flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-white/60"
           >
             <Link href="/" className="hover:text-white transition-colors">{language === "en" ? "Home" : "मुखपृष्ठ"}</Link>
             <ChevronRight className="h-3 w-3" />
@@ -94,13 +96,13 @@ function Hero({ project, language }) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.35, duration: 0.5 }}
-            className={`mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black text-white shadow-xl backdrop-blur-md ${status.cls}`}
+            className={`mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white shadow-xl backdrop-blur-md ${status.cls}`}
           >
             <status.Icon className={`h-3.5 w-3.5 ${project.statusType === "current" ? "animate-pulse" : ""}`} />
             {t(project.status, language)}
           </motion.span>
 
-          <h1 className="max-w-5xl text-5xl font-black leading-[0.98] tracking-tight text-white md:text-7xl lg:text-8xl">
+          <h1 className="max-w-5xl text-5xl font-medium leading-[0.98] tracking-tight text-white md:text-7xl lg:text-8xl">
             {name.split(" ").map((w, i) => (
               <span key={`${language}-${i}`} className="mr-[0.22em] inline-block overflow-hidden pb-2 align-bottom">
                 <motion.span
@@ -119,7 +121,7 @@ function Hero({ project, language }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8, ease: EASE }}
-            className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-white/85 md:text-2xl"
+            className="mt-6 max-w-2xl text-lg leading-relaxed text-white/85 md:text-2xl"
           >
             {t(project.tagline, language)}
           </motion.p>
@@ -136,7 +138,7 @@ function Hero({ project, language }) {
             <span className="rounded-xl bg-orange-500/20 p-2.5 border border-orange-400/30 group-hover:bg-orange-500 transition-colors">
               <MapPin className="h-5 w-5 text-orange-300 group-hover:text-white" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-widest md:text-sm">{t(project.location, language)}</span>
+            <span className="text-xs font-medium uppercase tracking-widest md:text-sm">{t(project.location, language)}</span>
           </motion.a>
 
           <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
@@ -150,12 +152,12 @@ function Hero({ project, language }) {
                 <motion.div
                   key={i}
                   variants={rise}
-                  className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-md sm:min-w-[150px]"
+                  className="rounded-2xl border border-white/15 bg-slate-900/40 px-5 py-4 transition-colors hover:bg-slate-900/55 sm:min-w-[150px]"
                 >
-                  <div className="text-2xl font-black tracking-tight text-white md:text-3xl">
+                  <div className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
                     {/^\d+[+%]?$/.test(s.value) ? <CountUp value={s.value} /> : s.value}
                   </div>
-                  <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-white/60">{t(s.label, language)}</div>
+                  <div className="mt-1 text-[10px] font-medium uppercase tracking-widest text-white/60">{t(s.label, language)}</div>
                 </motion.div>
               ))}
             </motion.div>
@@ -169,19 +171,21 @@ function Hero({ project, language }) {
               {project.has3D && (
                 <a
                   href="#flythrough"
-                  className="group flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-4 font-bold text-slate-900 shadow-xl transition-all hover:-translate-y-0.5 hover:bg-blue-50"
+                  className="group flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-4 font-medium text-slate-900 shadow-xl transition-all hover:-translate-y-0.5 hover:bg-blue-50"
                 >
                   <Rotate3d className="h-5 w-5 text-blue-700 transition-transform duration-700 group-hover:rotate-180" />
                   {language === "en" ? "Take the 3D Tour" : "3D सफर करा"}
                 </a>
               )}
+              <Magnetic className="block">
               <a
                 href="tel:+917774882844"
-                className="group flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 py-4 font-bold text-white shadow-xl shadow-orange-900/30 transition-all hover:-translate-y-0.5 hover:bg-orange-700"
+                className="group flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 py-4 font-medium text-white shadow-xl shadow-orange-900/30 transition-all hover:-translate-y-0.5 hover:bg-orange-700"
               >
                 <Phone className="h-5 w-5 transition-transform group-hover:rotate-12" />
                 {language === "en" ? "Book Free Site Visit" : "मोफत साइट भेट बुक करा"}
               </a>
+              </Magnetic>
             </motion.div>
           </div>
         </div>
@@ -211,20 +215,20 @@ function FlythroughIntro({ project, language }) {
           <Eyebrow>{language === "en" ? "Interactive 3D Experience" : "इंटरॅक्टिव्ह 3D अनुभव"}</Eyebrow>
         </Reveal>
         <Reveal delay={0.1}>
-          <h2 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 md:text-6xl">
+          <h2 className="mt-6 text-4xl font-medium tracking-tight text-slate-900 md:text-6xl">
             {language === "en" ? (
               <>
-                Fly through <span className="text-blue-700 italic font-serif font-extrabold">{t(project.name, language)}</span>
+                Fly through <span className="text-blue-700 italic font-serif font-semibold">{t(project.name, language)}</span>
               </>
             ) : (
               <>
-                <span className="text-blue-700 italic font-serif font-extrabold">{t(project.name, language)}</span> ची हवाई सफर
+                <span className="text-blue-700 italic font-serif font-semibold">{t(project.name, language)}</span> ची हवाई सफर
               </>
             )}
           </h2>
         </Reveal>
         <Reveal delay={0.2}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-relaxed text-slate-600">
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600">
             {language === "en"
               ? "Keep scrolling to fly over the layout, glide through the entrance, land on a plot and watch a home, then a whole society, come to life."
               : "स्क्रोल करत राहा: लेआउटवरून उड्डाण करा, प्रवेशद्वारातून आत या, एका प्लॉटवर उतरा आणि घर व संपूर्ण वसाहत साकार होताना पाहा."}
@@ -249,7 +253,7 @@ function Overview({ project, language }) {
               <Eyebrow>{language === "en" ? "Project Overview" : "प्रकल्पाचा आढावा"}</Eyebrow>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-slate-900 md:text-5xl">
+              <h2 className="mt-6 text-4xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
                 {language === "en" ? "About " : ""}
                 <span className="text-blue-700">{t(project.name, language)}</span>
                 {language === "en" ? "" : " विषयी"}
@@ -258,7 +262,7 @@ function Overview({ project, language }) {
             <div className="mt-8 space-y-6">
               {t(project.longDescription, language).map((para, i) => (
                 <Reveal key={i} delay={0.15 + i * 0.1}>
-                  <p className="text-lg font-medium leading-relaxed text-slate-600">{para}</p>
+                  <p className="text-lg leading-relaxed text-slate-600">{para}</p>
                 </Reveal>
               ))}
             </div>
@@ -279,7 +283,7 @@ function Overview({ project, language }) {
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white shadow-lg shadow-blue-700/20 transition-colors group-hover:bg-orange-500">
                     <Check className="h-4 w-4" />
                   </span>
-                  <span className="font-bold leading-snug text-slate-800">{t(h, language)}</span>
+                  <span className="font-medium leading-snug text-slate-800">{t(h, language)}</span>
                 </motion.li>
               ))}
             </motion.ul>
@@ -289,7 +293,7 @@ function Overview({ project, language }) {
             <Reveal x={30} y={0} className="lg:sticky lg:top-32">
               <div className="relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.06)] md:p-10">
                 <div className="absolute right-0 top-0 h-40 w-40 -translate-y-1/2 translate-x-1/2 rounded-full bg-orange-500/10" />
-                <h3 className="relative text-xl font-black tracking-tight text-slate-900">
+                <h3 className="relative text-xl font-semibold tracking-tight text-slate-900">
                   {language === "en" ? "Project at a glance" : "प्रकल्प एका दृष्टीक्षेपात"}
                 </h3>
                 <dl className="relative mt-6 divide-y divide-slate-100">
@@ -302,17 +306,17 @@ function Overview({ project, language }) {
                       transition={{ delay: 0.1 + i * 0.06, duration: 0.6, ease: EASE }}
                       className="flex items-center justify-between gap-6 py-4"
                     >
-                      <dt className="text-[11px] font-black uppercase tracking-widest text-slate-400">{t(f.label, language)}</dt>
-                      <dd className="text-right text-sm font-bold text-slate-900">{t(f.value, language)}</dd>
+                      <dt className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{t(f.label, language)}</dt>
+                      <dd className="text-right text-sm font-medium text-slate-900">{t(f.value, language)}</dd>
                     </motion.div>
                   ))}
                 </dl>
                 <div className="relative mt-8 grid gap-3">
-                  <a href="tel:+917774882844" className="group flex items-center justify-center gap-3 rounded-2xl bg-blue-600 px-6 py-4 font-black text-white shadow-xl shadow-blue-600/15 transition-all hover:-translate-y-0.5 hover:bg-blue-700">
+                  <a href="tel:+917774882844" className="group flex items-center justify-center gap-3 rounded-2xl bg-blue-600 px-6 py-4 font-semibold text-white shadow-xl shadow-blue-600/15 transition-all hover:-translate-y-0.5 hover:bg-blue-700">
                     <Phone className="h-5 w-5 transition-transform group-hover:rotate-12" />
                     {language === "en" ? "Call Executive" : "एक्झिक्युटिव्हला कॉल करा"}
                   </a>
-                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-center gap-3 rounded-2xl bg-emerald-600 px-6 py-4 font-black text-white shadow-xl shadow-emerald-600/15 transition-all hover:-translate-y-0.5 hover:bg-emerald-700">
+                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-center gap-3 rounded-2xl bg-emerald-600 px-6 py-4 font-semibold text-white shadow-xl shadow-emerald-600/15 transition-all hover:-translate-y-0.5 hover:bg-emerald-700">
                     <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
                     {language === "en" ? "WhatsApp Us" : "व्हॉट्सॲप करा"}
                   </a>
@@ -337,7 +341,7 @@ function Amenities({ project, language }) {
             <Eyebrow>{language === "en" ? "Amenities" : "सुविधा"}</Eyebrow>
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
+            <h2 className="mt-6 text-4xl font-medium tracking-tight text-slate-900 md:text-5xl">
               {language === "en" ? "Everything your family needs" : "तुमच्या कुटुंबाला हवे ते सर्व"}
             </h2>
           </Reveal>
@@ -355,15 +359,19 @@ function Amenities({ project, language }) {
               <motion.div
                 key={i}
                 variants={rise}
-                whileHover={{ y: -8 }}
+                whileHover={{ y: -6 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-2xl md:p-8"
+                className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-shadow hover:shadow-2xl"
               >
                 <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-orange-500/5 transition-transform duration-700 group-hover:scale-[3]" />
-                <div className="relative mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-blue-700 transition-all duration-500 group-hover:rotate-6 group-hover:bg-blue-700 group-hover:text-white">
-                  <Icon className="h-7 w-7" />
+                <Spotlight className="h-full p-6 md:p-8" color="rgba(249,115,22,0.1)">
+                <div className="relative mb-6 [perspective:600px]">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-blue-700 transition-colors duration-300 group-hover:bg-blue-700 group-hover:text-white">
+                    <Icon className="h-7 w-7" />
+                  </div>
                 </div>
-                <h3 className="relative text-base font-extrabold leading-snug text-slate-900 md:text-lg">{t(a.label, language)}</h3>
+                <h3 className="relative text-base font-medium leading-snug text-slate-900 md:text-lg">{t(a.label, language)}</h3>
+                </Spotlight>
               </motion.div>
             );
           })}
@@ -386,7 +394,7 @@ function Gallery({ project, language }) {
               <Eyebrow>{language === "en" ? "Layout Plan" : "लेआउट प्लॅन"}</Eyebrow>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="mt-6 text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
+              <h2 className="mt-6 text-4xl font-medium tracking-tight text-slate-900 md:text-5xl">
                 {language === "en" ? "See the full layout" : "संपूर्ण लेआउट पहा"}
               </h2>
             </Reveal>
@@ -414,7 +422,7 @@ function Gallery({ project, language }) {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
-                <span className="rounded-full bg-white/95 px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-900 shadow-lg">{t(g.caption, language)}</span>
+                <span className="rounded-full bg-white/95 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-slate-900 shadow-lg">{t(g.caption, language)}</span>
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-600 text-white shadow-xl transition-transform group-hover:scale-110">
                   <ZoomIn className="h-5 w-5" />
                 </span>
@@ -474,7 +482,7 @@ function Location({ project, language }) {
               <Eyebrow>{language === "en" ? "Location & Connectivity" : "ठिकाण आणि कनेक्टिव्हिटी"}</Eyebrow>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-slate-900 md:text-5xl">
+              <h2 className="mt-6 text-4xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
                 {language === "en" ? "Well connected, peacefully placed" : "उत्तम कनेक्टिव्हिटी, शांत परिसर"}
               </h2>
             </Reveal>
@@ -495,7 +503,7 @@ function Location({ project, language }) {
                         <Icon className="h-5 w-5" />
                       </span>
                       <div className="flex-1 rounded-2xl border border-slate-100 bg-slate-50 px-5 py-4 transition-all duration-300 group-hover:translate-x-1 group-hover:border-blue-100 group-hover:bg-white group-hover:shadow-lg">
-                        <p className="font-extrabold text-slate-900">{t(c.label, language)}</p>
+                        <p className="font-semibold text-slate-900">{t(c.label, language)}</p>
                         <p className="text-sm font-medium text-slate-500">{t(c.note, language)}</p>
                       </div>
                     </motion.li>
@@ -508,7 +516,7 @@ function Location({ project, language }) {
                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(project.mapQuery)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group mt-10 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 font-bold text-white shadow-lg transition-all hover:bg-slate-800"
+                className="group mt-10 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 font-medium text-white shadow-lg transition-all hover:bg-slate-800"
               >
                 <Navigation className="h-4 w-4" />
                 {language === "en" ? "Get Directions" : "दिशा मिळवा"}
@@ -534,12 +542,12 @@ function OtherProjects({ current, language }) {
               <Eyebrow>{language === "en" ? "Explore More" : "आणखी पहा"}</Eyebrow>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">
+              <h2 className="mt-6 text-3xl font-medium tracking-tight text-slate-900 md:text-5xl">
                 {language === "en" ? "Other projects" : "इतर प्रकल्प"}
               </h2>
             </Reveal>
           </div>
-          <Link href="/projects" className="hidden items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white shadow-lg transition-all hover:bg-slate-800 md:flex">
+          <Link href="/projects" className="hidden items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-medium text-white shadow-lg transition-all hover:bg-slate-800 md:flex">
             {language === "en" ? "All Projects" : "सर्व प्रकल्प"}
             <ArrowRight className="h-5 w-5" />
           </Link>
@@ -552,16 +560,16 @@ function OtherProjects({ current, language }) {
                   <div className="relative h-52 overflow-hidden">
                     <img src={p.image} alt={t(p.name, language)} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     {p.has3D && (
-                      <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-700 shadow">
+                      <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-blue-700 shadow">
                         <Rotate3d className="h-3.5 w-3.5" /> 3D
                       </span>
                     )}
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-orange-600">{t(p.status, language)}</span>
-                    <h3 className="mt-2 text-xl font-black tracking-tight text-slate-900 transition-colors group-hover:text-blue-700">{t(p.name, language)}</h3>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-600">{t(p.status, language)}</span>
+                    <h3 className="mt-2 text-xl font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-blue-700">{t(p.name, language)}</h3>
                     <p className="mt-2 line-clamp-1 text-sm font-medium text-slate-500">{t(p.location, language)}</p>
-                    <span className="mt-auto flex items-center gap-2 pt-5 text-sm font-bold text-slate-900">
+                    <span className="mt-auto flex items-center gap-2 pt-5 text-sm font-medium text-slate-900">
                       {language === "en" ? "View project" : "प्रकल्प पहा"}
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </span>

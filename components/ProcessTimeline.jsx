@@ -83,13 +83,13 @@ const ProcessTimeline = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-16"
         >
-          <span className="text-blue-700 font-extrabold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
+          <span className="text-blue-700 font-semibold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
             {language === "en" ? "How it Works" : "प्रक्रिया कशी आहे"}
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mt-6 tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-medium text-slate-900 mt-6 tracking-tight">
             {language === "en" ? "Your 5-Step Path to Land Ownership" : "जमीन मालकीचा तुमचा ५-टप्प्यांचा प्रवास"}
           </h2>
-          <p className="text-slate-600 mt-6 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
+          <p className="text-slate-600 mt-6 max-w-2xl mx-auto text-lg leading-relaxed">
             {language === "en" 
               ? "We believe in a transparent and structured buying journey with no surprises." 
               : "आम्ही पारदर्शक आणि संरचित खरेदी प्रवासावर विश्वास ठेवतो."}
@@ -108,6 +108,10 @@ const ProcessTimeline = () => {
             transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             className="hidden md:block absolute top-[2.5rem] left-[10%] right-[10%] h-0.5 origin-left bg-gradient-to-r from-blue-700 via-orange-500 to-blue-700 z-0"
           ></motion.div>
+          <div className="pointer-events-none hidden md:block absolute top-[2.5rem] left-[10%] right-[10%] h-0.5 z-0">
+            <span className="absolute -top-[5px] h-3 w-3 -translate-x-1/2 rounded-full bg-orange-500 shadow-[0_0_22px_8px_rgba(249,115,22,0.45)] animate-[travel_5.5s_ease-in-out_infinite]" />
+            <span className="absolute -top-[4px] h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-blue-500 shadow-[0_0_18px_6px_rgba(59,130,246,0.45)] animate-[travel_5.5s_ease-in-out_infinite] [animation-delay:2.75s]" />
+          </div>
 
           <motion.div
             variants={containerVariants}
@@ -123,20 +127,22 @@ const ProcessTimeline = () => {
                 className="relative z-10 flex flex-col items-center text-center group"
               >
                 {/* Step Number Badge */}
-                <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-5xl font-black text-slate-100 select-none z-0">
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-5xl font-medium text-slate-100 select-none z-0">
                   0{step.id}
                 </div>
                 
                 {/* Icon Circle */}
-                <div className="w-20 h-20 rounded-2xl bg-white border-2 border-slate-200 group-hover:border-blue-600 group-hover:shadow-xl group-hover:-translate-y-1.5 transition-all duration-300 flex items-center justify-center mb-8 relative z-10">
+                <div className="mb-8 relative z-10 [perspective:700px]">
+                <div className="w-20 h-20 rounded-2xl bg-white border-2 border-slate-200 group-hover:border-blue-600 group-hover:shadow-2xl group-hover:shadow-blue-600/20 transition-all duration-500 flex items-center justify-center [transform-style:preserve-3d] group-hover:[transform:rotateX(16deg)_rotateY(-20deg)_translateY(-6px)]">
                     <step.icon className="w-8 h-8 text-blue-700 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6" />
                 </div>
+                </div>
                 
-                <h3 className="text-xl font-extrabold text-slate-900 mb-4 group-hover:text-blue-700 transition-colors">
+                <h3 className="text-xl font-semibold text-slate-900 mb-4 group-hover:text-blue-700 transition-colors">
                   {step.title}
                 </h3>
                 
-                <p className="text-slate-500 font-medium leading-relaxed text-sm">
+                <p className="text-slate-500 leading-relaxed text-sm">
                   {step.description}
                 </p>
               </motion.div>
