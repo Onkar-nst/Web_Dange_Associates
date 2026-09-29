@@ -282,12 +282,12 @@ export function boardTexture(renderer, title, subtitle) {
   const c = makeCanvas(1600, 200);
   const g = c.getContext("2d");
   const grd = g.createLinearGradient(0, 0, 1600, 0);
-  grd.addColorStop(0, "#1e3a8a");
-  grd.addColorStop(0.5, "#1e40af");
-  grd.addColorStop(1, "#1e3a8a");
+  grd.addColorStop(0, "#112443");
+  grd.addColorStop(0.5, "#1f3f73");
+  grd.addColorStop(1, "#112443");
   g.fillStyle = grd;
   g.fillRect(0, 0, 1600, 200);
-  g.fillStyle = "#f97316";
+  g.fillStyle = "#9eb2d3";
   g.fillRect(0, 186, 1600, 14);
   g.fillRect(0, 0, 1600, 8);
   g.fillStyle = "#ffffff";

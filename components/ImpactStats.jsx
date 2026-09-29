@@ -1,60 +1,65 @@
 "use client";
 
 import { useLanguage } from "./LanguageContext";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Award, LandPlot, Users, ShieldCheck } from "lucide-react";
 import CountUp from "./motion/CountUp";
-import PlotWave from "./fx/PlotWave";
+
+const ease = [0.22, 1, 0.36, 1];
 
 const ImpactStats = () => {
   const { language } = useLanguage();
+  const en = language === "en";
 
   const stats = [
     {
       value: "18+",
-      label: language === "en" ? "Years Experience" : "वर्षांचा अनुभव",
+      icon: Award,
+      label: en ? "Years Experience" : "वर्षांचा अनुभव",
+      desc: en ? "Building trust in land since 2007" : "२००७ पासून विश्वासाचा वारसा",
     },
     {
       value: "12+",
-      label: language === "en" ? "Completed Layouts" : "पूर्ण लेआउट्स",
+      icon: LandPlot,
+      label: en ? "Completed Layouts" : "पूर्ण लेआउट्स",
+      desc: en ? "Approved, demarcated & delivered" : "मंजूर, सीमांकित आणि हस्तांतरित",
     },
     {
       value: "1200+",
-      label: language === "en" ? "Happy Families" : "आनंदी कुटुंबे",
+      icon: Users,
+      label: en ? "Happy Families" : "आनंदी कुटुंबे",
+      desc: en ? "Who now own their piece of land" : "ज्यांनी स्वतःची जमीन घेतली",
     },
-
+    {
+      value: "100%",
+      icon: ShieldCheck,
+      label: en ? "Clear-Title Plots" : "स्पष्ट मालकी प्लॉट",
+      desc: en ? "Every document shown before you pay" : "पैसे देण्यापूर्वी प्रत्येक कागदपत्र",
+    },
   ];
 
+  // One trigger for the whole row so every counter starts at the same moment.
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+
   return (
-    <section className="py-24 md:py-28 bg-slate-900 overflow-hidden relative">
-      <PlotWave className="opacity-70" />
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(15,23,42,0.85)_75%)]" />
-      
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-16 md:gap-8">
+    <section ref={ref} className="relative border-y border-slate-100 bg-white py-4 md:py-5">
+      <div className="container relative z-10 mx-auto px-6">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-y-6 lg:grid-cols-4 lg:divide-x lg:divide-slate-200">
           {stats.map((stat, index) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.5 }}
-              transition={{ duration: 0.8, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center group flex-1 rounded-3xl border border-white/0 px-6 py-6 transition-all duration-500 hover:border-white/10 hover:bg-white/5 hover:backdrop-blur-sm"
+              key={stat.label}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, ease }}
+              className="px-4 text-center"
             >
-              <div className="relative inline-block">
-                <h3 className="text-6xl md:text-7xl font-medium mb-4 tracking-tighter transition-all duration-500 group-hover:scale-110 bg-gradient-to-b from-white to-blue-400 bg-clip-text text-transparent">
-                  <CountUp value={stat.value} />
-                </h3>
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.9, delay: 0.4 + index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-                  className="h-1.5 w-16 bg-orange-600 mx-auto rounded-full mb-6 transform transition-all duration-500 group-hover:w-24 group-hover:bg-blue-500"
-                ></motion.div>
-              </div>
-              <p className="text-sm md:text-base font-medium text-blue-100 uppercase tracking-[0.25em] leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity duration-500">
-                {stat.label}
+              <p className="text-3xl font-medium tracking-tight text-slate-900 tabular-nums">
+                <CountUp value={stat.value} duration={2.5} start={inView} />
               </p>
+              <p className="mt-1 text-sm text-slate-500">{stat.label}</p>
             </motion.div>
           ))}
         </div>

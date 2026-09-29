@@ -4,6 +4,7 @@ import Navbar from "../Navbar";
 import Footer from "../Footer";
 import Reveal from "../motion/Reveal";
 import { useLanguage } from "../LanguageContext";
+import SectionLabel from "../ui/SectionLabel";
 
 export default function LegalPage({ title, updated, sections }) {
   const { language } = useLanguage();
@@ -11,12 +12,10 @@ export default function LegalPage({ title, updated, sections }) {
   return (
     <>
       <Navbar />
-      <main className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white pb-24 pt-36">
+      <main className="relative overflow-hidden pb-24 pt-36 bg-white">
         <div className="container relative mx-auto max-w-3xl px-6">
           <Reveal>
-            <span className="inline-block rounded-md border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-medium uppercase italic tracking-widest text-blue-700">
-              Dange Associates
-            </span>
+            <SectionLabel>Dange Associates</SectionLabel>
             <h1 className="mt-6 text-4xl font-medium tracking-tight text-slate-900 md:text-5xl">{L(title)}</h1>
             <p className="mt-3 text-sm text-slate-500">{L(updated)}</p>
           </Reveal>

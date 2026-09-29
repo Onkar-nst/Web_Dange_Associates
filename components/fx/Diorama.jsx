@@ -116,7 +116,7 @@ export default function Diorama({ variant = "home", className = "", hint = true,
       <canvas ref={canvasRef} className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`} />
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-40 w-40 animate-pulse rounded-[2rem] bg-gradient-to-br from-blue-100 via-white to-orange-100 [transform:rotateX(55deg)_rotateZ(45deg)]" />
+          <div className="h-40 w-40 animate-pulse rounded-[2rem] [transform:rotateX(55deg)_rotateZ(45deg)]" />
         </div>
       )}
       {hint && ready && (

@@ -303,7 +303,7 @@ export default function LayoutFlythrough() {
 
   if (failed) {
     return (
-      <section className="relative py-24 bg-slate-50">
+      <section className="relative py-24 bg-white">
         <div className="container mx-auto px-6 max-w-5xl text-center">
           <img src="/project-imgg.webp" alt="Shree Ram Nagri-1 master layout" className="w-full rounded-[2rem] shadow-2xl border-8 border-white" />
           <p className="mt-6 text-slate-500 font-medium">
@@ -317,13 +317,10 @@ export default function LayoutFlythrough() {
   }
 
   return (
-    <section ref={sectionRef} className="relative bg-slate-900" style={{ height: "900vh" }} aria-label="3D fly-through of the layout">
+    <section ref={sectionRef} className="relative bg-slate-900" style={{ height: "900vh" }} aria-label="3D fly-through of the layout" data-no-vanish>
       <div ref={stageRef} className="sticky top-0 h-[100svh] w-full overflow-hidden" onPointerMove={onPointerMove}>
         <canvas ref={canvasRef} className={`absolute inset-0 h-full w-full block transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`} />
 
-        {/* soft vignettes for legibility */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-slate-950/35 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-slate-950/45 to-transparent" />
 
         {/* 3D-anchored labels (positioned every frame by the scene) */}
         <div className="pointer-events-none absolute inset-0">
@@ -332,14 +329,14 @@ export default function LayoutFlythrough() {
               <div className="flex -translate-x-1/2 -translate-y-full flex-col items-center">
                 <div
                   className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.18em] shadow-xl ${
-                    l.accent ? "bg-orange-600 text-white" : "bg-white/95 text-slate-900 border border-white"
+                    l.accent ? "bg-blue-700 text-white" : "bg-white/95 text-slate-900 border border-white"
                   }`}
                 >
-                  <span className={`h-1.5 w-1.5 rounded-full ${l.accent ? "bg-white" : "bg-orange-500"} animate-pulse`} />
+                  <span className={`h-1.5 w-1.5 rounded-full ${l.accent ? "bg-white" : "bg-blue-700"} animate-pulse`} />
                   {L(l.text)}
                 </div>
-                <div className={`h-7 w-px ${l.accent ? "bg-orange-500" : "bg-white/90"}`} />
-                <div className={`h-2 w-2 rounded-full ${l.accent ? "bg-orange-500 ring-4 ring-orange-500/30" : "bg-white ring-4 ring-white/30"}`} />
+                <div className={`h-7 w-px ${l.accent ? "bg-blue-700" : "bg-white/90"}`} />
+                <div className={`h-2 w-2 rounded-full ${l.accent ? "bg-blue-700 ring-4 ring-blue-700/30" : "bg-white ring-4 ring-white/30"}`} />
               </div>
             </div>
           ))}
@@ -367,8 +364,8 @@ export default function LayoutFlythrough() {
             {RAIL.map((r, i) => (
               <li key={i}>
                 <button onClick={() => jumpTo(i)} className="group flex w-full items-center gap-3 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-blue-50">
-                  <span className={`relative flex h-2.5 w-2.5 items-center justify-center rounded-full transition-all duration-500 ${i === chapter ? "bg-orange-500 scale-125" : i < chapter ? "bg-blue-700" : "bg-slate-300"}`}>
-                    {i === chapter && <span className="absolute inset-0 rounded-full bg-orange-500 animate-ping" />}
+                  <span className={`relative flex h-2.5 w-2.5 items-center justify-center rounded-full transition-all duration-500 ${i === chapter ? "bg-blue-700 scale-125" : i < chapter ? "bg-blue-700" : "bg-slate-300"}`}>
+                    {i === chapter && <span className="absolute inset-0 rounded-full bg-blue-700 animate-ping" />}
                   </span>
                   <span className={`text-[11px] font-medium uppercase tracking-wider transition-colors ${i === chapter ? "text-slate-900" : "text-slate-400 group-hover:text-blue-700"}`}>
                     {L(r)}
@@ -391,9 +388,9 @@ export default function LayoutFlythrough() {
               className="rounded-[1.75rem] bg-white/90 backdrop-blur-xl p-6 md:p-8 shadow-[0_30px_80px_rgba(15,23,42,0.35)] border border-white"
             >
               <div className="mb-4 flex items-center gap-3">
-                <span className="text-3xl md:text-4xl font-medium italic text-orange-600 leading-none">0{chapter + 1}</span>
+                <span className="text-3xl md:text-4xl font-medium italic text-blue-700 leading-none">0{chapter + 1}</span>
                 <span className="text-xs font-semibold text-slate-300">/ 0{CHAPTERS.length}</span>
-                <span className="ml-auto text-blue-700 font-semibold tracking-widest uppercase text-[10px] bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
+                <span className="ml-auto text-blue-700 font-semibold tracking-widest uppercase text-[10px] bg-white px-3 py-1.5 rounded-md border border-slate-200">
                   {L(ch.eyebrow)}
                 </span>
               </div>
@@ -422,15 +419,15 @@ export default function LayoutFlythrough() {
                     {STAGES.map((s, i) => (
                       <div key={i} className="flex flex-1 flex-col items-center gap-2">
                         <div className="flex w-full items-center">
-                          <div className={`h-0.5 flex-1 ${i === 0 ? "opacity-0" : i <= stage ? "bg-orange-500" : "bg-slate-200"} transition-colors duration-500`} />
+                          <div className={`h-0.5 flex-1 ${i === 0 ? "opacity-0" : i <= stage ? "bg-blue-700" : "bg-slate-200"} transition-colors duration-500`} />
                           <div
                             className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-semibold transition-all duration-500 ${
-                              i < stage ? "border-blue-700 bg-blue-700 text-white" : i === stage ? "border-orange-500 bg-orange-500 text-white scale-110 shadow-lg shadow-orange-500/30" : "border-slate-200 bg-white text-slate-400"
+                              i < stage ? "border-blue-700 bg-blue-700 text-white" : i === stage ? "border-blue-700 bg-blue-700 text-white scale-110 shadow-lg " : "border-slate-200 bg-white text-slate-400"
                             }`}
                           >
                             {i < stage ? <Check className="h-3.5 w-3.5" /> : i + 1}
                           </div>
-                          <div className={`h-0.5 flex-1 ${i === STAGES.length - 1 ? "opacity-0" : i < stage ? "bg-orange-500" : "bg-slate-200"} transition-colors duration-500`} />
+                          <div className={`h-0.5 flex-1 ${i === STAGES.length - 1 ? "opacity-0" : i < stage ? "bg-blue-700" : "bg-slate-200"} transition-colors duration-500`} />
                         </div>
                         <span className={`text-center text-[9px] md:text-[10px] font-medium uppercase tracking-wider leading-tight ${i === stage ? "text-slate-900" : "text-slate-400"}`}>
                           {L(s.label)}
@@ -447,7 +444,7 @@ export default function LayoutFlythrough() {
                     <Phone className="h-4 w-4" />
                     {language === "en" ? "Book Site Visit" : "साइट भेट बुक करा"}
                   </a>
-                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3.5 text-sm font-semibold text-white shadow-xl shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:-translate-y-0.5">
+                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-700 px-5 py-3.5 text-sm font-semibold text-white shadow-xl  transition-all hover:bg-blue-800 hover:-translate-y-0.5">
                     <MessageCircle className="h-4 w-4" />
                     WhatsApp
                   </a>
@@ -459,7 +456,7 @@ export default function LayoutFlythrough() {
 
         {/* Progress bar + disclaimer */}
         <div className="absolute inset-x-0 bottom-0 h-1 bg-white/25">
-          <div ref={barRef} className="h-full origin-left bg-gradient-to-r from-blue-700 via-orange-500 to-blue-700" style={{ transform: "scaleX(0)" }} />
+          <div ref={barRef} className="h-full origin-left bg-blue-700" style={{ transform: "scaleX(0)" }} />
         </div>
         <p className="pointer-events-none absolute bottom-3 right-4 hidden md:block text-[10px] font-semibold uppercase tracking-widest text-white/80 drop-shadow">
           {language === "en" ? "Illustrative 3D visualisation · refer to the sanctioned layout" : "प्रातिनिधिक 3D दृश्य · मंजूर लेआउट पहा"}
@@ -489,7 +486,7 @@ export default function LayoutFlythrough() {
                 {language === "en" ? "Laying out the plots" : "प्लॉटची आखणी सुरू आहे"}
               </p>
               <div className="relative mt-4 h-1 w-48 overflow-hidden rounded-full bg-slate-200">
-                <div className="h-full bg-gradient-to-r from-blue-700 to-orange-500 transition-all duration-300" style={{ width: `${Math.round(loadP * 100)}%` }} />
+                <div className="h-full transition-all duration-300 bg-blue-700" style={{ width: `${Math.round(loadP * 100)}%` }} />
               </div>
             </motion.div>
           )}

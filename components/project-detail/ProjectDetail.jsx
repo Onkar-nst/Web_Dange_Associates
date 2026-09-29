@@ -19,6 +19,7 @@ import TiltCard from "../motion/TiltCard";
 import Spotlight from "../fx/Spotlight";
 import Magnetic from "../fx/Magnetic";
 import { projects, getProject, t } from "@/lib/projects";
+import SectionLabel from "../ui/SectionLabel";
 
 const LayoutFlythrough = dynamic(() => import("../project3d/LayoutFlythrough"), {
   ssr: false,
@@ -36,20 +37,12 @@ const ICONS = {
 
 const STATUS_STYLE = {
   current: { cls: "bg-blue-600/90", Icon: Rocket },
-  ready: { cls: "bg-green-600/90", Icon: Home },
+  ready: { cls: "bg-blue-700/90", Icon: Home },
   completed: { cls: "bg-slate-900/80", Icon: CheckCircle2 },
 };
 
 function Eyebrow({ children, light }) {
-  return (
-    <span
-      className={`inline-block font-semibold tracking-widest uppercase text-xs px-3 py-1.5 rounded-md border italic ${
-        light ? "text-white bg-white/10 border-white/20 backdrop-blur" : "text-blue-700 bg-blue-50 border-blue-100"
-      }`}
-    >
-      {children}
-    </span>
-  );
+  return <SectionLabel dark={light}>{children}</SectionLabel>;
 }
 
 // ---------------------------------------------------------------------------
@@ -74,7 +67,7 @@ function Hero({ project, language }) {
           className="h-full w-full object-cover"
         />
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/45 to-slate-900/30" />
+      <div className="absolute inset-0" />
       <div className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:28px_28px]" />
 
       <motion.div style={{ y: contentY, opacity: fade }} className="relative z-10 flex min-h-[100svh] flex-col justify-end pb-16 pt-32 md:h-full md:min-h-0 md:pb-24">
@@ -89,7 +82,7 @@ function Hero({ project, language }) {
             <ChevronRight className="h-3 w-3" />
             <Link href="/projects" className="hover:text-white transition-colors">{language === "en" ? "Projects" : "प्रकल्प"}</Link>
             <ChevronRight className="h-3 w-3" />
-            <span className="text-orange-400">{name}</span>
+            <span className="text-blue-700">{name}</span>
           </motion.nav>
 
           <motion.span
@@ -135,8 +128,8 @@ function Hero({ project, language }) {
             transition={{ delay: 1, duration: 0.8 }}
             className="group mt-6 inline-flex items-center gap-3 text-white/80 hover:text-white"
           >
-            <span className="rounded-xl bg-orange-500/20 p-2.5 border border-orange-400/30 group-hover:bg-orange-500 transition-colors">
-              <MapPin className="h-5 w-5 text-orange-300 group-hover:text-white" />
+            <span className="rounded-xl bg-blue-700/20 p-2.5 border border-slate-200/30 group-hover:bg-blue-800 transition-colors">
+              <MapPin className="h-5 w-5 text-slate-500 group-hover:text-white" />
             </span>
             <span className="text-xs font-medium uppercase tracking-widest md:text-sm">{t(project.location, language)}</span>
           </motion.a>
@@ -180,7 +173,7 @@ function Hero({ project, language }) {
               <Magnetic className="block">
               <a
                 href="tel:+917774882844"
-                className="group flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 py-4 font-medium text-white shadow-xl shadow-orange-900/30 transition-all hover:-translate-y-0.5 hover:bg-orange-700"
+                className="group flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-7 py-4 font-medium text-white shadow-xl  transition-all hover:-translate-y-0.5 hover:bg-blue-800"
               >
                 <Phone className="h-5 w-5 transition-transform group-hover:rotate-12" />
                 {language === "en" ? "Book Free Site Visit" : "मोफत साइट भेट बुक करा"}
@@ -208,7 +201,7 @@ function Hero({ project, language }) {
 // ---------------------------------------------------------------------------
 function FlythroughIntro({ project, language }) {
   return (
-    <section id="flythrough" className="relative scroll-mt-24 overflow-hidden bg-white py-24">
+    <section id="flythrough" className="relative scroll-mt-24 overflow-hidden bg-white py-12">
       <div className="absolute inset-0 opacity-[0.35] bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:24px_24px]" />
       <div className="container relative mx-auto max-w-4xl px-6 text-center">
         <Reveal>
@@ -235,7 +228,7 @@ function FlythroughIntro({ project, language }) {
           </p>
         </Reveal>
         <Reveal delay={0.3}>
-          <div className="mx-auto mt-10 h-1 w-24 rounded-full bg-gradient-to-r from-blue-700 via-orange-500 to-blue-700" />
+          <div className="mx-auto mt-10 h-1 w-24 rounded-full bg-blue-700" />
         </Reveal>
       </div>
     </section>
@@ -245,7 +238,7 @@ function FlythroughIntro({ project, language }) {
 // ---------------------------------------------------------------------------
 function Overview({ project, language }) {
   return (
-    <section className="relative bg-white py-24 md:py-32">
+    <section className="relative bg-white py-12 md:py-16">
       <div className="container mx-auto px-6">
         <div className="grid gap-16 lg:grid-cols-12">
           <div className="lg:col-span-7">
@@ -280,7 +273,7 @@ function Overview({ project, language }) {
                   variants={rise}
                   className="group flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:bg-white hover:shadow-xl"
                 >
-                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white shadow-lg shadow-blue-700/20 transition-colors group-hover:bg-orange-500">
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-700 text-white shadow-lg shadow-blue-700/20 transition-colors group-hover:bg-blue-800">
                     <Check className="h-4 w-4" />
                   </span>
                   <span className="font-medium leading-snug text-slate-800">{t(h, language)}</span>
@@ -292,7 +285,7 @@ function Overview({ project, language }) {
           <div className="lg:col-span-5">
             <Reveal x={30} y={0} className="lg:sticky lg:top-32">
               <div className="relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.06)] md:p-10">
-                <div className="absolute right-0 top-0 h-40 w-40 -translate-y-1/2 translate-x-1/2 rounded-full bg-orange-500/10" />
+                <div className="absolute right-0 top-0 h-40 w-40 -translate-y-1/2 translate-x-1/2 rounded-full bg-blue-700/10" />
                 <h3 className="relative text-xl font-semibold tracking-tight text-slate-900">
                   {language === "en" ? "Project at a glance" : "प्रकल्प एका दृष्टीक्षेपात"}
                 </h3>
@@ -316,7 +309,7 @@ function Overview({ project, language }) {
                     <Phone className="h-5 w-5 transition-transform group-hover:rotate-12" />
                     {language === "en" ? "Call Executive" : "एक्झिक्युटिव्हला कॉल करा"}
                   </a>
-                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-center gap-3 rounded-2xl bg-emerald-600 px-6 py-4 font-semibold text-white shadow-xl shadow-emerald-600/15 transition-all hover:-translate-y-0.5 hover:bg-emerald-700">
+                  <a href="https://wa.me/917774882844" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-center gap-3 rounded-2xl bg-blue-700 px-6 py-4 font-semibold text-white shadow-xl  transition-all hover:-translate-y-0.5 hover:bg-blue-800">
                     <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
                     {language === "en" ? "WhatsApp Us" : "व्हॉट्सॲप करा"}
                   </a>
@@ -333,8 +326,8 @@ function Overview({ project, language }) {
 // ---------------------------------------------------------------------------
 function Amenities({ project, language }) {
   return (
-    <section className="relative overflow-hidden border-t border-slate-100 bg-slate-50 py-24 md:py-32">
-      <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#3B82F6_2px,transparent_2px)] [background-size:40px_40px]" />
+    <section className="relative overflow-hidden border-t border-slate-100 bg-white py-12 md:py-16">
+      <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#4d6fa3_2px,transparent_2px)] [background-size:40px_40px]" />
       <div className="container relative mx-auto px-6">
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <Reveal>
@@ -363,8 +356,8 @@ function Amenities({ project, language }) {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-shadow hover:shadow-2xl"
               >
-                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-orange-500/5 transition-transform duration-700 group-hover:scale-[3]" />
-                <Spotlight className="h-full p-6 md:p-8" color="rgba(249,115,22,0.1)">
+                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blue-700/5 transition-transform duration-700 group-hover:scale-[3]" />
+                <Spotlight className="h-full p-6 md:p-8" color="rgba(31,63,115,0.1)">
                 <div className="relative mb-6 [perspective:600px]">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-blue-700 transition-colors duration-300 group-hover:bg-blue-700 group-hover:text-white">
                     <Icon className="h-7 w-7" />
@@ -386,7 +379,7 @@ function Gallery({ project, language }) {
   const [open, setOpen] = useState(null);
   if (!project.gallery?.length) return null;
   return (
-    <section className="bg-white py-24 md:py-32">
+    <section className="bg-white py-12 md:py-16">
       <div className="container mx-auto px-6">
         <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
@@ -420,10 +413,9 @@ function Gallery({ project, language }) {
                 transition={{ duration: 1.6, ease: EASE }}
                 className="w-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
                 <span className="rounded-full bg-white/95 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-slate-900 shadow-lg">{t(g.caption, language)}</span>
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-600 text-white shadow-xl transition-transform group-hover:scale-110">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-700 text-white shadow-xl transition-transform group-hover:scale-110">
                   <ZoomIn className="h-5 w-5" />
                 </span>
               </div>
@@ -463,7 +455,7 @@ function Gallery({ project, language }) {
 // ---------------------------------------------------------------------------
 function Location({ project, language }) {
   return (
-    <section className="relative overflow-hidden border-t border-slate-100 bg-white py-24 md:py-32">
+    <section className="relative overflow-hidden border-t border-slate-100 bg-white py-12 md:py-16">
       <div className="container mx-auto px-6">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <Reveal x={-30} y={0}>
@@ -492,14 +484,14 @@ function Location({ project, language }) {
                 whileInView={{ scaleY: 1 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 1.4, ease: EASE }}
-                className="absolute bottom-6 left-6 top-6 w-0.5 origin-top bg-gradient-to-b from-blue-700 via-orange-500 to-blue-700"
+                className="absolute bottom-6 left-6 top-6 w-0.5 origin-top bg-blue-700"
               />
               <motion.ul variants={stagger(0.12, 0.2)} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} className="space-y-4">
                 {project.connectivity.map((c, i) => {
                   const Icon = ICONS[c.icon] ?? MapPin;
                   return (
                     <motion.li key={i} variants={rise} className="group relative flex items-center gap-5">
-                      <span className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-white bg-blue-50 text-blue-700 shadow-md transition-colors duration-300 group-hover:bg-orange-500 group-hover:text-white">
+                      <span className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-white bg-blue-50 text-blue-700 shadow-md transition-colors duration-300 group-hover:bg-blue-800 group-hover:text-white">
                         <Icon className="h-5 w-5" />
                       </span>
                       <div className="flex-1 rounded-2xl border border-slate-100 bg-slate-50 px-5 py-4 transition-all duration-300 group-hover:translate-x-1 group-hover:border-blue-100 group-hover:bg-white group-hover:shadow-lg">
@@ -534,7 +526,7 @@ function Location({ project, language }) {
 function OtherProjects({ current, language }) {
   const others = projects.filter((p) => p.slug !== current.slug);
   return (
-    <section className="overflow-hidden border-t border-slate-100 bg-slate-50 py-24">
+    <section className="overflow-hidden border-t border-slate-100 bg-white py-12">
       <div className="container mx-auto px-6">
         <div className="mb-12 flex items-end justify-between gap-6">
           <div>
@@ -566,7 +558,7 @@ function OtherProjects({ current, language }) {
                     )}
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-600">{t(p.status, language)}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-blue-700">{t(p.status, language)}</span>
                     <h3 className="mt-2 text-xl font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-blue-700">{t(p.name, language)}</h3>
                     <p className="mt-2 line-clamp-1 text-sm font-medium text-slate-500">{t(p.location, language)}</p>
                     <span className="mt-auto flex items-center gap-2 pt-5 text-sm font-medium text-slate-900">

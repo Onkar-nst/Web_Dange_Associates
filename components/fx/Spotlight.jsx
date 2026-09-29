@@ -3,7 +3,7 @@
 import { useRef } from "react";
 
 // Soft light that follows the pointer across a card.
-export default function Spotlight({ children, className = "", color = "rgba(59,130,246,0.12)", as: Tag = "div", ...rest }) {
+export default function Spotlight({ children, className = "", color = "rgba(77,111,163,0.12)", as: Tag = "div", ...rest }) {
   const ref = useRef(null);
   const onMove = (e) => {
     const r = ref.current.getBoundingClientRect();

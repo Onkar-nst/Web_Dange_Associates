@@ -12,7 +12,12 @@ import {
   Calendar,
   Award,
   ArrowRight,
-  MapPin
+  MapPin,
+  Quote,
+  Phone,
+  ClipboardCheck,
+  Handshake,
+  FileSearch
 } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageContext";
@@ -20,6 +25,7 @@ import Diorama from "./fx/Diorama";
 import PlotWave from "./fx/PlotWave";
 import Magnetic from "./fx/Magnetic";
 import TiltCard from "./motion/TiltCard";
+import SectionLabel from "./ui/SectionLabel";
 
 const CountUp = ({ value, duration = 2 }) => {
   const [count, setCount] = useState(0);
@@ -77,6 +83,40 @@ const CountUp = ({ value, duration = 2 }) => {
   return <span ref={nodeRef}>{count}</span>;
 };
 
+// Three-column story shown on the Our Story page. Years and project order: confirm with the team.
+const STORY_COLUMNS = [
+  {
+    "lead": {
+      "en": "The journey began in 2006 with Dange Layout 1, behind the Panchayat Samiti in Kalmeshwar — every plot sold with a clear title and every paper explained.",
+      "mr": "प्रवासाची सुरुवात २००६ मध्ये कळमेश्वरमधील पंचायत समितीमागील डांगे लेआउट १ ने झाली — प्रत्येक प्लॉट स्पष्ट मालकीसह आणि प्रत्येक कागदपत्र समजावून."
+    },
+    "text": {
+      "en": "The years that followed saw layouts opposite Regent High School and behind PWS College, giving families plots close to schools, colleges and the town centre.",
+      "mr": "पुढील वर्षांत रेजेंट हायस्कूलसमोर आणि पीडब्ल्यूएस कॉलेजमागे लेआउट उभे राहिले, ज्यामुळे कुटुंबांना शाळा, महाविद्यालये आणि शहराजवळ प्लॉट मिळाले."
+    }
+  },
+  {
+    "lead": {
+      "en": "Growth along the highways brought a new scale. Dange Layout 4 and Om Sai Ram Nagar 1 & 2 opened up Kohli and the NH-353J corridor.",
+      "mr": "महामार्गालगतच्या वाढीमुळे नवा विस्तार झाला. डांगे लेआउट ४ आणि ओम साई राम नगर १ व २ मुळे कोहली आणि NH-353J पट्टा खुला झाला."
+    },
+    "text": {
+      "en": "With direct road connectivity to Nagpur, these layouts have grown into settled neighbourhoods where families have built their homes.",
+      "mr": "नागपूरला थेट रस्ता जोडणीमुळे हे लेआउट आता स्थिर वसाहती बनले आहेत, जिथे कुटुंबांनी आपली घरे बांधली आहेत."
+    }
+  },
+  {
+    "lead": {
+      "en": "The years since have been defined by complete, well-planned neighbourhoods.",
+      "mr": "त्यानंतरची वर्षे संपूर्ण, सुनियोजित वसाहतींची ठरली."
+    },
+    "text": {
+      "en": "From Shree Ram Nagri-1 on State Highway 250, with wide roads, a garden and a clubhouse, to ready-to-move homes beside the Tahsil Office and Maati Farms at Katol, each project reflects what Kalmeshwar families need today.",
+      "mr": "राज्य महामार्ग २५० वरील रुंद रस्ते, उद्यान आणि क्लबहाऊस असलेल्या श्री राम नगरी-१ पासून तहसील कार्यालयाजवळील तयार घरे आणि काटोल येथील माती फार्म्सपर्यंत, प्रत्येक प्रकल्प आजच्या कळमेश्वरच्या कुटुंबांच्या गरजा पूर्ण करतो."
+    }
+  }
+];
+
 const AboutUs = () => {
   const { language } = useLanguage();
 
@@ -85,7 +125,7 @@ const AboutUs = () => {
     { 
       label: language === "en" ? "Years of Experience" : "वर्षांचा अनुभव", 
       value: "18+", 
-      icon: <Calendar className="w-6 h-6 text-orange-500" /> 
+      icon: <Calendar className="w-6 h-6 text-blue-700" /> 
     },
     { 
       label: language === "en" ? "Completed Layouts" : "पूर्ण लेआउट्स", 
@@ -95,7 +135,7 @@ const AboutUs = () => {
     { 
       label: language === "en" ? "Happy Families" : "आनंदी कुटुंबे", 
       value: "1200+", 
-      icon: <Users className="w-6 h-6 text-green-500" /> 
+      icon: <Users className="w-6 h-6 text-blue-700" /> 
     },
   ];
 
@@ -103,7 +143,7 @@ const AboutUs = () => {
     {
       name: language === "en" ? "Pramod Dange" : "प्रमोद डांगे",
       role: language === "en" ? "Founder & CEO" : "संस्थापक आणि सीईओ",
-      image: "/pramod.jpeg",
+      image: "/pramod-dange.webp",
       bio: language === "en"
         ? "With over 18 years of expertise, Pramod Dange is the visionary force behind our success, committed to creating sustainable and legally compliant communities."
         : "१८ वर्षांहून अधिक अनुभवासह, प्रमोद डांगे हे आमच्या यशामागील दूरदर्शी शक्ती आहेत, जे शाश्वत आणि कायदेशीररित्या सुसंगत समुदाय तयार करण्यासाठी वचनबद्ध आहेत."
@@ -123,10 +163,7 @@ const AboutUs = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="mb-8"
           >
-            <span className="inline-flex items-center px-6 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-blue-400 text-xs md:text-sm font-medium tracking-[0.3em] uppercase">
-              <span className="w-2 h-2 rounded-full bg-blue-500 mr-3 animate-pulse"></span>
-              {language === "en" ? "Established 2007" : "२००७ पासून स्थापित"}
-            </span>
+            <SectionLabel dark>{language === "en" ? "Established 2007" : "२००७ पासून स्थापित"}</SectionLabel>
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -135,7 +172,7 @@ const AboutUs = () => {
             className="text-4xl md:text-7xl font-medium text-white mb-8 leading-[1.2] tracking-tight"
           >
             {language === "en" ? "Foundations for" : "भावी पिढ्यांसाठी"}{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-orange-400">
+            <span className="text-blue-200">
               {language === "en" ? "Future Generations." : "पाया रचणे."}
             </span>
           </motion.h1>
@@ -151,291 +188,254 @@ const AboutUs = () => {
           </motion.p>
         </div>
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-1 h-12 rounded-full bg-gradient-to-b from-blue-500 to-transparent opacity-50"></div>
+          <div className="w-1 h-12 rounded-full opacity-50 bg-white/40"></div>
         </div>
       </section>
 
       {/* 2. Founder & CEO: Leadership */}
-      <section className="py-32 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-            
-            {/* Left Column: Portrait */}
-            <motion.div 
+      <section className="relative overflow-hidden bg-slate-50 py-12 md:py-16">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+            {/* Portrait */}
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
-              className="order-2 lg:order-1"
+              className="relative mx-auto w-full max-w-md lg:max-w-none"
             >
-              <div className="relative">
-                {/* Soft Background Accent */}
-                <div className="absolute -inset-8 bg-gradient-to-br from-blue-50 to-orange-50 rounded-[3rem] opacity-40"></div>
-                
-                {/* Portrait Card */}
-                <TiltCard max={7} className="group rounded-[2rem]">
-                <div className="relative bg-white rounded-[2rem] p-3 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)]">
-                  <img 
-                    src={team[0].image} 
-                    alt={team[0].name} 
-                    className="w-full h-[600px] object-cover rounded-[1.5rem]"
-                  />
+              <div className="absolute -left-4 -top-4 h-full w-full rounded-3xl border border-blue-100 bg-blue-50" />
+              <div className="relative overflow-hidden rounded-3xl bg-white shadow-xl shadow-slate-900/10">
+                <img src={team[0].image} alt={team[0].name} className="aspect-[4/5] w-full object-cover object-top" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 via-slate-900/30 to-transparent p-6 pt-20 text-white">
+                  <p className="text-2xl font-medium">{team[0].name}</p>
+                  <p className="mt-1 text-sm text-white/80">{team[0].role} · Dange Associates</p>
                 </div>
-                </TiltCard>
+              </div>
+              <div className="absolute -right-3 top-8 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-lg md:-right-6">
+                <p className="text-3xl font-semibold leading-none text-blue-700">18+</p>
+                <p className="mt-1 text-xs font-medium text-slate-500">{language === "en" ? "Years in real estate" : "वर्षांचा अनुभव"}</p>
               </div>
             </motion.div>
-            
-            {/* Right Column: Content */}
-            <motion.div 
+
+            {/* Message */}
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="order-1 lg:order-2 space-y-8"
+              transition={{ duration: 0.7, delay: 0.15 }}
             >
-              {/* Label */}
-              <div className="inline-block">
-                <span className="text-xs font-medium tracking-[0.25em] uppercase text-slate-400 bg-slate-100 px-4 py-2 rounded-full">
-                  {language === "en" ? "Leadership" : "नेतृत्व"}
-                </span>
-              </div>
-              
-              {/* Name */}
-              <h2 className="text-5xl lg:text-6xl font-medium text-slate-900 leading-tight tracking-tight">
-                {team[0].name}
+              <SectionLabel>{language === "en" ? "Leadership" : "नेतृत्व"}</SectionLabel>
+              <h2 className="mt-6 text-3xl font-medium tracking-tight text-slate-900 md:text-4xl">
+                {language === "en" ? "A message from our founder" : "आमच्या संस्थापकांचा संदेश"}
               </h2>
-              
-              {/* Title */}
-              <p className="text-3xl text-blue-700 font-serif italic">
-                {team[0].role}
+
+              <blockquote className="relative mt-8 border-l-4 border-blue-700 pl-6">
+                <Quote className="absolute -left-1 -top-6 h-10 w-10 -translate-x-full text-blue-100" />
+                <p className="text-2xl font-medium leading-snug text-slate-900 md:text-3xl">
+                  {language === "en"
+                    ? "Real estate isn't just about land — it's about the foundation of your family's future."
+                    : "रिअल इस्टेट म्हणजे फक्त जमीन नाही — ते तुमच्या कुटुंबाच्या भविष्याचा पाया आहे."}
+                </p>
+              </blockquote>
+
+              <p className="mt-8 max-w-xl text-lg leading-relaxed text-slate-600">
+                {language === "en"
+                  ? "Building trust through transparency. For 18 years, I've been committed to creating land legacies that Nagpur families can depend on — legally secure, ethically developed, and built to last generations."
+                  : "पारदर्शकतेद्वारे विश्वास निर्माण करणे. १८ वर्षांपासून, मी नागपूरच्या कुटुंबांसाठी कायदेशीररित्या सुरक्षित, नैतिकरित्या विकसित आणि पिढ्यान्पिढ्या टिकणारे जमिनीचे वारसे तयार करण्यासाठी वचनबद्ध आहे."}
               </p>
-              
-              {/* Divider */}
-              <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-orange-500 rounded-full"></div>
-              
-              {/* Story */}
-              <div className="space-y-6 text-slate-600 text-lg leading-relaxed max-w-xl">
-                <p className="font-medium">
-                  {language === "en"
-                    ? "Building trust through transparency. For 18 years, I've been committed to creating land legacies that Nagpur families can depend on—legally secure, ethically developed, and built to last generations."
-                    : "पारदर्शकतेद्वारे विश्वास निर्माण करणे. १८ वर्षांपासून, मी नागपूरच्या कुटुंबांसाठी कायदेशीररित्या सुरक्षित, नैतिकरित्या विकसित आणि पिढ्यान्पिढ्या टिकणारे जमिनीचे वारसे तयार करण्यासाठी वचनबद्ध आहे."}
-                </p>
-                <p className="text-slate-500 italic">
-                  {language === "en"
-                    ? "Real estate isn't just about land—it's about the foundation of your family's future."
-                    : "रिअल इस्टेट म्हणजे फक्त जमीन नाही—ते तुमच्या कुटुंबाच्या भविष्याचा पाया आहे."}
-                </p>
-              </div>
-              
-              {/* Signature Element */}
-              <div className="pt-6">
-                <div className="inline-flex items-center gap-3 text-sm text-slate-400">
-                  <div className="w-12 h-px bg-slate-300"></div>
-                  <span className="font-medium">{language === "en" ? "Since 2007" : "२००७ पासून"}</span>
-                </div>
-              </div>
-            </motion.div>
-            
-          </div>
-        </div>
-      </section>
 
-      {/* 3. Our Journey: Community Impact */}
-      <section className="py-24 bg-slate-50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-full -mr-48 -mt-48"></div>
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="flex flex-col md:flex-row items-center gap-16">
-            <motion.div 
-              className="md:w-1/2"
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl md:text-5xl font-medium text-slate-900 mb-8 leading-tight">
-                {language === "en" ? "My Journey in" : "माझा प्रवास"}<br />
-                <span className="text-blue-700 italic font-serif">Nagpur Real Estate</span>
-              </h2>
-              <div className="w-24 h-2 bg-gradient-to-r from-blue-700 to-orange-500 rounded-full mb-10"></div>
-              
-              <div className="space-y-8">
-                <div className="flex gap-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-medium text-xl uppercase tracking-tighter">07</div>
-                  <div>
-                    <h4 className="text-xl font-medium text-slate-900 mb-2">{language === "en" ? "The Beginning" : "सुरुवात"}</h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      {language === "en" 
-                        ? "Starting in 2007, I envisioned a company built on absolute transparency and legal clarity."
-                        : "२००७ मध्ये सुरुवात करताना, मी पूर्ण पारदर्शकता आणि कायदेशीर स्पष्टतेवर आधारित कंपनीची कल्पना केली."}
-                    </p>
+              <dl className="mt-10 grid max-w-lg grid-cols-3 divide-x divide-slate-200 border-y border-slate-200 py-5">
+                {[
+                  { v: "2007", l: language === "en" ? "Founded" : "स्थापना" },
+                  { v: "12+", l: language === "en" ? "Layouts delivered" : "पूर्ण लेआउट" },
+                  { v: "1200+", l: language === "en" ? "Families served" : "कुटुंबे" },
+                ].map((x) => (
+                  <div key={x.l} className="px-4 first:pl-0">
+                    <dd className="text-2xl font-semibold text-slate-900">{x.v}</dd>
+                    <dt className="mt-1 text-sm text-slate-500">{x.l}</dt>
                   </div>
+                ))}
+              </dl>
+
+              <div className="mt-10 flex flex-wrap items-center justify-between gap-6">
+                <div>
+                  <p className="font-serif text-3xl italic text-slate-800">Pramod Dange</p>
+                  <p className="text-sm text-slate-500">{team[0].role}</p>
                 </div>
-                <div className="flex gap-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-medium text-xl uppercase tracking-tighter">12</div>
-                  <div>
-                    <h4 className="text-xl font-medium text-slate-900 mb-2">{language === "en" ? "The Milestone" : "एक टप्पा"}</h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      {language === "en" 
-                        ? "Successfully delivered 12+ premier layouts that have now become thriving residential communities."
-                        : "१२+ प्रीमियम लेआउट यशस्वीरित्या पूर्ण केले जे आता भरभराट होणारे निवासी समुदाय बनले आहेत."}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center text-blue-700 font-medium text-xl uppercase tracking-tighter">24</div>
-                  <div>
-                    <h4 className="text-xl font-medium text-slate-900 mb-2">{language === "en" ? "The Future" : "भविष्य"}</h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      {language === "en" 
-                        ? "Today, we continue to lead with innovation, ensuring every plot we sell is a gold standard for investment."
-                        : "आज, आम्ही नावीन्यपूर्ण नेतृत्व करत आहोत, हे सुनिश्चित करत आहोत की आम्ही विकलेला प्रत्येक प्लॉट गुंतवणुकीसाठी सुवर्ण मानक आहे."}
-                    </p>
-                  </div>
-                </div>
+                <a
+                  href="tel:+917774882844"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                >
+                  <Phone className="h-4 w-4" />
+                  {language === "en" ? "Talk to our team" : "आमच्या टीमशी बोला"}
+                </a>
               </div>
-            </motion.div>
-            
-            <motion.div 
-              className="md:w-1/2 relative"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              <div className="absolute inset-6 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.18),rgba(249,115,22,0.1)_50%,transparent_72%)] blur-2xl"></div>
-              <Diorama variant="layout" className="relative h-[420px] w-full md:h-[520px]" fallback="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1973&auto=format&fit=crop" />
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* 4 & 5. Combined Mission & Vision: The Core Values */}
-      <section className="py-24 bg-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-            {/* Mission Card */}
-            <TiltCard max={5} className="group h-full rounded-[3rem]">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="group relative p-10 md:p-14 rounded-[3rem] bg-white/5 backdrop-blur-md border border-white/10 hover:border-blue-500/50 transition-all duration-500 flex flex-col justify-between overflow-hidden h-full"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-blue-600/20 transition-all duration-500"></div>
-              
-              <div>
-                <div className="w-16 h-16 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center mb-10 border border-blue-500/30 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
-                  <Target className="w-8 h-8" />
-                </div>
-                <h3 className="text-3xl md:text-4xl font-medium text-white mb-6 tracking-tight">
-                  {language === "en" ? "Our Mission" : "आमचे ध्येय"}
-                </h3>
-                <p className="text-xl text-slate-300 leading-relaxed font-light italic relative z-10">
-                  {language === "en"
-                    ? "\"To provide high-quality, legally clear, and affordable residential plots that empower families to build their dream homes without compromise.\""
-                    : "\"उच्च-गुणवत्तेचे, कायदेशीररित्या स्पष्ट आणि परवडणारे निवासी प्लॉट प्रदान करणे जे कुटुंबांना तडजोड न करता त्यांची स्वप्नातील घरे बांधण्यास सक्षम करतात.\""}
-                </p>
+      {/* 4 & 5. Mission & Vision: two framed columns */}
+      <section className="bg-slate-50 py-10 md:py-14">
+        <div className="container mx-auto max-w-7xl px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="grid overflow-hidden rounded-3xl border border-slate-900 md:grid-cols-2"
+          >
+            {[
+              {
+                label: language === "en" ? "Our Mission" : "आमचे ध्येय",
+                statement:
+                  language === "en"
+                    ? "To give every Nagpur family a plot they can build on with complete confidence."
+                    : "नागपूरच्या प्रत्येक कुटुंबाला पूर्ण विश्वासाने घर बांधता येईल असा प्लॉट देणे.",
+                body:
+                  language === "en"
+                    ? "Since 2006, we have delivered high-quality, legally clear and affordable residential plots, with every document explained before you pay, so families can build their dream homes without compromise."
+                    : "२००६ पासून आम्ही उच्च-गुणवत्तेचे, कायदेशीररित्या स्पष्ट आणि परवडणारे निवासी प्लॉट देत आहोत. पैसे देण्यापूर्वी प्रत्येक कागदपत्र समजावून सांगतो, जेणेकरून कुटुंबे तडजोड न करता स्वप्नातील घर बांधू शकतील.",
+              },
+              {
+                label: language === "en" ? "Our Vision" : "आमची दृष्टी",
+                statement:
+                  language === "en"
+                    ? "To be the most trusted name in land development in Central India."
+                    : "मध्य भारतातील जमीन विकासातील सर्वात विश्वासार्ह नाव बनणे.",
+                body:
+                  language === "en"
+                    ? "Known for integrity, well-planned layouts and customer satisfaction, we aim to build neighbourhoods around Kalmeshwar and Nagpur that families are proud to call home for generations."
+                    : "प्रामाणिकपणा, सुनियोजित लेआउट आणि ग्राहकांच्या समाधानासाठी ओळखले जाणारे, कळमेश्वर आणि नागपूर परिसरात पिढ्यान्पिढ्या अभिमानाने घर म्हणता येतील अशा वसाहती उभारणे हे आमचे ध्येय आहे.",
+              },
+            ].map((c, i) => (
+              <div key={c.label} className={`p-8 md:p-14 ${i === 1 ? "border-t border-slate-900 md:border-l md:border-t-0" : ""}`}>
+                <p className="font-mono text-xs uppercase tracking-[0.25em] text-blue-700">{c.label}</p>
+                <h3 className="mt-6 text-2xl font-normal leading-snug tracking-tight text-slate-900 md:text-3xl">{c.statement}</h3>
+                <p className="mt-6 text-base leading-relaxed text-slate-500 md:text-lg">{c.body}</p>
               </div>
-              
-              <div className="mt-12 flex items-center gap-3">
-                <div className="h-px flex-1 bg-gradient-to-r from-blue-500/50 to-transparent"></div>
-                <span className="text-blue-500/50 font-medium text-xs uppercase tracking-[0.3em]">Integrity</span>
-              </div>
-            </motion.div>
-            </TiltCard>
-
-            {/* Vision Card */}
-            <TiltCard max={5} className="group h-full rounded-[3rem]">
-            <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-              className="group relative p-10 md:p-14 rounded-[3rem] bg-white/5 backdrop-blur-md border border-white/10 hover:border-orange-500/50 transition-all duration-500 flex flex-col justify-between overflow-hidden h-full"
-            >
-              <div className="absolute top-0 left-0 w-32 h-32 bg-orange-600/10 rounded-full -ml-16 -mt-16 blur-2xl group-hover:bg-orange-600/20 transition-all duration-500"></div>
-              
-              <div>
-                <div className="w-16 h-16 bg-orange-600/20 text-orange-400 rounded-2xl flex items-center justify-center mb-10 border border-orange-500/30 group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
-                  <Eye className="w-8 h-8" />
-                </div>
-                <h3 className="text-3xl md:text-4xl font-medium text-white mb-6 tracking-tight">
-                  {language === "en" ? "Our Vision" : "आमची दृष्टी"}
-                </h3>
-                <p className="text-xl text-slate-300 leading-relaxed font-light italic relative z-10">
-                  {language === "en"
-                    ? "\"To be the most trusted name in real estate development in Central India, known for integrity, innovation, and customer satisfaction.\""
-                    : "\"मध्य भारतातील रिअल इस्टेट विकासामध्ये सर्वात विश्वासार्ह नाव बनणे, जे अखंडता, नावीन्य आणि ग्राहकांच्या समाधानासाठी ओळखले जाते.\""}
-                </p>
-              </div>
-
-              <div className="mt-12 flex items-center gap-3">
-                <div className="h-px flex-1 bg-gradient-to-r from-orange-500/50 to-transparent"></div>
-                <span className="text-orange-500/50 font-medium text-xs uppercase tracking-[0.3em]">Innovation</span>
-              </div>
-            </motion.div>
-            </TiltCard>
-          </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* 6. Why Choose Us: Strategic Advantage */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-6 text-center">
+      {/* 3. Our Story: three-column narrative */}
+      <section className="bg-slate-50 py-10 md:py-14">
+        <div className="container mx-auto max-w-7xl px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SectionLabel>{language === "en" ? "Our Story" : "आमची कथा"}</SectionLabel>
+            <h2 className="mt-8 text-4xl font-medium leading-[1.08] tracking-tight text-slate-900 md:text-6xl">
+              {language === "en" ? "From Kalmeshwar town" : "कळमेश्वर शहरापासून"}
+              <br />
+              <span className="text-blue-700">{language === "en" ? "to the highways of Nagpur" : "नागपूरच्या महामार्गांपर्यंत"}</span>
+            </h2>
+          </motion.div>
+
+          <div className="mt-14 grid gap-10 md:mt-20 md:grid-cols-3 md:gap-12">
+            {STORY_COLUMNS.map((c, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <p className="text-lg leading-relaxed text-slate-900">{c.lead[language] ?? c.lead.en}</p>
+                <p className="mt-6 text-lg leading-relaxed text-slate-500">{c.text[language] ?? c.text.en}</p>
+              </motion.div>
+            ))}
+          </div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="mb-16"
+            transition={{ duration: 0.8 }}
+            className="mt-20 text-center"
           >
-            <span className="text-orange-600 font-semibold tracking-widest uppercase text-xs mb-4 block">
-              {language === "en" ? "The Dange Advantage" : "डांगे असोसिएटचे फायदे"}
-            </span>
-            <h2 className="text-5xl md:text-6xl font-medium text-slate-900">
-              {language === "en" ? "Why Nagpur Trusts My Vision" : "नागपूर माझ्या दृष्टीवर का विश्वास ठेवते"}
+            <p className="text-2xl font-medium uppercase tracking-tight text-blue-700 md:text-4xl">
+              {language === "en" ? "18+ Years · 12+ Layouts · Kalmeshwar & Nagpur" : "१८+ वर्षे · १२+ लेआउट · कळमेश्वर आणि नागपूर"}
+            </p>
+            <p className="mt-4 text-lg text-slate-500">
+              {language === "en"
+                ? "From our first layout behind the Panchayat Samiti to our next generation of neighbourhoods."
+                : "पंचायत समितीमागील पहिल्या लेआउटपासून आमच्या पुढच्या पिढीच्या वसाहतींपर्यंत."}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 6. Values: dark band, four framed columns */}
+      <section id="values" className="bg-blue-950 py-10 text-white md:py-12">
+        <div className="container mx-auto max-w-7xl px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SectionLabel dark>{language === "en" ? "Why Dange Associates?" : "डांगे असोसिएट्स का?"}</SectionLabel>
+            <h2 className="mt-6 text-4xl font-medium leading-[1.08] tracking-tight md:text-5xl">
+              {language === "en" ? "The values we" : "आमची"}
+              <br />
+              <span className="text-blue-300">{language === "en" ? "build on" : "मूल्ये"}</span>
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4">
             {[
               {
-                icon: <Award className="w-8 h-8" />,
-                title: language === "en" ? "100% Legal Titles" : "१००% कायदेशीर टायटल",
+                Icon: ClipboardCheck,
+                kicker: language === "en" ? "Developed with care" : "काळजीपूर्वक विकास",
+                title: language === "en" ? "Quality" : "गुणवत्ता",
+                body: language === "en"
+                  ? "Fully developed layouts with proper roads, drainage, water and electricity lines, built to last for generations."
+                  : "योग्य रस्ते, ड्रेनेज, पाणी आणि वीज जोडणीसह पूर्ण विकसित लेआउट, पिढ्यान्पिढ्या टिकणारे.",
               },
               {
-                icon: <MapPin className="w-8 h-8" />,
-                title: language === "en" ? "Prime Locations" : "प्रमुख ठिकाणे",
+                Icon: Handshake,
+                kicker: language === "en" ? "Ethical foundation" : "नैतिक पाया",
+                title: language === "en" ? "Integrity" : "प्रामाणिकपणा",
+                body: language === "en"
+                  ? "Honest dealing and clear commitments since 2006. What we promise at the site visit is what we deliver at possession."
+                  : "२००६ पासून प्रामाणिक व्यवहार आणि स्पष्ट वचने. साइट भेटीत जे सांगतो तेच ताब्याच्या वेळी देतो.",
               },
               {
-                icon: <TrendingUp className="w-8 h-8" />,
-                title: language === "en" ? "Affordable Pricing" : "परवडणाऱ्या किंमती",
+                Icon: FileSearch,
+                kicker: language === "en" ? "Papers first" : "आधी कागदपत्रे",
+                title: language === "en" ? "Transparency" : "पारदर्शकता",
+                body: language === "en"
+                  ? "Every document — 7/12, sanction letter, title search — shared and explained before you pay, so you can verify with your own lawyer."
+                  : "प्रत्येक कागदपत्र — ७/१२, मंजुरी पत्र, टायटल सर्च — पैसे देण्यापूर्वी दाखवून समजावून सांगतो, जेणेकरून तुम्ही वकिलाकडून तपासू शकता.",
               },
               {
-                icon: <Eye className="w-8 h-8" />,
-                title: language === "en" ? "Transparent Deals" : "पारदर्शक व्यवहार",
-              }
-            ].map((item, index) => (
-              <motion.div 
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
+                Icon: Users,
+                kicker: language === "en" ? "Local roots" : "स्थानिक नाळ",
+                title: language === "en" ? "Community" : "समुदाय",
+                body: language === "en"
+                  ? "Based in Kalmeshwar, we build neighbourhoods for our own neighbours and stay available long after the registry is done."
+                  : "कळमेश्वरमध्येच असल्याने आम्ही आपल्याच शेजाऱ्यांसाठी वसाहती उभारतो आणि नोंदणीनंतरही सदैव उपलब्ध असतो.",
+              },
+            ].map(({ Icon, kicker, title, body }, i) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 hover:border-orange-200 transition-all duration-300 shadow-sm hover:shadow-xl hover:bg-white group"
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="group relative bg-blue-950 px-7 pb-9 pt-8 transition-colors duration-500 hover:bg-blue-900/60"
               >
-                <div className="text-slate-900 mb-6 flex justify-center [perspective:600px] group-hover:text-orange-600">
-                  <div className="transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(360deg)_scale(1.15)]">
-                  {item.icon}
-                  </div>
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">{item.title}</h3>
-                <div className="w-12 h-1 bg-slate-200 group-hover:bg-orange-500 transition-all duration-300 mx-auto rounded-full"></div>
+                <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-blue-300 transition-transform duration-500 group-hover:scale-x-100" />
+                <Icon className="h-8 w-8 text-blue-300" strokeWidth={1.25} />
+                <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.2em] text-slate-400">{kicker}</p>
+                <h3 className="mt-2 text-2xl font-medium tracking-tight text-white">{title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">{body}</p>
               </motion.div>
             ))}
           </div>
@@ -443,30 +443,44 @@ const AboutUs = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 center-0 w-full h-full bg-gradient-to-b from-blue-600/10 to-transparent"></div>
-        </div>
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <h2 className="text-4xl md:text-5xl font-medium text-white mb-8 tracking-tighter">
-            {language === "en" ? "Ready to Build Your Dream?" : "तुमचे स्वप्न पूर्ण करण्यास तयार आहात?"}
-          </h2>
-          <p className="text-slate-400 mb-12 max-w-2xl mx-auto text-xl font-light leading-relaxed">
-            {language === "en" 
-              ? "Contact us today to explore our latest projects and find the perfect plot for your future."
-              : "आमचे नवीनतम प्रकल्प एक्सप्लोर करण्यासाठी आणि तुमच्या भविष्यासाठी योग्य प्लॉट शोधण्यासाठी आजच आमच्याशी संपर्क साधा."}
-          </p>
-          <Magnetic>
-          <Link 
-            href="/contact" 
-            className="inline-flex items-center bg-orange-600 hover:bg-orange-700 text-white font-semibold py-5 px-12 rounded-2xl transition-all duration-300 hover:shadow-[0_0_40px_rgba(234,88,12,0.3)] hover:-translate-y-1 text-lg"
+      <section className="bg-white py-10 md:py-14">
+        <div className="container mx-auto max-w-4xl px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            {language === "en" ? "Get in Touch" : "संपर्क साधा"}
-            <ArrowRight className="ml-3 w-6 h-6" />
-          </Link>
-          </Magnetic>
+            <SectionLabel>{language === "en" ? "Get in Touch" : "संपर्क साधा"}</SectionLabel>
+            <h2 className="mt-6 text-4xl font-medium leading-[1.08] tracking-tight text-slate-900 md:text-5xl">
+              {language === "en" ? "Ready to build" : "तुमचे स्वप्नातील घर"}
+              <br />
+              <span className="text-blue-700">{language === "en" ? "your dream home?" : "उभारायला तयार आहात?"}</span>
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
+              {language === "en"
+                ? "Visit our layouts, see every document, and find the right plot for your family. Pick-up and drop is on us."
+                : "आमचे लेआउट पहा, प्रत्येक कागदपत्र तपासा आणि तुमच्या कुटुंबासाठी योग्य प्लॉट निवडा. पिक-अप आणि ड्रॉप आमच्याकडून."}
+            </p>
+            <div className="mt-10 flex flex-wrap justify-center gap-3">
+              <Link
+                href="/contact"
+                className="group inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-blue-800"
+              >
+                {language === "en" ? "Book a site visit" : "साइट भेट बुक करा"}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-6 py-3.5 text-sm font-medium text-slate-800 transition-colors hover:border-slate-900"
+              >
+                {language === "en" ? "View projects" : "प्रकल्प पहा"}
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
+
 
     </div>
   );

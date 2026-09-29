@@ -6,6 +6,7 @@ import { Phone, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
 import Magnetic from "./fx/Magnetic";
+import SectionLabel from "./ui/SectionLabel";
 
 const HomeEnquiry = () => {
   const { language } = useLanguage();
@@ -39,10 +40,10 @@ const HomeEnquiry = () => {
   };
 
   return (
-    <section id="contact-section" className="py-24 bg-blue-50 relative overflow-hidden border-t border-blue-100">
+    <section id="contact-section" className="py-12 bg-white relative overflow-hidden border-t border-blue-100">
       {/* Background Decor - Pragmatic Pattern */}
       <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(#3B82F6_1px,transparent_1px)] [background-size:40px_40px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#4d6fa3_1px,transparent_1px)] [background-size:40px_40px]"></div>
       </div>
       
       <div className="container mx-auto px-6 relative z-10">
@@ -56,9 +57,7 @@ const HomeEnquiry = () => {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="lg:w-1/2"
           >
-            <span className="text-blue-700 font-semibold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
-               {language === "en" ? "Direct Communication" : "थेट संवाद"}
-            </span>
+            <SectionLabel>{language === "en" ? "Direct Communication" : "थेट संवाद"}</SectionLabel>
             <h2 className="text-4xl md:text-5xl font-medium text-slate-900 mt-6 leading-tight tracking-tight">
               {language === "en" ? "Have Questions? Get Authentic Advice." : "प्रश्न आहेत? अस्सल सल्ला मिळवा."}
             </h2>
@@ -74,7 +73,7 @@ const HomeEnquiry = () => {
                 href="https://wa.me/917774882844" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-xl shadow-emerald-900/10 group text-lg"
+                className="inline-flex items-center justify-center gap-3 bg-blue-700 hover:bg-blue-800 text-white px-10 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-xl  group text-lg"
               >
                 <Phone className="w-6 h-6 group-hover:rotate-12 transition-transform" />
                 {language === "en" ? "Connect on WhatsApp" : "व्हॉट्सॲपवर संपर्क साधा"}
@@ -104,7 +103,7 @@ const HomeEnquiry = () => {
           >
             <div className="bg-white p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 relative group overflow-hidden">
               {/* Decorative accent */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -translate-y-1/2 translate-x-1/2 transition-transform group-hover:scale-150 duration-700"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-700/5 rounded-full -translate-y-1/2 translate-x-1/2 transition-transform group-hover:scale-150 duration-700"></div>
               
               <h3 className="text-2xl font-semibold text-slate-900 mb-8 tracking-tight">
                 {language === "en" ? "Schedule a Call Back" : "कॉल बॅक विनंती"}
@@ -176,7 +175,7 @@ const HomeEnquiry = () => {
                 </button>
 
                 {status === "success" && (
-                  <div className="mt-6 p-4 bg-green-50 border border-green-100 rounded-xl text-green-700 text-sm font-medium text-center animate-in fade-in duration-500">
+                  <div className="mt-6 p-4 bg-slate-100 border border-slate-200 rounded-xl text-blue-700 text-sm font-medium text-center animate-in fade-in duration-500">
                       {language === "en" ? "✓ Success! Our team will contact you in 30 minutes." : "✓ यश! आमची टीम ३० मिनिटांत तुमच्याशी संपर्क साधेल."}
                   </div>
                 )}

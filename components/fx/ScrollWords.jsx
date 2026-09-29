@@ -18,7 +18,7 @@ function Word({ children, progress, range }) {
 
 export default function ScrollWords({ text, className = "", as: Tag = "p" }) {
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.45"] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.95", "end 0.8"] });
   const words = String(text).split(" ");
   return (
     <Tag ref={ref} className={className}>

@@ -42,9 +42,9 @@ export default function PlotWave({ className = "", cols = 30, rows = 30, tile = 
           g.lineTo(x, y + th - 1);
           g.lineTo(x - tw / 2 + 1, y + th / 2);
           g.closePath();
-          g.fillStyle = hot ? `rgba(249,115,22,${0.35 + k * 0.45})` : `rgba(96,165,250,${0.06 + k * 0.16})`;
+          g.fillStyle = hot ? `rgba(31,63,115,${0.35 + k * 0.45})` : `rgba(96,165,250,${0.06 + k * 0.16})`;
           g.fill();
-          g.strokeStyle = hot ? "rgba(251,146,60,0.8)" : `rgba(147,197,253,${0.12 + k * 0.2})`;
+          g.strokeStyle = hot ? "rgba(158,178,211,0.8)" : `rgba(147,197,253,${0.12 + k * 0.2})`;
           g.lineWidth = 1;
           g.stroke();
           // sides
@@ -54,7 +54,7 @@ export default function PlotWave({ className = "", cols = 30, rows = 30, tile = 
           g.lineTo(x, y + th - 1 + lift * 0.6);
           g.lineTo(x - tw / 2 + 1, y + th / 2 + lift * 0.6);
           g.closePath();
-          g.fillStyle = hot ? "rgba(194,65,12,0.35)" : "rgba(30,64,175,0.08)";
+          g.fillStyle = hot ? "rgba(31,63,115,0.35)" : "rgba(31,63,115,0.08)";
           g.fill();
         }
       }
