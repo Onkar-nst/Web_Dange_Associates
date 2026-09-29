@@ -5,6 +5,7 @@ import { useLanguage } from "./LanguageContext";
 import { MapPin, Phone, MessageSquare, ArrowRight, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import Magnetic from "./fx/Magnetic";
+import SectionLabel from "./ui/SectionLabel";
 
 const SiteVisitEnquiry = () => {
   const { language } = useLanguage();
@@ -22,10 +23,10 @@ const SiteVisitEnquiry = () => {
   ];
 
   return (
-    <section className="py-24 bg-slate-50 relative overflow-hidden border-t border-slate-100">
+    <section className="py-12 bg-white relative overflow-hidden border-t border-slate-100">
       {/* Background Decor */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(#3B82F6_2px,transparent_2px)] [background-size:40px_40px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#4d6fa3_2px,transparent_2px)] [background-size:40px_40px]"></div>
       </div>
 
       <div className="relative z-10 w-full px-4 md:px-12">
@@ -40,9 +41,7 @@ const SiteVisitEnquiry = () => {
           
           <div className="flex-1 space-y-8">
             <div>
-              <span className="text-blue-700 font-semibold tracking-widest uppercase text-xs bg-blue-50 px-4 py-2 rounded-full border border-blue-100 italic">
-                {language === "en" ? "Experience the Reality" : "प्रत्यक्ष अनुभव"}
-              </span>
+              <SectionLabel>{language === "en" ? "Experience the Reality" : "प्रत्यक्ष अनुभव"}</SectionLabel>
               <h2 className="text-4xl md:text-5xl font-medium text-slate-900 mt-6 leading-tight tracking-tight">
                 {language === "en" ? "Plan your site visit now" : "तुमच्या साईट व्हिजिटचे नियोजन करा"}
               </h2>
@@ -69,7 +68,7 @@ const SiteVisitEnquiry = () => {
                 href="https://wa.me/917774882844"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-5 rounded-2xl font-semibold transition-all shadow-xl shadow-emerald-600/10 group text-lg"
+                className="flex items-center justify-center gap-3 bg-blue-700 hover:bg-blue-800 text-white px-8 py-5 rounded-2xl font-semibold transition-all shadow-xl  group text-lg"
               >
                 <MessageSquare className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 {language === "en" ? "WhatsApp Us" : "व्हॉट्सॲप करा"}
@@ -123,7 +122,7 @@ const SiteVisitEnquiry = () => {
           background: #f1f1f1;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #3b82f6;
+          background: #4d6fa3;
           border-radius: 10px;
         }
       `}</style>

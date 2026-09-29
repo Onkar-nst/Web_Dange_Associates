@@ -11,8 +11,10 @@ export async function generateMetadata({ params }) {
   const project = getProject(slug);
   if (!project) return {};
   return {
-    title: `${project.name.en} | Dange Associates`,
-    description: `${project.tagline.en} ${project.location.en}.`,
+    title: `${project.name.en} – ${project.location.en}`,
+    description: `${project.name.en} by Dange Developers (Dange Associates). ${project.tagline.en} ${project.location.en}.`,
+    alternates: { canonical: `/projects/${slug}` },
+    openGraph: { images: [project.heroImage] },
   };
 }
 

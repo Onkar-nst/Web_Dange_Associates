@@ -14,7 +14,7 @@ function Field({ id, label, textarea, ...props }) {
       <Tag
         id={id}
         placeholder=" "
-        className={`peer w-full rounded-xl border-2 border-slate-100 bg-slate-50 px-5 pb-3 pt-6 text-slate-900 outline-none transition-all duration-300 focus:border-blue-600 focus:bg-white focus:shadow-[0_10px_30px_-10px_rgba(37,99,235,0.35)] ${textarea ? "min-h-[140px] resize-none" : ""}`}
+        className={`peer w-full rounded-xl border-2 border-slate-100 bg-slate-50 px-5 pb-3 pt-6 text-slate-900 outline-none transition-all duration-300 focus:border-blue-600 focus:bg-white focus:shadow-[0_10px_30px_-10px_rgba(31,63,115,0.35)] ${textarea ? "min-h-[140px] resize-none" : ""}`}
         {...props}
       />
       <label
@@ -66,7 +66,7 @@ export default function ContactForm() {
         aria-hidden
         animate={{ scale: [1, 1.2, 1], rotate: [0, 45, 0] }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -right-16 -top-16 h-48 w-48 rounded-[2.5rem] bg-gradient-to-br from-orange-200/40 to-blue-200/30 blur-xl"
+        className="absolute -right-16 -top-16 h-48 w-48 rounded-[2.5rem] blur-xl"
       />
       <h2 className="relative text-2xl font-medium text-slate-900 md:text-3xl">{language === "en" ? "Enquire Us" : "आमच्याशी चौकशी करा"}</h2>
       <p className="relative mb-8 mt-2 text-slate-600">
@@ -104,7 +104,7 @@ export default function ContactForm() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className={`flex items-center gap-2 text-sm ${state === "success" ? "text-emerald-700" : "text-red-600"}`}
+                className={`flex items-center gap-2 text-sm ${state === "success" ? "text-blue-700" : "text-red-600"}`}
               >
                 {state === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                 {messages[state]}

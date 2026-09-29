@@ -3,7 +3,8 @@
 import { useLanguage } from "./LanguageContext";
 import { ArrowRight, Phone, MapPin, Rotate3d, BadgeCheck } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Magnetic from "./fx/Magnetic";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -20,6 +21,13 @@ const Line = ({ children, delay }) => (
 const HeroSection = () => {
   const { language } = useLanguage();
   const en = language === "en";
+  const [slide, setSlide] = useState(0);
+
+  // Banner alternates between the current project and the upcoming one every 3s.
+  useEffect(() => {
+    const id = setTimeout(() => setSlide((s) => (s + 1) % 2), 3000);
+    return () => clearTimeout(id);
+  }, [slide]);
 
   return (
     <section className="relative w-full overflow-hidden bg-slate-50 pt-14">
@@ -27,7 +35,7 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:24px_24px]"></div>
       </div>
       <div className="pointer-events-none absolute -left-24 -top-24 z-0 h-96 w-96 rounded-full bg-blue-200/30 blur-[110px]" />
-      <div className="pointer-events-none absolute bottom-0 left-1/3 z-0 h-80 w-80 rounded-full bg-orange-200/25 blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 left-1/3 z-0 h-80 w-80 rounded-full bg-blue-200/25 blur-[120px]" />
 
       <div className="container relative z-10 mx-auto px-6 pb-16 pt-8 md:pb-24 md:pt-16">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
@@ -71,7 +79,7 @@ const HeroSection = () => {
               <Magnetic className="block">
                 <Link
                   href="/projects"
-                  className="group flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-8 py-4 text-lg font-medium text-white shadow-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-orange-700 hover:shadow-orange-200"
+                  className="group flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-8 py-4 text-lg font-medium text-white shadow-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 hover:shadow-blue-200"
                 >
                   {en ? "Explore Projects" : "प्रकल्प पहा"}
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -111,33 +119,75 @@ const HeroSection = () => {
               transition={{ duration: 1.3, delay: 0.2, ease: EASE }}
               className="group absolute inset-y-0 right-0 w-full overflow-hidden rounded-[2rem] shadow-2xl shadow-slate-900/15 lg:w-[92%]"
             >
-              <img
-                src="/project-imgg.webp"
-                alt="Shree Ram Nagri-1 layout"
-                fetchPriority="high"
-                className="h-full w-full object-cover transition-transform duration-[1.6s] ease-out group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/10 to-transparent" />
-              <div className="absolute right-5 top-5 flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium text-slate-800 shadow">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                {en ? "Bookings open" : "बुकिंग सुरू"}
-              </div>
-              <div className="absolute inset-x-5 bottom-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div className="text-white">
-                  <p className="text-xs uppercase tracking-[0.2em] text-orange-300">{en ? "Current project" : "सध्याचा प्रकल्प"}</p>
-                  <h3 className="mt-1 text-2xl font-medium md:text-3xl">{en ? "Shree Ram Nagri-1" : "श्री राम नगरी-१"}</h3>
-                  <p className="mt-1 flex items-center gap-1.5 text-sm text-white/80">
-                    <MapPin className="h-4 w-4" />
-                    {en ? "State Highway 250, Kalmeshwar" : "राज्य महामार्ग २५०, कळमेश्वर"}
-                  </p>
-                </div>
-                <Link
-                  href="/projects/shree-ram-nagri-1#flythrough"
-                  className="inline-flex items-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-medium text-slate-900 shadow-lg transition-colors hover:bg-blue-50 sm:self-auto"
-                >
-                  <Rotate3d className="h-4 w-4 text-blue-700" />
-                  {en ? "Take the 3D tour" : "3D सफर करा"}
-                </Link>
+              <AnimatePresence initial={false}>
+                {slide === 0 ? (
+                  <motion.div key="current" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.7 }} className="absolute inset-0">
+                  <img
+                    src="/project-imgg.webp"
+                    alt="Shree Ram Nagri-1 layout"
+                    fetchPriority="high"
+                    className="h-full w-full object-cover transition-transform duration-[1.6s] ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/10 to-transparent" />
+                  <div className="absolute right-5 top-5 flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium text-slate-800 shadow">
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
+                    {en ? "Bookings open" : "बुकिंग सुरू"}
+                  </div>
+                  <div className="absolute inset-x-5 bottom-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="text-white">
+                      <p className="text-xs uppercase tracking-[0.2em] text-blue-200">{en ? "Current project" : "सध्याचा प्रकल्प"}</p>
+                      <h3 className="mt-1 text-2xl font-medium md:text-3xl">{en ? "Shree Ram Nagri-1" : "श्री राम नगरी-१"}</h3>
+                      <p className="mt-1 flex items-center gap-1.5 text-sm text-white/80">
+                        <MapPin className="h-4 w-4" />
+                        {en ? "State Highway 250, Kalmeshwar" : "राज्य महामार्ग २५०, कळमेश्वर"}
+                      </p>
+                    </div>
+                    <Link
+                      href="/projects/shree-ram-nagri-1#flythrough"
+                      className="inline-flex items-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-medium text-slate-900 shadow-lg transition-colors hover:bg-blue-50 sm:self-auto"
+                    >
+                      <Rotate3d className="h-4 w-4 text-blue-700" />
+                      {en ? "Take the 3D tour" : "3D सफर करा"}
+                    </Link>
+                  </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="upcoming"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.7 }}
+                    className="absolute inset-0 flex flex-col justify-end bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 p-8 pb-14 text-white md:p-10 md:pb-16"
+                  >
+                    <div className="absolute right-5 top-5 flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium text-slate-800 shadow">
+                      <span className="h-2 w-2 rounded-full bg-blue-300" />
+                      {en ? "Coming soon" : "लवकरच"}
+                    </div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-blue-200">{en ? "Upcoming project" : "आगामी प्रकल्प"}</p>
+                    <h3 className="mt-2 text-4xl font-medium md:text-6xl">{en ? "Maati Farms" : "माती फार्म्स"}</h3>
+                    <a
+                      href={`https://wa.me/917774882844?text=${encodeURIComponent("Hi, I want to know more about Maati Farms.")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-6 inline-flex items-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-medium text-slate-900 shadow-lg transition-colors hover:bg-blue-50"
+                    >
+                      {en ? "Enquire now" : "चौकशी करा"}
+                      <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+                {[0, 1].map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSlide(i)}
+                    aria-label={i === 0 ? "Shree Ram Nagri-1" : "Maati Farms"}
+                    className={`h-1.5 rounded-full transition-all ${slide === i ? "w-6 bg-white" : "w-1.5 bg-white/50"}`}
+                  />
+                ))}
               </div>
             </motion.div>
 

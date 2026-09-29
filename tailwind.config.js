@@ -18,17 +18,32 @@ module.exports = {
     },
     extend: {
       colors: {
+        // Brand palette: one navy accent family (like Arham's single green) + slate neutrals + white.
+        // Redefining `blue` means every existing blue-* class uses the brand navy.
+        blue: {
+          50: "#f2f5fa",
+          100: "#e3e9f3",
+          200: "#c5d2e6",
+          300: "#9eb2d3",
+          400: "#7290bd",
+          500: "#4d6fa3",
+          600: "#335489",
+          700: "#1f3f73",
+          800: "#18315a",
+          900: "#112443",
+          950: "#0a1628",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#1e40af", // blue-700
+          DEFAULT: "#1f3f73", // brand navy (blue-700)
           foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "#f97316", // orange-500
+          DEFAULT: "#112443", // brand navy dark (blue-900)
           foreground: "#ffffff",
         },
         destructive: {

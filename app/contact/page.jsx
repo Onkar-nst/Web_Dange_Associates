@@ -9,6 +9,7 @@ import { useLanguage } from "@/components/LanguageContext";
 import Diorama from "@/components/fx/Diorama";
 import Spotlight from "@/components/fx/Spotlight";
 import Reveal from "@/components/motion/Reveal";
+import SectionLabel from "@/components/ui/SectionLabel";
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -28,14 +29,14 @@ export default function ContactSection() {
     },
     {
       icon: Phone,
-      tone: "text-emerald-700 bg-emerald-50 border-emerald-100",
+      tone: "text-blue-700 bg-slate-100 border-slate-200",
       title: language === "en" ? "Call Us" : "आम्हाला कॉल करा",
       content: "+91 7774882844",
       href: "tel:+917774882844",
     },
     {
       icon: Mail,
-      tone: "text-orange-600 bg-orange-50 border-orange-100",
+      tone: "text-blue-700 bg-slate-100 border-slate-200",
       title: language === "en" ? "Email Us" : "आम्हाला ईमेल करा",
       content: "vedantdange18@gmail.com",
       href: "mailto:vedantdange18@gmail.com",
@@ -47,7 +48,7 @@ export default function ContactSection() {
   return (
     <>
       <Navbar />
-      <main className="relative overflow-hidden bg-gradient-to-b from-sky-50 via-white to-orange-50">
+      <main className="relative overflow-hidden bg-blue-700">
 
         {/* Hero: copy + live 3D office pin */}
         <section className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-10 pt-32 md:px-6 lg:grid-cols-2 lg:px-8 lg:pt-36">
@@ -56,9 +57,9 @@ export default function ContactSection() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-block rounded-md border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-medium uppercase italic tracking-widest text-blue-700"
+              className="inline-block"
             >
-              {language === "en" ? "Contact" : "संपर्क"}
+              <SectionLabel>{language === "en" ? "Contact" : "संपर्क"}</SectionLabel>
             </motion.span>
             <h1 className="mt-6 text-4xl font-medium leading-[1.1] tracking-tight text-slate-900 md:text-6xl">
               {title.split(" ").map((w, i) => (
@@ -104,7 +105,7 @@ export default function ContactSection() {
                       <span className="block text-sm font-medium uppercase tracking-widest text-slate-400">{item.title}</span>
                       <span className="mt-1 block text-base text-slate-800">{item.content}</span>
                     </span>
-                    <ArrowUpRight className="h-5 w-5 text-slate-300 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-orange-500" />
+                    <ArrowUpRight className="h-5 w-5 text-slate-300 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-blue-700" />
                   </Spotlight>
                 </motion.div>
               ))}
@@ -117,7 +118,7 @@ export default function ContactSection() {
             transition={{ duration: 1.2, delay: 0.3, ease: EASE }}
             className="relative h-[380px] md:h-[520px]"
           >
-            <div className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.18),rgba(59,130,246,0.12)_50%,transparent_72%)] blur-2xl" />
+            <div className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgba(31,63,115,0.18),rgba(77,111,163,0.12)_50%,transparent_72%)] blur-2xl" />
             <Diorama variant="pin" className="absolute inset-0" />
           </motion.div>
         </section>
@@ -137,7 +138,7 @@ export default function ContactSection() {
                 referrerPolicy="no-referrer-when-downgrade"
               />
               <div className="flex items-center gap-3 px-5 py-4 text-sm text-slate-600">
-                <Clock className="h-4 w-4 animate-pulse text-amber-500" />
+                <Clock className="h-4 w-4 animate-pulse text-blue-700" />
                 <span>
                   <span className="font-medium text-slate-900">{language === "en" ? "Mon – Sat" : "सोम – शनि"}</span> · 09:00 AM – 06:00 PM
                 </span>

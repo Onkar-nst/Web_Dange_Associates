@@ -40,7 +40,7 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed w-full z-50 border-b py-4 transition-all duration-300 ${
-        isScrolled ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border-slate-100" : "bg-white shadow-sm border-gray-100"
+        isScrolled ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border-slate-100" : "bg-white shadow-sm border-slate-100"
       }`}
     >
       <div className="w-full px-4 md:px-10">
@@ -56,7 +56,7 @@ const Navbar = () => {
                   className="h-16 w-auto object-contain transition-transform duration-700 group-hover:rotate-[20deg]" 
                 />
                 <span className="ml-2 text-2xl font-bold text-slate-900 tracking-tighter italic">
-                  Dange<span className="text-orange-600 group-hover:text-blue-600 transition-colors">Associates</span>
+                  Dange<span className="text-orange-600">Associates</span>
                 </span>
               </div>
             </Link>
@@ -68,10 +68,10 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative font-semibold text-base hover:text-orange-600 transition-all duration-300 group ${isActive(link.href) ? "text-orange-600" : "text-slate-700"}`}
+                className={`relative font-semibold text-base hover:text-blue-700 transition-all duration-300 group ${isActive(link.href) ? "text-blue-700" : "text-slate-700"}`}
               >
                 {link.name}
-                <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-orange-500 transition-all duration-300 group-hover:w-full ${isActive(link.href) ? "w-full" : "w-0"}`}></span>
+                <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-blue-700 transition-all duration-300 group-hover:w-full ${isActive(link.href) ? "w-full" : "w-0"}`}></span>
               </Link>
             ))}
           </div>
@@ -81,7 +81,7 @@ const Navbar = () => {
             <Magnetic strength={0.25}>
             <Link 
               href="/contact"
-              className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 group"
+              className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2.5 rounded-full font-medium transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 group"
             >
               {language === "en" ? "Get in Touch" : "संपर्क साधा"}
               <svg 
@@ -126,14 +126,14 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="md:hidden mt-4 bg-white shadow-xl p-6 absolute left-0 right-0 w-full top-16 z-50 border-t border-gray-100"
+            className="md:hidden mt-4 bg-white shadow-xl p-6 absolute left-0 right-0 w-full top-16 z-50 border-t border-slate-100"
           >
             <div className="flex flex-col space-y-4">
               {navLinks.map((link, i) => (
                 <motion.div key={link.name} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + i * 0.06 }}>
                 <Link
                   href={link.href}
-                  className={`flex items-center justify-between font-semibold hover:text-blue-700 text-lg py-2 border-b border-slate-50 ${isActive(link.href) ? "text-orange-600" : "text-slate-800"}`}
+                  className={`flex items-center justify-between font-semibold hover:text-blue-700 text-lg py-2 border-b border-slate-50 ${isActive(link.href) ? "text-blue-700" : "text-slate-800"}`}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
@@ -144,7 +144,7 @@ const Navbar = () => {
               <div className="pt-2">
                  <Link 
                   href="/contact"
-                  className="w-full bg-emerald-700 text-white py-3 rounded-lg font-medium flex justify-center items-center"
+                  className="w-full bg-blue-700 text-white py-3 rounded-lg font-medium flex justify-center items-center"
                   onClick={() => setIsOpen(false)}
                  >
                    {language === "en" ? "Get in Touch" : "संपर्क साधा"}

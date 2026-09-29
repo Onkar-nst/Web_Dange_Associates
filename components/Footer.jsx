@@ -44,7 +44,7 @@ const Footer = () => {
         aria-hidden
         animate={{ x: [0, 90, 0], y: [0, -30, 0] }}
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-0 left-0 w-1/4 h-1/3 bg-orange-600/10 blur-[100px] rounded-full"
+        className="absolute top-0 left-0 w-1/4 h-1/3 bg-blue-700/10 blur-[100px] rounded-full"
       />
       
       <div className="container mx-auto px-6 relative z-10">
@@ -54,9 +54,9 @@ const Footer = () => {
           <div className="space-y-10">
             <Link href="/" className="inline-block group">
               <h3 className="text-4xl font-bold text-white tracking-tighter italic">
-                Dange<span className="text-orange-500 group-hover:text-blue-500 transition-colors">Associates</span>
+                Dange<span className="text-orange-500">Associates</span>
               </h3>
-              <div className="h-1 w-12 bg-orange-500 mt-2 rounded-full transition-all group-hover:w-24 group-hover:bg-blue-500"></div>
+              <div className="h-1 w-12 bg-blue-700 mt-2 rounded-full transition-all group-hover:w-24 group-hover:bg-blue-500"></div>
             </Link>
             
             <p className="text-slate-500 text-sm font-medium uppercase tracking-widest leading-relaxed">
@@ -69,7 +69,7 @@ const Footer = () => {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center justify-center text-slate-500 hover:bg-orange-600 hover:text-white hover:border-orange-500 transition-all duration-500 transform hover:-translate-y-1 hover:rotate-[360deg] hover:shadow-lg hover:shadow-orange-600/30"
+                  className="w-10 h-10 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center justify-center text-slate-500 hover:bg-blue-800 hover:text-white hover:border-blue-700 transition-all duration-500 transform hover:-translate-y-1 hover:rotate-[360deg] hover:shadow-lg "
                 >
                   {social.icon}
                 </a>
@@ -86,16 +86,16 @@ const Footer = () => {
             
             <div className="space-y-8">
               <div className="flex items-start group">
-                <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border border-orange-600/20 flex items-center justify-center text-orange-500 mr-5 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500 shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-blue-700/10 border border-blue-700/20 flex items-center justify-center text-blue-700 mr-5 group-hover:bg-blue-800 group-hover:text-white transition-all duration-500 shrink-0">
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
                   <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Call Us" : "कॉल करा"}</p>
                   <div className="flex flex-col space-y-2">
-                    <a href="tel:+919112379641" className="text-white font-semibold text-lg hover:text-orange-500 transition-colors leading-none">
+                    <a href="tel:+919112379641" className="text-white font-semibold text-lg hover:text-blue-700 transition-colors leading-none">
                       +91 9112379641
                     </a>
-                    <a href="tel:+917774882844" className="text-white font-semibold text-lg hover:text-orange-500 transition-colors leading-none">
+                    <a href="tel:+917774882844" className="text-white font-semibold text-lg hover:text-blue-700 transition-colors leading-none">
                       +91 7774882844
                     </a>
                   </div>
@@ -117,7 +117,7 @@ const Footer = () => {
           {/* Location & Hours Column */}
           <div className="space-y-10">
             <h4 className="text-white text-xs font-semibold uppercase tracking-[0.3em] flex items-center gap-3">
-              <span className="w-8 h-px bg-emerald-600"></span>
+              <span className="w-8 h-px bg-blue-700"></span>
               {language === "en" ? "Find Us" : "आम्हाला शोधा"}
             </h4>
 
@@ -128,24 +128,24 @@ const Footer = () => {
                 rel="noopener noreferrer" 
                 className="flex items-start group"
               >
-                <div className="w-12 h-12 rounded-2xl bg-emerald-600/10 border border-emerald-600/20 flex items-center justify-center text-emerald-500 mr-5 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-blue-700/10 border border-blue-700/20 flex items-center justify-center text-blue-700 mr-5 group-hover:bg-blue-800 group-hover:text-white transition-all duration-500 shrink-0">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
                   <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest mb-1">{language === "en" ? "Office Location" : "कार्यालयाचे ठिकाण"}</p>
-                  <span className="text-slate-300 text-sm font-medium leading-relaxed group-hover:text-emerald-500 transition-colors">
+                  <span className="text-slate-300 text-sm font-medium leading-relaxed group-hover:text-blue-700 transition-colors">
                     Block No. 7, Khadi Gram Sankul, <br/> beside ICICI Bank, Kalmeshwar, <br/> Maharashtra 441501
                   </span>
                 </div>
               </a>
 
               <div className="flex items-start group">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mr-5 group-hover:bg-amber-500 group-hover:text-amber-950 transition-all duration-500 shrink-0 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+                <div className="w-12 h-12 rounded-2xl bg-blue-700/10 border border-blue-700/20 flex items-center justify-center text-blue-700 mr-5 group-hover:bg-blue-800 group-hover:text-blue-700 transition-all duration-500 shrink-0 shadow-[0_0_20px_rgba(31,63,115,0.1)]">
                   <Clock className="h-5 w-5 animate-pulse" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-[0.25em] mb-1.5 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                  <p className="text-[10px] font-semibold text-blue-700 uppercase tracking-[0.25em] mb-1.5 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-700 animate-ping"></span>
                     {language === "en" ? "Working Hours" : "कामाची वेळ"}
                   </p>
                   <div className="flex flex-col">

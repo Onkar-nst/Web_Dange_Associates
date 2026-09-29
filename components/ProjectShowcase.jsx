@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import TiltCard from "./motion/TiltCard";
 import Reveal from "./motion/Reveal";
 import Spotlight from "./fx/Spotlight";
+import SectionLabel from "./ui/SectionLabel";
 
 const ProjectShowcase = () => {
   const { language } = useLanguage();
@@ -33,7 +34,7 @@ const ProjectShowcase = () => {
       name: language === "en" ? "Ready to Move Homes" : "तयार घरे",
       location: language === "en" ? "Beside Tahsil Office, Kalemshwar, Nagpur" : "तहसील कार्यालयाजवळ, कळमेश्वर, नागपूर",
       status: language === "en" ? "Ready to Move" : "तयार",
-      statusColor: "bg-green-100 text-green-700",
+      statusColor: "bg-slate-100 text-blue-700",
       description: language === "en"
         ? "Move-in ready residential properties with complete documentation and legal clearance. Perfect for immediate occupancy."
         : "संपूर्ण दस्तऐवजीकरण आणि कायदेशीर मंजुरीसह तयार निवासी मालमत्ता. तात्काळ वास्तव्यासाठी योग्य.",
@@ -46,7 +47,7 @@ const ProjectShowcase = () => {
       name: language === "en" ? "Om Sai Ram Nagar 1" : "ओम साई राम नगर १",
       location: language === "en" ? "National Highway 353J, Kohli" : "राष्ट्रीय महामार्ग ३५३जे, कोहली",
       status: language === "en" ? "Few Plots Left" : "काही प्लॉट शिल्लक",
-      statusColor: "bg-red-100 text-red-700",
+      statusColor: "bg-blue-50 text-blue-700",
       description: language === "en"
         ? "Highway-facing residential plots with excellent road connectivity. Ideal for modern living."
         : "उत्कृष्ट रस्ता कनेक्टिव्हिटीसह महामार्गासमोरील निवासी प्लॉट. आधुनिक राहणीसाठी आदर्श.",
@@ -56,23 +57,16 @@ const ProjectShowcase = () => {
   ];
 
   return (
-    <section className="relative py-24 bg-white overflow-hidden">
+    <section className="relative py-12 bg-white overflow-hidden">
       <div className="container relative mx-auto px-6">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <Reveal className="max-w-3xl">
-            <span className="text-blue-700 font-semibold tracking-widest uppercase text-xs bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100 italic">
-              {language === "en" ? "Our Active Projects" : "आमचे सक्रिय प्रकल्प"}
-            </span>
+            <SectionLabel>{language === "en" ? "Our Active Projects" : "आमचे सक्रिय प्रकल्प"}</SectionLabel>
             <h2 className="text-3xl md:text-5xl font-medium text-slate-900 mt-4">
               {language === "en" ? "Invest in Verified & Sanctioned Layouts" : "सत्यापित आणि मंजूर लेआउट्समध्ये गुंतवणूक करा"}
             </h2>
-            <p className="text-slate-600 mt-6 text-lg leading-relaxed">
-              {language === "en" 
-                ? "Reliable land development across Nagpur's fastest-growing areas. Every project comes with a 100% legal guarantee and immediate registration."
-                : "नागपूरच्या वेगाने वाढणाऱ्या क्षेत्रांमध्ये विश्वसनीय जमीन विकास. प्रत्येक प्रकल्प १००% कायदेशीर हमी आणि तात्काळ नोंदणीसह येतो."}
-            </p>
           </Reveal>
           
           <Link 
@@ -114,7 +108,6 @@ const ProjectShowcase = () => {
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Link>
 
               {/* Content */}
@@ -129,7 +122,7 @@ const ProjectShowcase = () => {
 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-start">
-                    <MapPin className="w-5 h-5 mr-3 text-red-500 mt-0.5 shrink-0" />
+                    <MapPin className="w-5 h-5 mr-3 text-blue-700 mt-0.5 shrink-0" />
                     <span className="font-medium text-slate-700 text-sm">{project.location}</span>
                   </div>
                 </div>
@@ -144,7 +137,7 @@ const ProjectShowcase = () => {
                   </Link>
                   <Link
                     href={`/contact`}
-                    className="flex items-center justify-center bg-orange-600 text-white font-medium py-3.5 rounded-xl hover:bg-orange-700 transition-all shadow-md hover:shadow-orange-200 text-sm"
+                    className="flex items-center justify-center bg-blue-700 text-white font-medium py-3.5 rounded-xl hover:bg-blue-800 transition-all shadow-md  text-sm"
                   >
                     {language === "en" ? "Enquire" : "चौकशी करा"}
                   </Link>
