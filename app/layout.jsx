@@ -38,6 +38,7 @@ export const metadata = {
     locale: "en_IN",
   },
   robots: { index: true, follow: true },
+  verification: { google: "Oo7IlFIohyON1TDy6kyxqVNG_-pMPh0Sb8cwVRJdCP0" },
 };
 
 const businessJsonLd = {
