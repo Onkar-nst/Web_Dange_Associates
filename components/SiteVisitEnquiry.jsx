@@ -84,7 +84,7 @@ const SiteVisitEnquiry = () => {
                 {language === "en" ? "Select a Project" : "प्रकल्प निवडा"}
               </h3>
               
-              <div className="space-y-3 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                 {projects.map((project, i) => (
                   <motion.button
                     initial={{ opacity: 0, x: 20 }}
@@ -93,7 +93,7 @@ const SiteVisitEnquiry = () => {
                     transition={{ delay: 0.2 + i * 0.05 }}
                     key={project.id}
                     onClick={() => setSelectedProject(project.id)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all font-medium flex justify-between items-center group/item ${
+                    className={`w-full text-left px-4 py-3 text-sm rounded-xl border transition-all font-medium flex justify-between items-center group/item ${
                       selectedProject === project.id
                         ? "bg-blue-600 border-blue-600 text-white shadow-lg scale-[1.02]"
                         : "bg-white border-slate-200 text-slate-700 hover:border-blue-500 hover:shadow-md hover:text-blue-700"
