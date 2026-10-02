@@ -10,7 +10,9 @@ export default function SmoothScroll() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const lenis = new Lenis({ autoRaf: true, lerp: 0.1, anchors: { offset: -96 } });
+    // allowNestedScroll: sideways swipes on horizontal rows (e.g. "Other projects") scroll the row natively,
+    // while vertical wheel movement always scrolls the page — no dead zones.
+    const lenis = new Lenis({ autoRaf: true, lerp: 0.1, anchors: { offset: -96 }, allowNestedScroll: true });
     window.__lenis = lenis;
     return () => {
       lenis.destroy();

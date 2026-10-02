@@ -29,7 +29,7 @@ const LayoutFlythrough = dynamic(() => import("../project3d/LayoutFlythrough"), 
 const EASE = [0.22, 1, 0.36, 1];
 
 const ICONS = {
-  entrance: Landmark, road: Route, trees: Trees, light: Lightbulb, garden: TreePine, walk: Footprints,
+  entrance: Landmark, temple: Landmark, road: Route, trees: Trees, light: Lightbulb, garden: TreePine, walk: Footprints,
   kids: Baby, club: Building2, pool: Waves, sports: Trophy, fence: Fence, water: Droplets, home: Home,
   docs: FileCheck2, school: School, shop: ShoppingBag, highway: Navigation, town: Building, industry: Factory,
   city: MapPinned,
@@ -47,153 +47,111 @@ function Eyebrow({ children, light }) {
 
 // ---------------------------------------------------------------------------
 function Hero({ project, language }) {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "35%"]);
-  const fade = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const en = language === "en";
   const name = t(project.name, language);
   const status = STATUS_STYLE[project.statusType] ?? STATUS_STYLE.completed;
+  const fadeUp = (delay) => ({ initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.7, ease: EASE } });
 
   return (
-    <section ref={ref} className="relative min-h-[100svh] overflow-hidden bg-slate-900 md:h-[100svh] md:min-h-[640px]">
-      <motion.div style={{ y: imgY }} className="absolute inset-0">
-        <motion.img
-          src={project.heroImage}
-          alt={name}
-          initial={{ scale: 1.25 }}
-          animate={{ scale: 1.05 }}
-          transition={{ duration: 2.6, ease: EASE }}
-          className="h-full w-full object-cover"
-        />
-      </motion.div>
-      <div className="absolute inset-0" />
-      <div className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:28px_28px]" />
-
-      <motion.div style={{ y: contentY, opacity: fade }} className="relative z-10 flex min-h-[100svh] flex-col justify-end pb-16 pt-32 md:h-full md:min-h-0 md:pb-24">
-        <div className="container mx-auto px-6">
-          <motion.nav
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="mb-6 flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-white/60"
-          >
-            <Link href="/" className="hover:text-white transition-colors">{language === "en" ? "Home" : "मुखपृष्ठ"}</Link>
-            <ChevronRight className="h-3 w-3" />
-            <Link href="/projects" className="hover:text-white transition-colors">{language === "en" ? "Projects" : "प्रकल्प"}</Link>
-            <ChevronRight className="h-3 w-3" />
-            <span className="text-blue-700">{name}</span>
+    <section className="relative overflow-hidden border-b border-slate-200 bg-slate-50 pb-14 pt-32 md:pb-20 md:pt-40">
+      <div className="container mx-auto grid max-w-7xl items-center gap-10 px-6 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+        {/* Text */}
+        <div>
+          <motion.nav {...fadeUp(0.05)} className="flex items-center gap-2 text-sm text-slate-500">
+            <Link href="/" className="hover:text-slate-900">{en ? "Home" : "मुखपृष्ठ"}</Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <Link href="/projects" className="hover:text-slate-900">{en ? "Projects" : "प्रकल्प"}</Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-slate-800">{name}</span>
           </motion.nav>
 
-          <motion.span
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.35, duration: 0.5 }}
-            className={`mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white shadow-xl backdrop-blur-md ${status.cls}`}
-          >
-            <status.Icon className={`h-3.5 w-3.5 ${project.statusType === "current" ? "animate-pulse" : ""}`} />
+          <motion.span {...fadeUp(0.12)} className="mt-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700">
+            <status.Icon className="h-3.5 w-3.5 text-blue-700" />
             {t(project.status, language)}
           </motion.span>
 
-          <h1 className="max-w-5xl text-5xl font-medium leading-[0.98] tracking-tight text-white md:text-7xl lg:text-8xl">
-            {name.split(" ").map((w, i) => (
-              <span key={`${language}-${i}`} className="mr-[0.22em] inline-block overflow-hidden pb-2 align-bottom">
-                <motion.span
-                  className="inline-block"
-                  initial={{ y: "110%" }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1, delay: 0.4 + i * 0.09, ease: EASE }}
-                >
-                  {w}
-                </motion.span>
-              </span>
-            ))}
-          </h1>
+          <motion.h1 {...fadeUp(0.18)} className="mt-5 text-4xl font-semibold leading-[1.05] tracking-tight text-slate-900 md:text-6xl">
+            {name}
+          </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8, ease: EASE }}
-            className="mt-6 max-w-2xl text-lg leading-relaxed text-white/85 md:text-2xl"
-          >
+          <motion.p {...fadeUp(0.26)} className="mt-5 max-w-xl text-lg leading-relaxed text-slate-600">
             {t(project.tagline, language)}
           </motion.p>
 
           <motion.a
+            {...fadeUp(0.32)}
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.mapQuery)}`}
             target="_blank"
             rel="noopener noreferrer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="group mt-6 inline-flex items-center gap-3 text-white/80 hover:text-white"
+            className="mt-4 inline-flex items-start gap-2 text-sm text-slate-600 hover:text-blue-700"
           >
-            <span className="rounded-xl bg-blue-700/20 p-2.5 border border-slate-200/30 group-hover:bg-blue-800 transition-colors">
-              <MapPin className="h-5 w-5 text-slate-500 group-hover:text-white" />
-            </span>
-            <span className="text-xs font-medium uppercase tracking-widest md:text-sm">{t(project.location, language)}</span>
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-blue-700" />
+            <span className="underline-offset-4 hover:underline">{t(project.location, language)}</span>
           </motion.a>
 
-          <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <motion.div
-              variants={stagger(0.1, 1.1)}
-              initial="hidden"
-              animate="show"
-              className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap"
-            >
-              {project.stats.map((s, i) => (
-                <motion.div
-                  key={i}
-                  variants={rise}
-                  className="rounded-2xl border border-white/15 bg-slate-900/40 px-5 py-4 transition-colors hover:bg-slate-900/55 sm:min-w-[150px]"
-                >
-                  <div className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
-                    {/^\d+[+%]?$/.test(s.value) ? <CountUp value={s.value} /> : s.value}
-                  </div>
-                  <div className="mt-1 text-[10px] font-medium uppercase tracking-widest text-white/60">{t(s.label, language)}</div>
-                </motion.div>
-              ))}
-            </motion.div>
+          <motion.dl {...fadeUp(0.4)} className="mt-8 grid max-w-xl grid-cols-3 divide-x divide-slate-200 border-y border-slate-200 py-4">
+            {project.stats.slice(0, 3).map((s, i) => (
+              <div key={i} className="px-4 first:pl-0">
+                <dd className="text-2xl font-semibold tracking-tight text-slate-900">
+                  {/^\d+[+%]?$/.test(s.value) ? <CountUp value={s.value} /> : s.value}
+                </dd>
+                <dt className="mt-1 text-xs text-slate-500">{t(s.label, language)}</dt>
+              </div>
+            ))}
+          </motion.dl>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.4, duration: 0.8, ease: EASE }}
-              className="flex flex-col gap-3 sm:flex-row"
+          <motion.div {...fadeUp(0.48)} className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="tel:+917774882844"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-blue-800"
             >
-              {project.has3D && (
-                <a
-                  href="#flythrough"
-                  className="group flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-4 font-medium text-slate-900 shadow-xl transition-all hover:-translate-y-0.5 hover:bg-blue-50"
-                >
-                  <Rotate3d className="h-5 w-5 text-blue-700 transition-transform duration-700 group-hover:rotate-180" />
-                  {language === "en" ? "Take the 3D Tour" : "3D सफर करा"}
-                </a>
-              )}
-              <Magnetic className="block">
+              <Phone className="h-4 w-4" />
+              {en ? "Book Free Site Visit" : "मोफत साइट भेट बुक करा"}
+            </a>
+            {project.has3D ? (
               <a
-                href="tel:+917774882844"
-                className="group flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-7 py-4 font-medium text-white shadow-xl  transition-all hover:-translate-y-0.5 hover:bg-blue-800"
+                href="#flythrough"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-sm font-medium text-slate-800 transition-colors hover:border-slate-900"
               >
-                <Phone className="h-5 w-5 transition-transform group-hover:rotate-12" />
-                {language === "en" ? "Book Free Site Visit" : "मोफत साइट भेट बुक करा"}
+                <Rotate3d className="h-4 w-4 text-blue-700" />
+                {en ? "Take the 3D Tour" : "3D सफर करा"}
               </a>
-              </Magnetic>
-            </motion.div>
-          </div>
+            ) : (
+              <a
+                href="https://wa.me/917774882844"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-sm font-medium text-slate-800 transition-colors hover:border-slate-900"
+              >
+                {en ? "WhatsApp Us" : "व्हॉट्सॲप करा"}
+              </a>
+            )}
+          </motion.div>
         </div>
-      </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 md:block"
-      >
-        <div className="flex h-10 w-6 justify-center rounded-full border-2 border-white/40 pt-2">
-          <motion.div animate={{ y: [0, 12, 0], opacity: [1, 0.2, 1] }} transition={{ duration: 1.8, repeat: Infinity }} className="h-2 w-1 rounded-full bg-white" />
-        </div>
-      </motion.div>
+        {/* Image */}
+        <motion.figure
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.15, duration: 0.9, ease: EASE }}
+          className="relative"
+        >
+          <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-slate-200 shadow-xl shadow-slate-900/10">
+            <motion.img
+              src={project.heroImage}
+              alt={name}
+              initial={{ scale: 1.08 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.8, ease: EASE }}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <figcaption className="mt-3 flex items-center justify-between text-sm text-slate-500">
+            <span>{name}</span>
+            <span className={`inline-flex h-2 w-2 rounded-full ${project.statusType === "current" ? "bg-blue-600" : project.statusType === "ready" ? "bg-green-600" : "bg-slate-400"}`} />
+          </figcaption>
+        </motion.figure>
+      </div>
     </section>
   );
 }
@@ -329,12 +287,12 @@ function Amenities({ project, language }) {
     <section className="relative overflow-hidden border-t border-slate-100 bg-white py-12 md:py-16">
       <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#4d6fa3_2px,transparent_2px)] [background-size:40px_40px]" />
       <div className="container relative mx-auto px-6">
-        <div className="mx-auto mb-16 max-w-3xl text-center">
+        <div className="mx-auto mb-8 max-w-3xl text-center md:mb-10">
           <Reveal>
             <Eyebrow>{language === "en" ? "Amenities" : "सुविधा"}</Eyebrow>
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 className="mt-6 text-4xl font-medium tracking-tight text-slate-900 md:text-5xl">
+            <h2 className="mt-4 text-3xl font-medium tracking-tight text-slate-900 md:text-4xl">
               {language === "en" ? "Everything your family needs" : "तुमच्या कुटुंबाला हवे ते सर्व"}
             </h2>
           </Reveal>
@@ -344,7 +302,7 @@ function Amenities({ project, language }) {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.15 }}
-          className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6"
+          className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6"
         >
           {project.amenities.map((a, i) => {
             const Icon = ICONS[a.icon] ?? CheckCircle2;
@@ -352,18 +310,15 @@ function Amenities({ project, language }) {
               <motion.div
                 key={i}
                 variants={rise}
-                whileHover={{ y: -6 }}
+                whileHover={{ y: -3 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-shadow hover:shadow-2xl"
+                className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-shadow hover:shadow-lg"
               >
-                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blue-700/5 transition-transform duration-700 group-hover:scale-[3]" />
-                <Spotlight className="h-full p-6 md:p-8" color="rgba(31,63,115,0.1)">
-                <div className="relative mb-6 [perspective:600px]">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-blue-700 transition-colors duration-300 group-hover:bg-blue-700 group-hover:text-white">
-                    <Icon className="h-7 w-7" />
+                <Spotlight className="flex h-full items-center gap-3 p-3.5" color="rgba(31,63,115,0.1)">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-700 transition-colors duration-300 group-hover:bg-blue-700 group-hover:text-white">
+                    <Icon className="h-5 w-5" />
                   </div>
-                </div>
-                <h3 className="relative text-base font-medium leading-snug text-slate-900 md:text-lg">{t(a.label, language)}</h3>
+                  <h3 className="relative text-sm font-medium leading-snug text-slate-900">{t(a.label, language)}</h3>
                 </Spotlight>
               </motion.div>
             );
@@ -544,7 +499,7 @@ function OtherProjects({ current, language }) {
             <ArrowRight className="h-5 w-5" />
           </Link>
         </div>
-        <div className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-8 [scrollbar-width:none]" data-lenis-prevent-wheel>
+        <div className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-8 [scrollbar-width:none]">
           {others.map((p, i) => (
             <Reveal key={p.slug} delay={Math.min(i, 4) * 0.08} className="w-[300px] shrink-0 snap-start md:w-[360px]">
               <TiltCard className="group h-full rounded-[2rem]">

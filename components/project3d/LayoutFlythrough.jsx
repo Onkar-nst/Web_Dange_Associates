@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, MessageCircle, Rotate3d, Mouse, Check } from "lucide-react";
 import { useLanguage } from "../LanguageContext";
-import { heroPlot } from "./layoutPlan";
+import { heroPlot, PARK, PARK2, PLAY, CLUB, TEMPLE, GATE, ROAD_X } from "./layoutPlan";
 
 // Chapter ranges must line up with the camera keyframes / TIMELINE in LayoutScene.js
 const CHAPTERS = [
@@ -13,18 +13,18 @@ const CHAPTERS = [
     eyebrow: { en: "The Master Plan", mr: "मास्टर प्लॅन" },
     title: { en: "Shree Ram Nagri-1, from above", mr: "वरून दिसणारी श्री राम नगरी-१" },
     body: {
-      en: "A fully planned residential layout on State Highway 250 near Kalmeshwar, with wide roads, green open spaces and more than 140 demarcated plots.",
-      mr: "कळमेश्वरजवळ राज्य महामार्ग २५० वरील पूर्ण नियोजित निवासी लेआउट: रुंद रस्ते, हिरव्या मोकळ्या जागा आणि १४० पेक्षा जास्त सीमांकित प्लॉट.",
+      en: "The sanctioned layout at Mouza Bramni, Kalmeshwar: six blocks of demarcated plots on 9 m and 12 m roads, with two open spaces and two amenity spaces.",
+      mr: "मौजा ब्रामणी, कळमेश्वर येथील मंजूर लेआउट: ९ मी. व १२ मी. रस्त्यांवर सीमांकित प्लॉटचे सहा ब्लॉक, दोन मोकळ्या जागा आणि दोन सुविधा जागा.",
     },
-    chips: [{ en: "140+ plots", mr: "१४०+ प्लॉट" }, { en: "SH-250 frontage", mr: "SH-250 लगत" }, { en: "Clear title", mr: "स्पष्ट शीर्षक" }],
+    chips: [{ en: "140+ plots", mr: "१४०+ प्लॉट" }, { en: "15 m road frontage", mr: "१५ मी. रस्त्यालगत" }, { en: "Clear title", mr: "स्पष्ट शीर्षक" }],
   },
   {
     range: [0.1, 0.22],
-    eyebrow: { en: "Highway Frontage", mr: "महामार्गालगत" },
-    title: { en: "Right on State Highway 250", mr: "थेट राज्य महामार्ग २५० वर" },
+    eyebrow: { en: "Road Frontage", mr: "रस्त्यालगत" },
+    title: { en: "On the 15 m Shiv Pandan Road", mr: "१५ मी. शिव पांदण रस्त्यालगत" },
     body: {
-      en: "Direct highway access keeps Kalmeshwar town, the MIDC and Nagpur city within easy reach.",
-      mr: "थेट महामार्ग प्रवेशामुळे कळमेश्वर शहर, एमआयडीसी आणि नागपूर शहर सहज आवाक्यात.",
+      en: "The layout fronts the 15 m wide Shiv Pandan Road, keeping Kalmeshwar town, State Highway 250 and Nagpur city within easy reach.",
+      mr: "लेआउट १५ मी. रुंद शिव पांदण रस्त्यालगत आहे, त्यामुळे कळमेश्वर शहर, राज्य महामार्ग २५० आणि नागपूर शहर सहज आवाक्यात.",
     },
   },
   {
@@ -32,8 +32,8 @@ const CHAPTERS = [
     eyebrow: { en: "Grand Entrance", mr: "भव्य प्रवेशद्वार" },
     title: { en: "Drive in through the gate", mr: "प्रवेशद्वारातून आत या" },
     body: {
-      en: "A palm-lined boulevard leads into wide internal roads with footpaths, street lights and avenue trees.",
-      mr: "पाम वृक्षांनी सजलेला प्रवेश मार्ग पदपथ, पथदिवे आणि झाडांसह रुंद अंतर्गत रस्त्यांकडे घेऊन जातो.",
+      en: "A palm-lined gate road meets the 12 m main internal road; 9 m roads with footpaths, street lights and avenue trees lead to every plot.",
+      mr: "पाम वृक्षांनी सजलेला प्रवेश रस्ता १२ मी. मुख्य अंतर्गत रस्त्याला मिळतो; पदपथ, पथदिवे आणि झाडांसह ९ मी. रस्ते प्रत्येक प्लॉटपर्यंत जातात.",
     },
   },
   {
@@ -50,8 +50,8 @@ const CHAPTERS = [
     eyebrow: { en: "Lifestyle Amenities", mr: "जीवनशैली सुविधा" },
     title: { en: "Room to play, relax and grow", mr: "खेळ, विश्रांती आणि प्रगतीसाठी जागा" },
     body: {
-      en: "A central garden with a walking track, a kids' play area, and a clubhouse with a swimming pool and sports courts.",
-      mr: "चालण्याच्या ट्रॅकसह मध्यवर्ती उद्यान, मुलांचे खेळाचे मैदान आणि जलतरण तलाव व क्रीडा कोर्टसह क्लबहाऊस.",
+      en: "Two open spaces become gardens with walking tracks, and two amenity spaces hold a kids' play area, a clubhouse and a temple for the community.",
+      mr: "दोन मोकळ्या जागांवर चालण्याच्या ट्रॅकसह उद्याने, आणि दोन सुविधा जागांवर मुलांचे खेळाचे मैदान, क्लबहाऊस आणि समाजासाठी मंदिर.",
     },
   },
   {
@@ -87,7 +87,7 @@ const CHAPTERS = [
 
 const RAIL = [
   { en: "Master plan", mr: "मास्टर प्लॅन" },
-  { en: "Highway", mr: "महामार्ग" },
+  { en: "Main road", mr: "मुख्य रस्ता" },
   { en: "Entrance", mr: "प्रवेशद्वार" },
   { en: "Plots", mr: "प्लॉट" },
   { en: "Amenities", mr: "सुविधा" },
@@ -107,17 +107,18 @@ const STAGES = [
 
 const hx = heroPlot.cx;
 const hz = heroPlot.cz;
+const ctr = (A) => [(A.x0 + A.x1) / 2, (A.z0 + A.z1) / 2];
 const LABELS = [
-  { text: { en: "State Highway 250", mr: "राज्य महामार्ग २५०" }, pos: [154, 4, 55], from: 0.08, to: 0.26 },
-  { text: { en: "Main Gate", mr: "मुख्य प्रवेशद्वार" }, pos: [132, 12.5, -20], from: 0.12, to: 0.3 },
-  { text: { en: "Wide internal roads", mr: "रुंद अंतर्गत रस्ते" }, pos: [0, 1, -40], from: 0.37, to: 0.46 },
-  { text: { en: "Central Garden", mr: "मध्यवर्ती उद्यान" }, pos: [102, 3, 64], from: 0.5, to: 0.6 },
-  { text: { en: "Kids' Play Area", mr: "खेळाचे मैदान" }, pos: [98, 4, 4], from: 0.5, to: 0.6 },
-  { text: { en: "Clubhouse", mr: "क्लबहाऊस" }, pos: [89, 11, -48], from: 0.52, to: 0.63 },
-  { text: { en: "Swimming Pool", mr: "जलतरण तलाव" }, pos: [113, 1.5, -48], from: 0.53, to: 0.63 },
-  { text: { en: "Sports Courts", mr: "क्रीडा कोर्ट" }, pos: [103, 4, -86], from: 0.55, to: 0.63 },
+  { text: { en: "Shiv Pandan Road (15 m)", mr: "शिव पांदण रस्ता (१५ मी.)" }, pos: [70, 4, -142.5], from: 0.08, to: 0.26 },
+  { text: { en: "Main Gate", mr: "मुख्य प्रवेशद्वार" }, pos: [(GATE.x0 + GATE.x1) / 2, 12.5, GATE.z], from: 0.12, to: 0.3 },
+  { text: { en: "9 m internal roads", mr: "९ मी. अंतर्गत रस्ते" }, pos: [ROAD_X.R2, 1, -55], from: 0.37, to: 0.46 },
+  { text: { en: "Garden · Open Space 1", mr: "उद्यान · मोकळी जागा १" }, pos: [ctr(PARK)[0], 3, ctr(PARK)[1]], from: 0.5, to: 0.58 },
+  { text: { en: "Kids' Play Area", mr: "खेळाचे मैदान" }, pos: [ctr(PLAY)[0], 4, ctr(PLAY)[1]], from: 0.5, to: 0.58 },
+  { text: { en: "Clubhouse", mr: "क्लबहाऊस" }, pos: [ctr(CLUB)[0], 11, ctr(CLUB)[1]], from: 0.54, to: 0.63 },
+  { text: { en: "Temple", mr: "मंदिर" }, pos: [ctr(TEMPLE)[0], 17, ctr(TEMPLE)[1] - 3], from: 0.54, to: 0.63 },
+  { text: { en: "Garden · Open Space 2", mr: "उद्यान · मोकळी जागा २" }, pos: [ctr(PARK2)[0], 3, ctr(PARK2)[1]], from: 0.56, to: 0.63 },
   { text: { en: `Plot No. ${heroPlot.n}`, mr: `प्लॉट क्र. ${heroPlot.n}` }, pos: [hx, 11.5, hz], from: 0.61, to: 0.71, accent: true },
-  { text: { en: "Your Home", mr: "तुमचे घर" }, pos: [hx, 10.8, hz - 0.8], from: 0.84, to: 0.91, accent: true },
+  { text: { en: "Your Home", mr: "तुमचे घर" }, pos: [hx, 10.8, hz], from: 0.84, to: 0.91, accent: true },
 ];
 
 const chapterAt = (p) => {

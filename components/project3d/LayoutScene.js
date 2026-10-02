@@ -98,6 +98,21 @@ class Batch {
 
 const unitBox = () => new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
 
+// Walk a road's centre-line every `step` metres: fn(x, z, ux, uz) with (ux, uz) the unit direction
+function alongRoad(road, step, fn, start = step / 2) {
+  let carry = start;
+  for (let i = 0; i < road.pts.length - 1; i++) {
+    const [ax, az] = road.pts[i];
+    const [bx, bz] = road.pts[i + 1];
+    const L = Math.hypot(bx - ax, bz - az);
+    if (!L) continue;
+    const ux = (bx - ax) / L, uz = (bz - az) / L;
+    let t = carry;
+    for (; t <= L; t += step) fn(ax + ux * t, az + uz * t, ux, uz);
+    carry = t - L;
+  }
+}
+
 
 // ---------------------------------------------------------------------------
 export default class LayoutScene {
@@ -478,39 +493,46 @@ export default class LayoutScene {
       this.poolMat.emissiveIntensity = 0.1 + dusk * 0.8;
       this.waterNormal.offset.set(t * 0.02, t * 0.013);
     }
+    if (this.nallahNormal) this.nallahNormal.offset.set(0, -t * 0.03);
   }
 
   // ---- camera ----------------------------------------------------------------
   buildCameraPath() {
     const hx = heroPlot.cx;
     const hz = heroPlot.cz;
+    // Orbit angles are measured from the plot's front (the road it faces)
+    const front = P.plotAngle(heroPlot);
     const orbit = (p, deg, R, h, ty) => {
-      const a = (deg * Math.PI) / 180;
-      return [p, [hx + R * Math.sin(a), h, hz + R * Math.cos(a)], [hx, ty, hz - 0.5]];
+      const a = (deg * Math.PI) / 180 + front;
+      return [p, [hx + R * Math.sin(a), h, hz + R * Math.cos(a)], [hx - 0.5 * Math.sin(front), ty, hz - 0.5 * Math.cos(front)]];
     };
+    // Site: x -120 … 135 (west → east), z -150 (Shiv Pandan Road) … +35 (south boundary). Gate at x 15.5, z -127.
+    const ROAD_R4 = P.ROAD_X.R4;
     const keys = [
-      [0.0, [205, 250, 285], [12, 0, -8]],
-      [0.07, [172, 200, 232], [16, 0, -8]],
-      [0.135, [238, 88, 120], [140, 0, -18]],
-      [0.195, [200, 30, 34], [134, 5, -20]],
-      [0.25, [166, 9, -8], [130, 6.2, -21]],
-      [0.295, [140, 5.4, -23.5], [100, 4.8, -22.5]],
-      [0.34, [86, 10, -22.2], [30, 3, -20]],
-      [0.39, [32, 30, 12], [-10, 0, -30]],
-      [0.44, [-22, 38, 42], [-40, 0, -8]],
-      [0.49, [-40, 72, 118], [-32, 0, 12]],
-      [0.545, [52, 56, 122], [100, 0, 45]],
-      [0.595, [58, 42, 2], [106, 0, -62]],
-      [0.64, [64, 34, 50], [hx, 0, hz]],
+      [0.0, [185, 250, 170], [5, 0, -55]],
+      [0.07, [150, 190, 125], [8, 0, -58]],
+      [0.135, [175, 70, -235], [30, 0, -145]],
+      [0.195, [75, 22, -190], [15.5, 5, -127]],
+      [0.25, [15.5, 8, -172], [15.5, 6, -127]],
+      [0.295, [15.5, 5, -140], [15.5, 4, -110]],
+      [0.34, [15.5, 7, -106], [15.5, 3, -70]],
+      [0.39, [0, 34, -80], [-40, 0, -52]],
+      [0.44, [-62, 42, -26], [-72, 0, -60]],
+      [0.49, [-30, 100, 62], [5, 0, -40]],
+      [0.545, [-52, 40, -72], [-50, 0, -114]],
+      [0.595, [22, 46, -58], [52, 5, -114]],
+      [0.64, [42, 34, -18], [hx, 0, hz]],
       orbit(0.69, 31, 27, 17, 1.2),
       orbit(0.73, 10, 25, 16, 2),
       orbit(0.77, -22, 24, 16.5, 3),
       orbit(0.81, -46, 25, 17, 3.5),
       orbit(0.845, -16, 27, 14, 3),
       orbit(0.875, 16, 29, 13, 2.2),
-      [0.915, [hx + 50, 50, hz + 92], [22, 2, -4]],
-      [0.955, [140, 95, 185], [5, 0, -30]],
-      [1.0, [196, 92, 238], [-10, 0, -70]],
+      // Society: glide low down a street as the homes rise around you, then lift into the dusk aerial
+      [0.905, [hx + 22, 12, hz + 30], [ROAD_R4, 4, hz]],
+      [0.935, [ROAD_R4, 6.5, 22], [ROAD_R4, 3.5, -30]],
+      [0.965, [ROAD_R4 + 18, 30, -38], [10, 0, -80]],
+      [1.0, [175, 115, 185], [0, 0, -70]],
     ];
     this.camKeys = keys.map((k) => k[0]);
     this.posCurve = new THREE.CatmullRomCurve3(keys.map((k) => new THREE.Vector3(...k[1])), false, "centripetal");
@@ -613,7 +635,7 @@ export default class LayoutScene {
 
     const sun = new THREE.DirectionalLight("#fff4e2", 2.6);
     this.sun = sun;
-    sun.target.position.set(20, 0, 0);
+    sun.target.position.set(5, 0, -50);
     sun.position.copy(sun.target.position).addScaledVector(SKY.daySun, 320);
     sun.castShadow = !this.isMobile;
     if (sun.castShadow) {
@@ -669,7 +691,7 @@ export default class LayoutScene {
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Master site plan: roads, markings, lawns, park, courts — shaded with real textures
+    // Master site plan: roads, markings, lawns, gardens, courts — shaded with real textures
     const size = this.isMobile ? 2048 : 3072;
     const sw = P.SITE_TEX.x1 - P.SITE_TEX.x0;
     const masks = T.sitePlanMasks(this.renderer, size);
@@ -680,19 +702,43 @@ export default class LayoutScene {
     site.receiveShadow = true;
     scene.add(site);
 
-    // Highway
-    const HW = P.HIGHWAY;
+    // 15 m Shiv Pandan Road along the north side
+    const MR = P.MAIN_ROAD;
     const len = 1400;
-    const hw = new THREE.Mesh(new THREE.PlaneGeometry(HW.x1 - HW.x0, len), highwayMaterial({ mask: T.highwayMask(this.renderer, len / 40), tex }));
-    hw.rotation.x = -Math.PI / 2;
-    hw.position.set((HW.x0 + HW.x1) / 2, 0.04, 0);
-    hw.receiveShadow = true;
-    scene.add(hw);
-    const link = new THREE.Mesh(new THREE.PlaneGeometry(5, P.ENTRANCE.w - 3.2), new THREE.MeshStandardMaterial({ map: tiled(tex.asphalt, 0.8, 2), color: "#d0d0d0", roughness: 0.92 }));
-    link.rotation.x = -Math.PI / 2;
-    link.position.set(139.5, 0.05, P.ENTRANCE.z);
-    link.receiveShadow = true;
-    scene.add(link);
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(len, MR.z1 - MR.z0), highwayMaterial({ mask: T.mainRoadMask(this.renderer, len / 40), tex }));
+    road.rotation.x = -Math.PI / 2;
+    road.position.set(0, 0.04, (MR.z0 + MR.z1) / 2);
+    road.receiveShadow = true;
+    scene.add(road);
+
+    // Nallah: a shallow water channel beyond the east buffer, with earthen banks
+    const n = P.NALLAH;
+    const ext = (a, b, k) => [a[0] + (a[0] - b[0]) * k, a[1] + (a[1] - b[1]) * k];
+    const path = [ext(n[0], n[1], 5), ...n, ext(n[n.length - 1], n[n.length - 2], 4)];
+    const ribbon = (half, y, mat) => {
+      const pos = [];
+      const idx = [];
+      path.forEach((p, i) => {
+        const a = path[Math.max(0, i - 1)];
+        const b2 = path[Math.min(path.length - 1, i + 1)];
+        const dx = b2[0] - a[0], dz = b2[1] - a[1];
+        const L = Math.hypot(dx, dz) || 1;
+        const nx = -dz / L, nz = dx / L;
+        pos.push(p[0] + nx * half, y, p[1] + nz * half, p[0] - nx * half, y, p[1] - nz * half);
+        if (i) idx.push((i - 1) * 2, (i - 1) * 2 + 1, i * 2, (i - 1) * 2 + 1, i * 2 + 1, i * 2);
+      });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+    };
+    ribbon(6.5, 0.035, new THREE.MeshStandardMaterial({ map: tiled(tex.dirt, 40, 1), color: "#b59a7a", roughness: 1, side: THREE.DoubleSide }));
+    this.nallahNormal = T.waterNormalTexture();
+    this.nallahNormal.repeat.set(1, 30);
+    ribbon(3.2, 0.06, new THREE.MeshStandardMaterial({ color: "#5c7f7a", roughness: 0.12, metalness: 0.15, normalMap: this.nallahNormal, normalScale: new THREE.Vector2(0.3, 0.3), side: THREE.DoubleSide }));
 
     // Farmland patches: ploughed soil, green and ripening crops
     const r = rng(404);
@@ -705,16 +751,16 @@ export default class LayoutScene {
     ];
     this.fields = [];
     let tries = 0;
-    while (this.fields.length < (this.isMobile ? 16 : 30) && tries++ < 400) {
+    while (this.fields.length < (this.isMobile ? 16 : 30) && tries++ < 500) {
       const w = 50 + r() * 90;
       const d = 40 + r() * 110;
       const a = r() * Math.PI * 2;
       const dist = 190 + r() * 520;
-      const x = 20 + Math.cos(a) * dist;
-      const z = Math.sin(a) * dist;
+      const x = 5 + Math.cos(a) * dist;
+      const z = -50 + Math.sin(a) * dist;
       const pad = Math.max(w, d) / 2 + 12;
-      if (x + pad > -110 && x - pad < 180 && z + pad > -125 && z - pad < 125) continue;
-      if (x + pad > 125 && x - pad < 185) continue;
+      if (x + pad > -140 && x - pad < 190 && z + pad > -170 && z - pad < 70) continue;
+      if (Math.abs(z - (MR.z0 + MR.z1) / 2) < pad + 10) continue;
       if (this.fields.some((f) => Math.abs(f.x - x) < (f.w + w) / 2 + 6 && Math.abs(f.z - z) < (f.d + d) / 2 + 6)) continue;
       const [t, color, scale] = crops[Math.floor(r() * crops.length)];
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({ map: tiled(t, w / scale, d / scale), color, roughness: 1 }));
@@ -731,89 +777,89 @@ export default class LayoutScene {
     const b = new Batch();
     const lamps = new Batch();
     const glow = [];
-    const S = P.SITE;
     const WALL = "#efe6d6";
     const COPING = "#c9bda8";
-    // Compound wall with pilasters, gap for the gate
+    const G = P.GATE;
+    // Compound wall with pilasters along the site boundary, gap for the gate
     const wallH = 1.9;
     const seg = (x0, z0, x1, z1) => {
       const len = Math.hypot(x1 - x0, z1 - z0);
-      const alongX = Math.abs(x1 - x0) > Math.abs(z1 - z0);
+      if (len < 0.2) return;
+      const ry = -Math.atan2(z1 - z0, x1 - x0);
       const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
-      b.box(alongX ? len : 0.3, wallH, alongX ? 0.3 : len, cx, 0, cz, WALL);
-      b.box(alongX ? len : 0.42, 0.12, alongX ? 0.42 : len, cx, wallH, cz, COPING);
-      const n = Math.floor(len / 6);
+      b.push(new THREE.BoxGeometry(len, wallH, 0.3), WALL, cx, wallH / 2, cz, 0, ry, 0);
+      b.push(new THREE.BoxGeometry(len, 0.12, 0.42), COPING, cx, wallH + 0.06, cz, 0, ry, 0);
+      const n = Math.max(1, Math.floor(len / 6));
       for (let i = 0; i <= n; i++) {
         const t = i / n;
         b.box(0.55, wallH + 0.25, 0.55, lerp(x0, x1, t), 0, lerp(z0, z1, t), "#e4d7c1");
       }
     };
-    seg(S.x0, S.z0, S.x1, S.z0);
-    seg(S.x0, S.z1, S.x1, S.z1);
-    seg(S.x0, S.z0, S.x0, S.z1);
-    seg(S.x1, S.z0, S.x1, P.GATE.z0 - 1.5);
-    seg(S.x1, P.GATE.z1 + 1.5, S.x1, S.z1);
-
-    // Gate arch
-    const gx = P.GATE.x;
-    for (const z of [P.GATE.z0 - 1, P.GATE.z1 + 1]) {
-      b.box(2.2, 10, 2.2, gx, 0, z, "#f3ede2");
-      b.box(2.4, 0.8, 2.4, gx, 0, z, "#1e40af");
-      b.box(2.35, 0.35, 2.35, gx, 8.2, z, "#f97316");
-      b.box(2.6, 0.4, 2.6, gx, 10, z, "#d9ccb4");
+    const poly = P.SITE_POLY;
+    for (let i = 0; i < poly.length; i++) {
+      const [x0, z0] = poly[i];
+      const [x1, z1] = poly[(i + 1) % poly.length];
+      if (i === 0) {
+        seg(x0, z0, G.x0 - 1.5, z0);
+        seg(G.x1 + 1.5, z0, x1, z1);
+      } else seg(x0, z0, x1, z1);
     }
-    b.box(1.8, 1.3, P.GATE.z1 - P.GATE.z0 + 5, gx, 10.1, (P.GATE.z0 + P.GATE.z1) / 2, "#f3ede2");
-    b.box(0.5, 2.3, 16.4, gx, 7.0, (P.GATE.z0 + P.GATE.z1) / 2, "#1e3a8a");
+
+    // Gate arch over the gate road, facing the Shiv Pandan Road
+    const gcx = (G.x0 + G.x1) / 2, gw = G.x1 - G.x0;
+    for (const x of [G.x0 - 1, G.x1 + 1]) {
+      b.box(2.2, 10, 2.2, x, 0, G.z, "#f3ede2");
+      b.box(2.4, 0.8, 2.4, x, 0, G.z, "#1f3f73");
+      b.box(2.35, 0.35, 2.35, x, 8.2, G.z, "#9eb2d3");
+      b.box(2.6, 0.4, 2.6, x, 10, G.z, "#d9ccb4");
+    }
+    b.box(gw + 5, 1.3, 1.8, gcx, 10.1, G.z, "#f3ede2");
+    b.box(gw + 4.4, 2.3, 0.5, gcx, 7.0, G.z, "#112443");
     const boardTex = T.boardTexture(this.renderer, this.opts.gateTitle || "SHREE RAM NAGRI - 1", this.opts.gateSubtitle || "by Dange Associates");
     const boardMat = new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.5, emissive: new THREE.Color("#ffffff"), emissiveMap: boardTex, emissiveIntensity: 0.15 });
     for (const side of [1, -1]) {
-      const board = new THREE.Mesh(new THREE.PlaneGeometry(16, 2.1), boardMat);
-      board.position.set(gx + side * 0.26, 8.15, (P.GATE.z0 + P.GATE.z1) / 2);
-      board.rotation.y = side * Math.PI / 2;
+      const board = new THREE.Mesh(new THREE.PlaneGeometry(gw + 4, 2.1), boardMat);
+      board.position.set(gcx, 8.15, G.z + side * 0.26);
+      board.rotation.y = side > 0 ? 0 : Math.PI;
       scene.add(board);
     }
-    // Security cabin
-    b.box(4.2, 3, 3.4, gx - 5, 0, P.GATE.z0 - 6, "#f3ede2");
-    b.box(4.8, 0.25, 4, gx - 5, 3, P.GATE.z0 - 6, "#1e40af");
-    b.box(0.08, 1.1, 2.2, gx - 2.88, 1.2, P.GATE.z0 - 6, "#2a4863");
+    // Security cabin just inside the gate
+    const cab = { x: G.x0 - 4, z: G.z + 4.5 };
+    b.box(4.2, 3, 3.4, cab.x, 0, cab.z, "#f3ede2");
+    b.box(4.8, 0.25, 4, cab.x, 3, cab.z, "#1f3f73");
+    b.box(0.08, 1.1, 2.2, cab.x + 2.12, 1.2, cab.z, "#2a4863");
 
-    // Street lights along the east-west roads (south footpath) and the avenue median
+    // Street lights along every internal road, alternating sides
     const lamp = (x, z, dirX, dirZ) => {
       b.cyl(0.09, 0.13, 7, x, 0, z, "#475569", 6);
-      b.box(Math.abs(dirX) * 1.6 + 0.12, 0.12, Math.abs(dirZ) * 1.6 + 0.12, x + dirX * 0.8, 6.9, z + dirZ * 0.8, "#475569");
-      lamps.box(0.7, 0.16, 0.34, x + dirX * 1.5, 6.78, z + dirZ * 1.5, "#ffffff");
+      b.push(new THREE.BoxGeometry(1.6, 0.12, 0.12), "#475569", x + dirX * 0.8, 6.96, z + dirZ * 0.8, 0, -Math.atan2(dirZ, dirX), 0);
+      lamps.push(new THREE.BoxGeometry(0.7, 0.16, 0.34), "#ffffff", x + dirX * 1.5, 6.86, z + dirZ * 1.5, 0, -Math.atan2(dirZ, dirX), 0);
       glow.push(x + dirX * 1.5, 6.5, z + dirZ * 1.5);
     };
-    const inJunctionX = (x, pad) => P.nsRoads.some((n) => Math.abs(x - n.x) < n.w / 2 + pad);
-    const inJunctionZ = (z, pad) => P.ewRoads.some((e) => Math.abs(z - e) < 5 + pad);
-    const heroRoad = heroPlot.cz + heroPlot.face * (P.PD / 2 + 5);
-    for (const z of P.ewRoads) {
-      for (let x = P.OUT_W + 10; x < P.OUT_E - 4; x += 22) {
-        if (inJunctionX(x, 4)) continue;
-        if (z === heroRoad && Math.abs(x - heroPlot.cx) < 9) continue;
-        lamp(x, z + 4.3, 0, -1);
-      }
-    }
-    for (let i = 0; i < P.ewRoads.length - 1; i++) for (let z = P.ewRoads[i] + 20; z < P.ewRoads[i + 1] - 10; z += 16) {
-      b.cyl(0.1, 0.14, 7.5, 0, 0, z, "#475569", 6);
-      b.box(3.4, 0.12, 0.12, 0, 7.35, z, "#475569");
-      for (const s of [-1, 1]) {
-        lamps.box(0.7, 0.16, 0.34, s * 1.6, 7.22, z, "#ffffff");
-        glow.push(s * 1.6, 6.9, z);
-      }
-    }
-    for (let x = 80; x < 128; x += 12) {
-      lamp(x, P.ENTRANCE.z - P.ENTRANCE.w / 2 + 0.8, 0, 1);
-      lamp(x + 6, P.ENTRANCE.z + P.ENTRANCE.w / 2 - 0.8, 0, -1);
+    const hero = heroPlot;
+    for (const road of P.roads) {
+      let k = 0;
+      alongRoad(road, road.id === "gate" ? 12 : 24, (x, z, ux, uz) => {
+        const sides = road.id === "gate" ? [1, -1] : [k++ % 2 ? 1 : -1];
+        for (const s of sides) {
+          const off = road.w / 2 - 0.8;
+          const lx = x - uz * s * off, lz = z + ux * s * off;
+          if (P.onRoad(lx, lz, 3, road) || !P.inSite(lx, lz)) continue;
+          if (Math.abs(lz - hero.cz) < 6 && Math.abs(lx - hero.x1) < 5) continue;
+          lamp(lx, lz, uz * s, -ux * s);
+        }
+      });
     }
 
     // Plot corner stones (white with an orange cap), like on site
+    const seen = new Set();
     const stones = [];
-    for (const blk of P.blocks) {
-      for (let c = 0; c <= blk.cols; c++) {
-        for (const z of [blk.z0, blk.z0 + P.PD, blk.z1]) {
-          stones.push([blk.x0 + c * P.PW, z]);
-        }
+    for (const pl of P.plots) {
+      for (const [x, z] of [[pl.x0, pl.z0], [pl.x1, pl.z0], [pl.x0, pl.z1], [pl.x1, pl.z1]]) {
+        const key = `${x.toFixed(1)},${z.toFixed(1)}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        stones.push([x, z]);
       }
     }
     const stoneBody = new THREE.InstancedMesh(unitBox(), std("#f8f7f2", 0.7), stones.length);
@@ -850,9 +896,9 @@ export default class LayoutScene {
     }
     // Light sweep (one additive quad per plot)
     const sweepMat = new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
-    const sweep = new THREE.InstancedMesh(new THREE.PlaneGeometry(P.PW - 0.5, P.PD - 0.5).rotateX(-Math.PI / 2), sweepMat, P.plots.length);
+    const sweep = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), sweepMat, P.plots.length);
     P.plots.forEach((pl, i) => {
-      _m.makeTranslation(pl.cx, BLOCK_H + 0.04, pl.cz);
+      _m.compose(_v.set(pl.cx, BLOCK_H + 0.04, pl.cz), _q.identity(), _s.set(pl.x1 - pl.x0 - 0.5, 1, pl.z1 - pl.z0 - 0.5));
       sweep.setMatrixAt(i, _m);
       sweep.setColorAt(i, _c.setRGB(0, 0, 0));
     });
@@ -869,86 +915,100 @@ export default class LayoutScene {
     const WHITE = "#f7f4ee";
     const WOOD = "#9a6a3f";
 
-    // Clubhouse
+    // Clubhouse (Amenity Space-2): entrance canopy on the gate-road side, glass lounge facing the pool
     const C = P.CLUB;
     const cx = (C.x0 + C.x1) / 2, cz = (C.z0 + C.z1) / 2;
-    b.box(5, 3.8, C.z1 - C.z0, C.x0 + 2.5, 0, cz, WHITE);
-    glassB.box(C.x1 - C.x0 - 5, 3.6, C.z1 - C.z0 - 1, cx + 2.5, 0, cz, "#ffffff");
-    b.box(C.x1 - C.x0 + 1.2, 3.4, 18.5, cx + 0.6, 3.8, cz + 2, WHITE);
-    b.box(C.x1 - C.x0 + 1.8, 0.35, 19.2, cx + 0.6, 7.2, cz + 2, "#d8d2c7");
-    glassB.box(0.12, 2.2, 15.5, C.x1 + 1.25, 4.4, cz + 2, "#ffffff");
-    glassB.box(17, 2.2, 0.12, cx + 0.6, 4.4, cz + 11.3, "#ffffff");
-    b.box(0.35, 3.4, 18.5, C.x1 + 1.3, 3.8, cz + 2, "#334155");
-    b.box(8, 0.25, 4.5, cx + 1, 3.3, C.z1 + 2, "#334155");
-    b.box(0.25, 3.3, 0.25, cx - 2.8, 0, C.z1 + 4, "#334155");
-    b.box(0.25, 3.3, 0.25, cx + 4.8, 0, C.z1 + 4, "#334155");
-    b.box(0.9, 7.8, 0.9, C.x0 + 2.5, 0, C.z1 - 0.6, "#f97316");
-    for (let i = 0; i < 6; i++) b.push(new THREE.BoxGeometry(2.4, 0.08, 1.5), "#1e3a8a", C.x0 + 4 + (i % 3) * 3.4, 7.75, cz + (i < 3 ? -2 : 2.5), -0.25, 0, 0);
-    for (let i = 0; i < 7; i++) b.box(0.18, 0.6, 12, C.x0 + 3 + i * 2.2, 7.55, cz + 8, WOOD);
+    const cw = C.x1 - C.x0, cd = C.z1 - C.z0;
+    b.box(cw, 3.8, 5, cx, 0, C.z0 + 2.5, WHITE);
+    glassB.box(cw - 1, 3.6, cd - 5, cx, 0, cz + 2.5, "#ffffff");
+    b.box(cw + 1.2, 3.4, cd - 2, cx, 3.8, cz + 0.5, WHITE);
+    b.box(cw + 1.8, 0.35, cd - 1.2, cx, 7.2, cz + 0.5, "#d8d2c7");
+    glassB.box(cw - 2, 2.2, 0.12, cx, 4.4, C.z1 - 0.4, "#ffffff");
+    glassB.box(0.12, 2.2, cd - 4, C.x1 + 0.62, 4.4, cz + 0.5, "#ffffff");
+    b.box(0.35, 3.4, cd - 2, C.x0 - 0.62, 3.8, cz + 0.5, "#334155");
+    b.box(3.4, 0.25, 6, C.x0 - 1.5, 3.3, cz, "#334155");
+    b.box(0.25, 3.3, 0.25, C.x0 - 3, 0, cz - 2.6, "#334155");
+    b.box(0.25, 3.3, 0.25, C.x0 - 3, 0, cz + 2.6, "#334155");
+    b.box(0.9, 7.8, 0.9, C.x0 + 1, 0, C.z1 - 0.6, "#1f3f73");
+    for (let i = 0; i < 6; i++) b.push(new THREE.BoxGeometry(2.4, 0.08, 1.5), "#1e3a8a", C.x0 + 3 + (i % 3) * 4.4, 7.75, cz + (i < 3 ? -3.5 : -1.2), -0.25, 0, 0);
+    for (let i = 0; i < 7; i++) b.box(0.18, 0.6, 7, C.x0 + 2 + (i * (cw - 4)) / 6, 7.55, cz + 5, WOOD);
 
-    // Pool: coping, water, loungers, umbrellas
-    const PL = P.POOL;
-    b.box(PL.x1 - PL.x0 + 1.2, 0.16, 0.6, (PL.x0 + PL.x1) / 2, 0, PL.z0 - 0.3, "#ffffff");
-    b.box(PL.x1 - PL.x0 + 1.2, 0.16, 0.6, (PL.x0 + PL.x1) / 2, 0, PL.z1 + 0.3, "#ffffff");
-    b.box(0.6, 0.16, PL.z1 - PL.z0, PL.x0 - 0.3, 0, (PL.z0 + PL.z1) / 2, "#ffffff");
-    b.box(0.6, 0.16, PL.z1 - PL.z0, PL.x1 + 0.3, 0, (PL.z0 + PL.z1) / 2, "#ffffff");
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(PL.x1 - PL.x0, PL.z1 - PL.z0),
-      new THREE.MeshStandardMaterial({ map: tiled(this.assets.tex.pooltile, (PL.x1 - PL.x0) / 2.5, (PL.z1 - PL.z0) / 2.5), roughness: 0.4, color: "#bfe6ff" }),
-    );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.set((PL.x0 + PL.x1) / 2, 0.045, (PL.z0 + PL.z1) / 2);
-    floor.receiveShadow = true;
-    scene.add(floor);
+    // Water material (garden fountain + nallah ripples share the animated normal map)
     this.waterNormal = T.waterNormalTexture();
-    this.waterNormal.repeat.set(5, 4);
+    this.waterNormal.repeat.set(5, 3);
     this.poolMat = new THREE.MeshStandardMaterial({ color: "#35a9d8", roughness: 0.03, metalness: 0.2, transparent: true, opacity: 0.62, normalMap: this.waterNormal, normalScale: new THREE.Vector2(0.35, 0.35), emissive: new THREE.Color("#0b6fa0"), emissiveIntensity: 0.1 });
-    const water = new THREE.Mesh(new THREE.PlaneGeometry(PL.x1 - PL.x0, PL.z1 - PL.z0), this.poolMat);
-    water.rotation.x = -Math.PI / 2;
-    water.position.set((PL.x0 + PL.x1) / 2, 0.1, (PL.z0 + PL.z1) / 2);
-    water.receiveShadow = true;
-    scene.add(water);
-    for (let i = 0; i < 6; i++) {
-      const x = PL.x0 + 2 + i * 3.6;
-      b.push(new THREE.BoxGeometry(0.75, 0.3, 1.9), WHITE, x, 0.35, PL.z0 - 2.6, 0, 0, 0);
-      b.push(new THREE.BoxGeometry(0.75, 0.08, 0.8), WHITE, x, 0.7, PL.z0 - 3.3, -0.6, 0, 0);
-      if (i % 2 === 0) {
-        b.cyl(0.05, 0.05, 2.4, x + 1.8, 0, PL.z0 - 2.8, "#e5e7eb", 5);
-        b.cone(1.5, 0.6, x + 1.8, 2.3, PL.z0 - 2.8, i % 4 === 0 ? "#f97316" : "#1e40af", 8);
+
+    // Temple (Amenity Space-2): plinth + steps, pillared mandapa, sanctum with a tiered shikhara, kalash and flag.
+    // Faces south, towards the 12 m road and the homes.
+    const TP = P.TEMPLE;
+    const tx = (TP.x0 + TP.x1) / 2;
+    const STONE = "#efe3cc", SAND = "#e6d3ae", GOLD = "#d4a017";
+    const zS = TP.z1 - 3; // south (front) edge of the plinth
+    const zN = TP.z0 + 3; // north (back) edge
+    const PH = 1.2; // plinth height
+    b.box(15, PH, zS - zN, tx, 0, (zS + zN) / 2, SAND);
+    b.box(15.6, 0.15, zS - zN + 0.6, tx, PH, (zS + zN) / 2, "#d9c49c");
+    b.box(6, 0.8, 1.1, tx, 0, zS + 0.55, SAND);
+    b.box(6, 0.4, 1.1, tx, 0, zS + 1.65, SAND);
+    // Mandapa: open hall with pillars and a flat roof with small corner shikharas
+    const mz0 = zS - 7.5, mz1 = zS - 0.6;
+    for (const x of [tx - 4.5, tx - 1.5, tx + 1.5, tx + 4.5]) {
+      for (const z of [mz1, (mz0 + mz1) / 2]) {
+        b.box(0.55, 3.6, 0.55, x, PH, z, STONE);
+        b.box(0.8, 0.3, 0.8, x, PH + 3.3, z, SAND);
       }
     }
-    // Courts: nets + fence
-    const CO = P.COURT;
-    const ccx = (CO.x0 + CO.x1) / 2;
-    for (const czz of [CO.z0 + 9, CO.z1 - 9]) {
-      b.box(0.06, 1.05, 12.6, ccx, 0, czz, "#f8fafc");
-      b.box(0.12, 1.1, 0.12, ccx, 0, czz - 6.3, "#1f2937");
-      b.box(0.12, 1.1, 0.12, ccx, 0, czz + 6.3, "#1f2937");
+    b.box(11, 0.5, mz1 - mz0 + 1, tx, PH + 3.6, (mz0 + mz1) / 2, STONE);
+    b.box(11.4, 0.25, mz1 - mz0 + 1.4, tx, PH + 4.1, (mz0 + mz1) / 2, SAND);
+    for (const [dx, dz] of [[-4.8, mz1 - 0.2], [4.8, mz1 - 0.2], [-4.8, mz0 + 0.2], [4.8, mz0 + 0.2]]) {
+      b.cyl(0.35, 0.7, 1.4, tx + dx, PH + 4.35, dz, SAND, 8);
+      b.sphere(0.22, tx + dx, PH + 5.9, dz, GOLD);
     }
-    const fenceMat = new THREE.MeshStandardMaterial({ color: "#14532d", transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false });
-    const fh = 3.6;
-    const fences = [
-      [CO.x1 - CO.x0, ccx, CO.z0, 0], [CO.x1 - CO.x0, ccx, CO.z1, 0],
-      [CO.z1 - CO.z0, CO.x0, (CO.z0 + CO.z1) / 2, Math.PI / 2], [CO.z1 - CO.z0, CO.x1, (CO.z0 + CO.z1) / 2, Math.PI / 2],
-    ];
-    for (const [len, x, z, ry] of fences) {
-      const f = new THREE.Mesh(new THREE.PlaneGeometry(len, fh), fenceMat);
-      f.position.set(x, fh / 2, z);
-      f.rotation.y = ry;
-      scene.add(f);
-    }
-    for (let x = CO.x0; x <= CO.x1 + 0.01; x += 3.83) {
-      b.box(0.12, fh, 0.12, x, 0, CO.z0, "#14532d");
-      b.box(0.12, fh, 0.12, x, 0, CO.z1, "#14532d");
-    }
-    for (let z = CO.z0; z <= CO.z1 + 0.01; z += 3.6) {
-      b.box(0.12, fh, 0.12, CO.x0, 0, z, "#14532d");
-      b.box(0.12, fh, 0.12, CO.x1, 0, z, "#14532d");
+    // Garbhagriha (sanctum) with a carved door facing the hall
+    const gz0 = zN + 0.3, gz1 = mz0;
+    const gcz = (gz0 + gz1) / 2, gd = gz1 - gz0;
+    b.box(7.5, 4.8, gd, tx, PH, gcz, STONE);
+    b.box(1.8, 2.8, 0.12, tx, PH, gz1 + 0.02, "#6b3a1f");
+    b.box(2.4, 0.3, 0.2, tx, PH + 2.8, gz1 + 0.08, GOLD);
+    // Shikhara: tapering tiers, amalaka ring, gold kalash
+    let y = PH + 4.8;
+    const tiers = [[3.9, 3.5, 1.5], [3.4, 3.0, 1.4], [2.9, 2.5, 1.3], [2.4, 2.0, 1.2], [1.9, 1.5, 1.1], [1.4, 1.0, 1.0]];
+    tiers.forEach(([rb, rt, h], i) => {
+      b.cyl(rt, rb, h, tx, y, gcz, i % 2 ? SAND : STONE, 8);
+      b.cyl(rb + 0.12, rb + 0.12, 0.18, tx, y, gcz, "#d9c49c", 8);
+      y += h;
+    });
+    b.cyl(1.25, 1.25, 0.5, tx, y, gcz, SAND, 16);
+    y += 0.5;
+    b.cyl(0.25, 0.55, 0.4, tx, y, gcz, GOLD, 12);
+    b.sphere(0.45, tx, y + 0.8, gcz, GOLD, 1.2);
+    b.cone(0.18, 0.9, tx, y + 1.3, gcz, GOLD, 8);
+    // Saffron flag on a pole beside the kalash
+    b.cyl(0.05, 0.05, 3.2, tx + 0.9, y, gcz, "#6b4f2a", 5);
+    b.push(new THREE.BoxGeometry(1.5, 0.9, 0.04), "#f97316", tx + 1.65, y + 2.7, gcz, 0, 0, -0.08);
+    // Courtyard: deepstambha (lamp pillar) and tulsi vrindavan in front of the steps
+    const fz = TP.z1 - 1.8;
+    b.cyl(0.35, 0.55, 5.2, tx - 8.5, 0, fz - 1, STONE, 8);
+    for (let k = 0; k < 6; k++) b.cyl(0.75 - k * 0.07, 0.75 - k * 0.07, 0.12, tx - 8.5, 0.9 + k * 0.72, fz - 1, SAND, 8);
+    b.sphere(0.3, tx - 8.5, 5.4, fz - 1, GOLD);
+    lamps.push(tx - 8.5, 5.4, fz - 1);
+    b.box(1.3, 1.1, 1.3, tx + 8.5, 0, fz - 1, "#c2410c");
+    b.box(1.5, 0.15, 1.5, tx + 8.5, 1.1, fz - 1, "#f3ede2");
+    // Evening lamps (diyas) along the plinth edge
+    for (let x = tx - 6.5; x <= tx + 6.6; x += 2.6) lamps.push(x, PH + 0.3, zS + 0.1);
+    this.templeCenter = [tx, gcz];
+
+    // Open lawn with seating where the sports court was (Amenity Space-1)
+    const LW = P.LAWN;
+    const lcx = (LW.x0 + LW.x1) / 2, lcz = (LW.z0 + LW.z1) / 2;
+    for (const [x, z] of [[lcx - 5, lcz - 4], [lcx + 5, lcz - 4], [lcx - 5, lcz + 4], [lcx + 5, lcz + 4]]) {
+      b.box(1.8, 0.45, 0.55, x, 0, z, WOOD);
+      b.box(1.8, 0.5, 0.1, x, 0.45, z - 0.25, WOOD);
     }
 
-    // Park: fountain, gazebo, benches, lamps
+    // Gardens (Open Space-1 and -2): fountain, gazebo, benches, lamps
     const PK = P.PARK;
-    const pc = { x: (PK.x0 + PK.x1) / 2, z: (PK.z0 + PK.z1) / 2 + 2 };
+    const pc = { x: (PK.x0 + PK.x1) / 2, z: (PK.z0 + PK.z1) / 2 };
     b.cyl(4, 4.2, 0.6, pc.x, 0, pc.z, "#e9e2d3", 24);
     b.cyl(0.55, 0.7, 1.7, pc.x, 0, pc.z, "#e9e2d3", 12);
     b.cyl(1.3, 0.9, 0.3, pc.x, 1.7, pc.z, "#e9e2d3", 16);
@@ -965,36 +1025,46 @@ export default class LayoutScene {
     jet.position.set(pc.x, 1.95, pc.z);
     scene.add(jet);
     this.fountainJet = jet;
-    const gz = { x: PK.x0 + 12, z: PK.z1 - 15 };
+    const PK2 = P.PARK2;
+    const gz = { x: (PK2.x0 + PK2.x1) / 2, z: (PK2.z0 + PK2.z1) / 2 };
     b.cyl(3.4, 3.4, 0.35, gz.x, 0, gz.z, "#e9e2d3", 6);
     for (let i = 0; i < 6; i++) {
       const a = (i / 6) * Math.PI * 2;
       b.box(0.22, 2.8, 0.22, gz.x + Math.cos(a) * 2.8, 0.35, gz.z + Math.sin(a) * 2.8, WHITE);
     }
     b.cone(3.8, 1.8, gz.x, 3.1, gz.z, "#b45309", 6);
-    const benchSpots = [[pc.x - 10, PK.z0 + 8], [pc.x + 10, PK.z0 + 8], [pc.x - 10, PK.z1 - 8], [pc.x + 10, PK.z1 - 8], [PK.x0 + 8, pc.z - 14], [PK.x1 - 8, pc.z + 14], [PK.x0 + 8, pc.z + 20], [PK.x1 - 8, pc.z - 20]];
+    const benchSpots = [
+      [pc.x - 8, pc.z - 3.5], [pc.x + 8, pc.z - 3.5], [pc.x - 8, pc.z + 3.5], [pc.x + 8, pc.z + 3.5],
+      [gz.x - 9, gz.z - 3.5], [gz.x + 9, gz.z + 3.5], [gz.x - 9, gz.z + 3.5], [gz.x + 9, gz.z - 3.5],
+    ];
     for (const [x, z] of benchSpots) {
       b.box(1.8, 0.45, 0.55, x, 0, z, WOOD);
       b.box(1.8, 0.5, 0.1, x, 0.45, z - 0.25, WOOD);
     }
     const heads = new Batch();
-    for (let i = 0; i < 10; i++) {
-      const a = (i / 10) * Math.PI * 2;
-      const x = pc.x + Math.cos(a) * 20, z = pc.z + Math.sin(a) * 34;
-      b.cyl(0.06, 0.08, 3.4, x, 0, z, "#334155", 5);
-      heads.sphere(0.28, x, 3.6, z, "#ffffff");
-      lamps.push(x, 3.6, z);
+    for (const [A, n] of [[PK, 10], [PK2, 8]]) {
+      const c = { x: (A.x0 + A.x1) / 2, z: (A.z0 + A.z1) / 2 };
+      const rx = (A.x1 - A.x0) / 2 - 4.5, rz = (A.z1 - A.z0) / 2 - 3.2;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + 0.3;
+        const x = c.x + Math.cos(a) * rx, z = c.z + Math.sin(a) * rz;
+        b.cyl(0.06, 0.08, 3.4, x, 0, z, "#334155", 5);
+        heads.sphere(0.28, x, 3.6, z, "#ffffff");
+        lamps.push(x, 3.6, z);
+      }
     }
     scene.add(heads.build(this.lampMat, false, false));
 
-    // Kids play area
-    const slide = { x: 89, z: 5 };
+    // Kids' play area (Amenity Space-1): slide, swings, see-saw, playhouse, merry-go-round
+    const PA = P.PLAY;
+    const plx = (PA.x0 + PA.x1) / 2, plz = (PA.z0 + PA.z1) / 2;
+    const slide = { x: plx - 5, z: plz - 1 };
     for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) b.box(0.16, 2.8, 0.16, slide.x + dx, 0, slide.z + dz, "#1e40af");
     b.box(2.3, 0.18, 2.3, slide.x, 1.5, slide.z, "#f97316");
     b.cone(1.8, 1.3, slide.x, 2.8, slide.z, "#ef4444", 4, Math.PI / 4);
     b.push(new THREE.BoxGeometry(0.95, 0.1, 3.6), "#facc15", slide.x, 0.8, slide.z + 2.6, 0.45, 0, 0);
     for (let i = 0; i < 5; i++) b.box(0.9, 0.08, 0.12, slide.x, 0.3 * i + 0.2, slide.z - 1.35, "#1e40af");
-    const sw = { x: 108, z: 4 };
+    const sw = { x: plx + 6, z: plz + 2 };
     for (const dx of [-2.3, 2.3]) {
       b.push(new THREE.BoxGeometry(0.14, 3, 0.14), "#1e40af", sw.x + dx, 1.45, sw.z - 0.7, 0.35, 0, 0);
       b.push(new THREE.BoxGeometry(0.14, 3, 0.14), "#1e40af", sw.x + dx, 1.45, sw.z + 0.7, -0.35, 0, 0);
@@ -1005,10 +1075,10 @@ export default class LayoutScene {
       b.box(0.03, 2.1, 0.03, sw.x + dx + 0.25, 0.7, sw.z, "#94a3b8");
       b.box(0.6, 0.07, 0.3, sw.x + dx, 0.65, sw.z, "#f97316");
     }
-    b.box(0.4, 0.5, 0.4, 97, 0, 12, "#16a34a");
-    b.push(new THREE.BoxGeometry(4.2, 0.1, 0.35), "#facc15", 97, 0.62, 12, 0, 0, 0.18);
-    b.box(2.2, 1.6, 2, 121, 0, 10, "#fde68a");
-    b.cone(1.8, 1.1, 121, 1.6, 10, "#f97316", 4, Math.PI / 4);
+    b.box(0.4, 0.5, 0.4, plx - 6, 0, plz + 7, "#16a34a");
+    b.push(new THREE.BoxGeometry(4.2, 0.1, 0.35), "#facc15", plx - 6, 0.62, plz + 7, 0, 0, 0.18);
+    b.box(2.2, 1.6, 2, plx - 9, 0, plz - 7, "#fde68a");
+    b.cone(1.8, 1.1, plx - 9, 1.6, plz - 7, "#f97316", 4, Math.PI / 4);
     const mgr = new THREE.Group();
     const mb = new Batch();
     mb.cyl(1.5, 1.5, 0.15, 0, 0.25, 0, "#3b82f6", 20);
@@ -1018,7 +1088,7 @@ export default class LayoutScene {
     }
     mb.cyl(0.1, 0.1, 1.2, 0, 0.2, 0, "#e5e7eb", 6);
     mgr.add(mb.build(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6 })));
-    mgr.position.set(100, 0, -2);
+    mgr.position.set(plx + 5, 0, plz - 7);
     scene.add(mgr);
     this.merryGoRound = mgr;
 
@@ -1032,70 +1102,88 @@ export default class LayoutScene {
     const r = rng(2024);
     const round = []; // [x, z, trunkH, canopyR, colorIndex]
     const palms = []; // [x, z, h, s]
-    const inJunctionX = (x, pad) => P.nsRoads.some((n) => Math.abs(x - n.x) < n.w / 2 + pad);
-    const inJunctionZ = (z, pad) => P.ewRoads.some((e) => Math.abs(z - e) < 5 + pad);
+    const hero = heroPlot;
+    const nearHeroFront = (x, z) => Math.abs(z - hero.cz) < 6 && Math.abs(x - hero.x1) < 6;
 
-    // Avenue trees on every road
-    const heroRoad = heroPlot.cz + heroPlot.face * (P.PD / 2 + 5);
-    for (const z of P.ewRoads) {
-      for (let x = P.OUT_W + 4; x < P.OUT_E - 2; x += 11) {
-        if (inJunctionX(x, 3)) continue;
-        if (z === heroRoad && Math.abs(x - heroPlot.cx) < 10) continue;
-        for (const s of [-1, 1]) round.push([x, z + s * 4.2, 2.2 + r() * 0.8, 1.7 + r() * 0.6, r()]);
+    // Avenue trees along both edges of every internal road; palms line the gate road
+    for (const road of P.roads) {
+      const palm = road.id === "gate";
+      alongRoad(road, palm ? 8 : 11, (x, z, ux, uz) => {
+        for (const s of [-1, 1]) {
+          const off = road.w / 2 - 0.8;
+          const tx = x - uz * s * off, tz = z + ux * s * off;
+          if (P.onRoad(tx, tz, 2.5, road) || !P.inSite(tx, tz) || nearHeroFront(tx, tz)) continue;
+          if (palm) palms.push([tx, tz, 5.5 + r() * 1.2, 1 + r() * 0.2]);
+          else round.push([tx, tz, 2.2 + r() * 0.8, 1.7 + r() * 0.6, r()]);
+        }
+      });
+    }
+    // Garden perimeters
+    for (const A of [P.PARK, P.PARK2]) {
+      for (let x = A.x0 + 1.5; x < A.x1; x += 6.5) {
+        round.push([x, A.z0 + 1.2, 2.6, 2.2 + r() * 0.6, r()]);
+        round.push([x, A.z1 - 1.2, 2.6, 2.2 + r() * 0.6, r()]);
+      }
+      for (let z = A.z0 + 7; z < A.z1 - 4; z += 6.5) {
+        round.push([A.x0 + 1.2, z, 2.6, 2.2 + r() * 0.6, r()]);
+        round.push([A.x1 - 1.2, z, 2.6, 2.2 + r() * 0.6, r()]);
       }
     }
-    for (const n of P.nsRoads) {
-      for (let z = P.OUT_N + 4; z < P.OUT_S - 2; z += 11) {
-        if (inJunctionZ(z, 3)) continue;
-        for (const s of [-1, 1]) round.push([n.x + s * (n.w / 2 - 0.8), z, 2.2 + r() * 0.8, 1.7 + r() * 0.6, r()]);
+    // Around the pool deck and play area
+    for (let x = P.TEMPLE.x0 + 1.5; x < P.TEMPLE.x1; x += 5) palms.push([x, P.TEMPLE.z0 + 0.8, 5, 1]);
+    for (const z of [P.TEMPLE.z0 + 5, P.TEMPLE.z1 - 5]) {
+      palms.push([P.TEMPLE.x0 + 1.2, z, 5, 1]);
+      palms.push([P.TEMPLE.x1 - 1.2, z, 5, 1]);
+    }
+    for (const [x, z] of [[P.LAWN.x0 + 2, P.LAWN.z0 + 2], [P.LAWN.x1 - 2, P.LAWN.z0 + 2], [P.LAWN.x0 + 2, P.LAWN.z1 - 2], [P.LAWN.x1 - 2, P.LAWN.z1 - 2]]) round.push([x, z, 2.8, 2.8 + r(), r()]);
+    for (let x = P.PLAY.x0 + 2; x < P.PLAY.x1; x += 8) round.push([x, P.PLAY.z0 + 1, 2.4, 2, r()]);
+    // Inside the compound wall
+    const poly = P.SITE_POLY;
+    for (let i = 0; i < poly.length; i++) {
+      const [x0, z0] = poly[i];
+      const [x1, z1] = poly[(i + 1) % poly.length];
+      const len = Math.hypot(x1 - x0, z1 - z0);
+      if (len < 1) continue;
+      const nx = -(z1 - z0) / len, nz = (x1 - x0) / len;
+      for (let t = 4; t < len; t += 9) {
+        let tx = x0 + ((x1 - x0) * t) / len + nx * 1.6, tz = z0 + ((z1 - z0) * t) / len + nz * 1.6;
+        if (!P.inSite(tx, tz)) {
+          tx -= nx * 3.2;
+          tz -= nz * 3.2;
+        }
+        if (!P.inSite(tx, tz) || P.onRoad(tx, tz, 1)) continue;
+        if (Math.abs(tz - P.GATE.z) < 4 && tx > P.GATE.x0 - 8 && tx < P.GATE.x1 + 8) continue;
+        round.push([tx, tz, 2.6, 2.2 + r() * 0.5, r()]);
       }
     }
-    // Palms: avenue median + entrance boulevard
-    for (let i = 0; i < P.ewRoads.length - 1; i++) {
-      for (let z = P.ewRoads[i] + 12; z < P.ewRoads[i + 1] - 10; z += 16) palms.push([0, z, 5.5 + r() * 1.2, 1 + r() * 0.2]);
-    }
-    for (let x = P.ENTRANCE.median[0] + 2; x < P.ENTRANCE.median[1] - 7; x += 7) palms.push([x, P.ENTRANCE.z, 5 + r() * 1, 1 + r() * 0.2]);
-    // Park perimeter & clusters
-    const PK = P.PARK;
-    for (let x = PK.x0 + 1.5; x < PK.x1; x += 7) {
-      round.push([x, PK.z0 + 1.5, 2.6, 2.4 + r() * 0.6, r()]);
-      round.push([x, PK.z1 - 1.5, 2.6, 2.4 + r() * 0.6, r()]);
-    }
-    for (let z = PK.z0 + 8; z < PK.z1 - 4; z += 7) {
-      round.push([PK.x0 + 1.5, z, 2.6, 2.4 + r() * 0.6, r()]);
-      round.push([PK.x1 - 1.5, z, 2.6, 2.4 + r() * 0.6, r()]);
-    }
-    const pcx = (PK.x0 + PK.x1) / 2, pcz = (PK.z0 + PK.z1) / 2 + 2;
-    for (const [x, z] of [[pcx - 15, pcz - 26], [pcx + 16, pcz - 24], [pcx - 16, pcz + 28], [pcx + 15, pcz + 26], [pcx + 17, pcz + 2], [pcx - 17, pcz - 2]]) {
-      for (let k = 0; k < 3; k++) round.push([x + (r() - 0.5) * 6, z + (r() - 0.5) * 6, 2.8, 2.6 + r(), r()]);
-    }
-    for (let x = P.PLAY.x0 + 2; x < P.PLAY.x1; x += 9) round.push([x, P.PLAY.z0 - 1.5, 2.4, 2, r()]);
-    for (let z = -104; z < -64; z += 8) round.push([129.5, z, 2.4, 2.2, r()]);
-    for (let z = -54; z < -40; z += 6) palms.push([128.5, z, 5, 1]);
-    // Inside the compound wall on the west, north and south edges
-    for (let x = P.SITE.x0 + 3; x < P.OUT_E; x += 9) {
-      round.push([x, P.SITE.z0 + 1.5, 2.6, 2.2 + r() * 0.5, r()]);
-      round.push([x, P.SITE.z1 - 1.5, 2.6, 2.2 + r() * 0.5, r()]);
-    }
-    for (let z = P.SITE.z0 + 3; z < P.SITE.z1; z += 9) round.push([P.SITE.x0 + 1.5, z, 2.6, 2.2 + r() * 0.5, r()]);
 
-    // Countryside: dense rows along the highway, forest around the site
-    for (let z = -620; z < 620; z += 9 + r() * 4) {
-      if (Math.abs(z - P.ENTRANCE.z) < 14) continue;
-      round.push([P.HIGHWAY.x0 - 3 - r() * 2, z, 3 + r(), 3 + r() * 1.5, r()]);
-      round.push([P.HIGHWAY.x1 + 3 + r() * 3, z, 3 + r(), 3 + r() * 1.5, r()]);
+    // Countryside: a tree line along the far side of the Shiv Pandan Road, trees on the nallah banks, forest beyond
+    const MR = P.MAIN_ROAD;
+    for (let x = -620; x < 620; x += 9 + r() * 4) round.push([x, MR.z0 - 3 - r() * 3, 3 + r(), 3 + r() * 1.5, r()]);
+    for (let i = 0; i < P.NALLAH.length - 1; i++) {
+      const [ax, az] = P.NALLAH[i];
+      const [bx, bz] = P.NALLAH[i + 1];
+      const len = Math.hypot(bx - ax, bz - az);
+      const nx = -(bz - az) / len, nz = (bx - ax) / len;
+      for (let t = 0; t < len; t += 7 + r() * 3) {
+        for (const s of [-1, 1]) {
+          const off = s * (7.5 + r() * 2);
+          const tx = ax + ((bx - ax) * t) / len + nx * off, tz = az + ((bz - az) * t) / len + nz * off;
+          if (P.inSite(tx, tz)) continue;
+          round.push([tx, tz, 3, 2.6 + r() * 1.5, r()]);
+        }
+      }
     }
     const forestCount = this.isMobile ? 900 : 1700;
     let placed = 0, tries = 0;
     while (placed < forestCount && tries++ < forestCount * 6) {
       const a = r() * Math.PI * 2;
-      const dist = 125 + Math.pow(r(), 1.4) * 620;
-      const x = 20 + Math.cos(a) * dist;
-      const z = Math.sin(a) * dist * 0.95;
-      if (x > -104 && x < 136 && z > -116 && z < 116) continue;
-      if (x > 132 && x < 176) continue;
+      const dist = 150 + Math.pow(r(), 1.4) * 620;
+      const x = 5 + Math.cos(a) * dist;
+      const z = -50 + Math.sin(a) * dist * 0.95;
+      if (x > -140 && x < 175 && z > -165 && z < 65) continue;
+      if (Math.abs(z - (MR.z0 + MR.z1) / 2) < 14) continue;
       if (this.fields.some((f) => Math.abs(f.x - x) < f.w / 2 + 3 && Math.abs(f.z - z) < f.d / 2 + 3)) continue;
-      // clusters: skip some to create clearings
       if (Math.sin(x * 0.03) * Math.cos(z * 0.027) > 0.55) continue;
       round.push([x, z, 3 + r() * 1.5, 3 + r() * 3.2, r()]);
       placed++;
@@ -1129,22 +1217,34 @@ export default class LayoutScene {
     proxies.castShadow = true;
     this.scene.add(jac, proxies);
 
-    // Bushes (searsia) along the compound wall, park beds, clubhouse and highway median
+    // Bushes (searsia) along the compound wall, garden beds and the clubhouse front
     const sm = A.treeMeta.searsia;
     const bushes = [[], []];
-    for (let x = P.SITE.x0 + 7.5; x < P.OUT_E; x += 9) {
-      bushes[0].push([x, P.SITE.z0 + 1.2, 1 + r() * 0.3]);
-      bushes[1].push([x + 3, P.SITE.z1 - 1.2, 1.1 + r() * 0.3]);
-    }
-    for (let z = P.SITE.z0 + 7.5; z < P.SITE.z1; z += 9) bushes[r() > 0.5 ? 0 : 1].push([P.SITE.x0 + 1.2, z, 1 + r() * 0.3]);
-    for (const [bx, bz] of [[pcx - 14, pcz - 16], [pcx + 14, pcz - 16], [pcx - 14, pcz + 18], [pcx + 14, pcz + 18]]) {
-      for (let k = 0; k < 6; k++) {
-        const a = (k / 6) * Math.PI * 2;
-        bushes[k % 2].push([bx + Math.cos(a) * 5.6, bz + Math.sin(a) * 3.6, 0.8 + r() * 0.3]);
+    for (let i = 0; i < poly.length; i++) {
+      const [x0, z0] = poly[i];
+      const [x1, z1] = poly[(i + 1) % poly.length];
+      const len = Math.hypot(x1 - x0, z1 - z0);
+      if (len < 1) continue;
+      const nx = -(z1 - z0) / len, nz = (x1 - x0) / len;
+      for (let t = 7.5; t < len; t += 9) {
+        let bx = x0 + ((x1 - x0) * t) / len + nx * 1.2, bz = z0 + ((z1 - z0) * t) / len + nz * 1.2;
+        if (!P.inSite(bx, bz)) {
+          bx -= nx * 2.4;
+          bz -= nz * 2.4;
+        }
+        if (!P.inSite(bx, bz) || P.onRoad(bx, bz, 1)) continue;
+        bushes[r() > 0.5 ? 0 : 1].push([bx, bz, 1 + r() * 0.3]);
       }
     }
-    for (let x = P.CLUB.x0; x < P.CLUB.x1; x += 3) bushes[1].push([x, P.CLUB.z1 + 5.5, 0.9]);
-    for (let z = -640; z < 640; z += 4) bushes[r() > 0.5 ? 0 : 1].push([153 + (r() - 0.5) * 1.2, z, 1.1 + r() * 0.4]);
+    const pc = { x: (P.PARK.x0 + P.PARK.x1) / 2, z: (P.PARK.z0 + P.PARK.z1) / 2 };
+    const pc2 = { x: (P.PARK2.x0 + P.PARK2.x1) / 2, z: (P.PARK2.z0 + P.PARK2.z1) / 2 };
+    for (const [bx, bz] of [[pc.x - 11, pc.z - 5], [pc.x + 11, pc.z - 5], [pc.x - 11, pc.z + 5], [pc.x + 11, pc.z + 5], [pc2.x - 10, pc2.z + 5], [pc2.x + 10, pc2.z - 5]]) {
+      for (let k = 0; k < 6; k++) {
+        const a = (k / 6) * Math.PI * 2;
+        bushes[k % 2].push([bx + Math.cos(a) * 4.4, bz + Math.sin(a) * 2.4, 0.8 + r() * 0.3]);
+      }
+    }
+    for (let z = P.CLUB.z0; z < P.CLUB.z1; z += 3) bushes[1].push([P.CLUB.x0 - 4.5, z, 0.9]);
     for (let vi = 0; vi < 2; vi++) {
       const mat = impostorMaterial(A.atlas.searsia, sm, vi);
       mat.userData.base = new THREE.Color(1.25, 1.25, 1.25);
@@ -1183,21 +1283,27 @@ export default class LayoutScene {
       truck: { lower: [2.4, 2.6, 6.6], upper: [2.4, 2.3, 2.1], upperY: 0, upperZ: 4.45, colors: ["#f59e0b", "#ea580c", "#16a34a", "#2563eb"], upperColor: "#f8fafc" },
     };
     const list = [];
-    const HW = P.HIGHWAY;
-    for (let i = 0; i < 34; i++) {
+    const MR = P.MAIN_ROAD;
+    // Traffic on the Shiv Pandan Road (keeps left: eastbound on the north half)
+    for (let i = 0; i < 26; i++) {
       const roll = r();
-      const type = roll < 0.66 ? "car" : roll < 0.82 ? "bus" : "truck";
-      const dirPos = i % 2 === 0;
-      const lanes = dirPos ? HW.lanesA : HW.lanesB;
-      const lane = type === "car" ? lanes[Math.floor(r() * 3)] : lanes[dirPos ? 2 : 0];
-      list.push({ type, axis: "z", lane, dir: dirPos ? 1 : -1, pos: -650 + r() * 1300, speed: type === "car" ? 15 + r() * 7 : 10 + r() * 3, min: -650, max: 650, group: "hw" });
+      const type = roll < 0.72 ? "car" : roll < 0.86 ? "bus" : "truck";
+      const east = i % 2 === 0;
+      const lanes = east ? MR.lanesA : MR.lanesB;
+      const lane = type === "car" ? lanes[Math.floor(r() * 2)] : east ? lanes[0] : lanes[1];
+      list.push({ type, axis: "x", lane, dir: east ? 1 : -1, pos: -650 + r() * 1300, speed: type === "car" ? 13 + r() * 6 : 9 + r() * 3, min: -650, max: 650, group: "hw" });
     }
     // A few residents' cars on internal roads once the society is built
-    const internal = [-60, -20, 20, 60];
-    for (let i = 0; i < 12; i++) {
-      const z = internal[i % 4];
+    for (let i = 0; i < 4; i++) {
       const dir = i % 2 === 0 ? 1 : -1;
-      list.push({ type: "car", axis: "x", lane: z + dir * 1.7, dir, pos: P.OUT_W + r() * (P.OUT_E - P.OUT_W), speed: 6 + r() * 3, min: P.OUT_W + 2, max: P.OUT_E - 2, group: "soc" });
+      list.push({ type: "car", axis: "x", lane: P.EW_ROAD_Z - dir * 2.2, dir, pos: -105 + r() * 220, speed: 6 + r() * 3, min: -106, max: 118, group: "soc" });
+    }
+    const ns = ["R1", "R2", "R3", "R4"];
+    for (let i = 0; i < 8; i++) {
+      const x = P.ROAD_X[ns[i % 4]];
+      const dir = i < 4 ? 1 : -1;
+      const max = P.southZ(x) - 3;
+      list.push({ type: "car", axis: "z", lane: x + dir * 1.6, dir, pos: P.BLOCK_TOP + r() * (max - P.BLOCK_TOP), speed: 5 + r() * 3, min: P.EW_ROAD_Z, max, group: "soc" });
     }
     this.vehicles = list;
     this.vehicleTypes = TYPES;
@@ -1246,22 +1352,38 @@ export default class LayoutScene {
 
   // ---- the society: a home on every plot -------------------------------------------
   buildSociety() {
-    const BODY = ["#f6f1e7", "#efe4d0", "#ebe1d3", "#f4e7d4", "#dfe7f0", "#f2d6c0", "#e7e2d9", "#f8f4ec", "#efe0cf", "#e8d2bd", "#dde5d6", "#f3e3c3"];
-    const ACCENT = ["#f97316", "#c2410c", "#8b5a33", "#1e40af", "#475569", "#b45309", "#9a3412", "#334155"];
+    // Warm, varied wall colours (no two neighbours alike) and a few roof-tile tones
+    const BODY = ["#f3e3c3", "#e9d5b5", "#f2d6c0", "#dfe7f0", "#e8d9c4", "#d9e3d0", "#f5ede0", "#eadcc8", "#f0cfb0", "#e2d4c0", "#ece6dc", "#f6efe2"];
+    const ACCENT = ["#8b5a33", "#b45309", "#475569", "#1f3f73", "#9a3412", "#6b7280", "#7c2d12", "#3f5a4a"];
+    const TILE = ["#a4452b", "#b5543a", "#8e3b26", "#6b4b3e", "#51606e", "#9c4a2f"];
     const CARS = ["#f8fafc", "#94a3b8", "#b91c1c", "#1d4ed8", "#111827", "#6b7280", "#e5e7eb", "#7c2d12"];
     const tex = this.assets.tex;
     this.glassLitMat = new THREE.MeshStandardMaterial({ color: "#2a4458", roughness: 0.05, metalness: 0.85, emissive: new THREE.Color("#ffbd6e"), emissiveIntensity: 0 });
+    // Gable roof: ridge along local x, sloping to the front (+z) and back (-z); base at y = 0
+    const prism = new THREE.BufferGeometry();
+    prism.setAttribute("position", new THREE.Float32BufferAttribute([
+      -0.5, 0, -0.5, -0.5, 0, 0.5, -0.5, 1, 0,
+      0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 1, 0,
+      -0.5, 0, 0.5, 0.5, 0, 0.5, 0.5, 1, 0, -0.5, 0, 0.5, 0.5, 1, 0, -0.5, 1, 0,
+      0.5, 0, -0.5, -0.5, 0, -0.5, -0.5, 1, 0, 0.5, 0, -0.5, -0.5, 1, 0, 0.5, 1, 0,
+    ], 3));
+    prism.computeVertexNormals();
+    const hip = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4, 1).rotateY(Math.PI / 4).translate(0, 0.5, 0);
     const registry = {};
     const reg = (name, geo, mat, cast = true) => (registry[name] = { geo, mat, cast, items: [] });
     reg("body", unitBox(), triplanar(std("#ffffff", 0.9), { map: tex.plaster, scale: 2.2, mode: "detail", amount: 0.6, mean: 0.157 }));
     reg("roof", unitBox(), triplanar(std("#ffffff", 0.92), { map: tex.concrete, scale: 2.5, mode: "detail", amount: 0.85, mean: 0.157 }));
+    reg("gable", prism, triplanar(std("#ffffff", 0.75), { map: tex.concrete, scale: 1.2, mode: "detail", amount: 0.5, mean: 0.157 }));
+    reg("hip", hip, triplanar(std("#ffffff", 0.75), { map: tex.concrete, scale: 1.2, mode: "detail", amount: 0.5, mean: 0.157 }));
     reg("glassLit", unitBox(), this.glassLitMat, false);
     reg("glassDark", unitBox(), std("#2a4458", 0.05, 0.85), false);
+    reg("rail", unitBox(), new THREE.MeshStandardMaterial({ color: "#cfe8ff", transparent: true, opacity: 0.4, roughness: 0.05, depthWrite: false }), false);
     reg("trim", unitBox(), triplanar(std("#ffffff", 0.6), { map: tex.wood, scale: 1.4, mode: "detail", amount: 0.6, mean: 0.034 }));
     reg("dark", unitBox(), std("#ffffff", 0.35, 0.6));
     reg("solar", unitBox(), std("#1b2f6b", 0.12, 0.7));
     reg("tank", new THREE.CylinderGeometry(1, 1, 1, 14).translate(0, 0.5, 0), std("#ffffff", 0.5));
     reg("wall", unitBox(), triplanar(std("#ffffff", 0.9), { map: tex.wall, scale: 2, mode: "detail", amount: 0.7, mean: 0.387 }));
+    reg("lawn", unitBox(), new THREE.MeshStandardMaterial({ map: tiled(tex.lawn, 1, 1), color: "#ffffff", roughness: 1 }), false);
     reg("carLower", new RoundedBoxGeometry(1, 1, 1, 2, 0.2).translate(0, 0.5, 0), new THREE.MeshPhysicalMaterial({ color: "#ffffff", roughness: 0.3, metalness: 0.5, clearcoat: 1, clearcoatRoughness: 0.06 }));
     reg("carUpper", new RoundedBoxGeometry(1, 1, 1, 2, 0.25).translate(0, 0.5, 0), new THREE.MeshPhysicalMaterial({ color: "#ffffff", roughness: 0.08, metalness: 0.85 }));
     reg("tree", this.treeQuad, this.jacMat, false);
@@ -1270,52 +1392,109 @@ export default class LayoutScene {
     const add = (name, house, pos, scl, color, { phase = "b", mode = "y", rotX = 0 } = {}) => {
       registry[name].items.push({ house, pos: new THREE.Vector3(...pos), scl: new THREE.Vector3(...scl), color, phase, mode, rotX });
     };
-    const maxD = 170;
-    for (const pl of P.plots) {
-      if (pl === heroPlot) continue;
-      const r = rng(pl.n * 131 + 7);
-      const h = this.houses.length;
-      const dist = Math.hypot(pl.cx - heroPlot.cx, pl.cz - heroPlot.cz);
-      this.houses.push({ plot: pl, delay: Math.min(1, dist / maxD) * 0.62 + r() * 0.05, angle: pl.face > 0 ? 0 : Math.PI });
-      const floors = r() < 0.18 ? 1 : r() < 0.75 ? 2 : 3;
+    const pick = (r, list) => list[Math.floor(r() * list.length)];
+    const u = { mode: "u" };
+    const maxD = 200;
+    const FZ = 3.2; // front face of the main body (local +z faces the road)
+
+    // Windows on the front and side of one floor
+    const windows = (h, r, y0, wide = false) => {
+      add(r() < 0.68 ? "glassLit" : "glassDark", h, [1.3, y0 + 0.85, FZ + 0.02], [wide ? 4.4 : 3.2, 1.45, 0.12], "#ffffff");
+      add(r() < 0.6 ? "glassLit" : "glassDark", h, [3.62, y0 + 0.9, -1.8], [0.12, 1.3, 2.2], "#ffffff");
+    };
+
+    // Style A: modern flat roof, stair cabin and tank, balconies and a colour fin
+    const modern = (h, r, body, accent) => {
+      const floors = r() < 0.2 ? 1 : r() < 0.8 ? 2 : 3;
       const H = 0.5 + floors * 3.2;
-      const body = BODY[Math.floor(r() * BODY.length)];
-      const accent = ACCENT[Math.floor(r() * ACCENT.length)];
       const roofC = "#d8d3cb";
-      const FZ = 3.2; // front face
       add("body", h, [0, 0, -1.2], [7.2, H, 8.8], body);
       add("roof", h, [0, H, -1.2], [7.6, 0.26, 9.2], roofC);
       add("body", h, [-2.1, H + 0.26, -4], [2.6, 2.6, 2.8], body);
       add("roof", h, [-2.1, H + 2.86, -4], [2.9, 0.15, 3.1], roofC);
-      add("tank", h, [-2.3, H + 3.0, -4.4], [0.55, 1.0, 0.55], "#1f2937");
+      if (r() < 0.5) add("tank", h, [-2.3, H + 3.0, -4.4], [0.55, 1.0, 0.55], "#1f2937");
       for (let f = 0; f < floors; f++) {
         const y0 = 0.5 + f * 3.2;
-        add(r() < 0.68 ? "glassLit" : "glassDark", h, [1.3, y0 + 0.85, FZ + 0.02], [3.4, 1.45, 0.12], "#ffffff");
-        add(r() < 0.6 ? "glassLit" : "glassDark", h, [3.62, y0 + 0.9, -1.8], [0.12, 1.3, 2.2], "#ffffff");
+        windows(h, r, y0);
         add("roof", h, [1.3, y0 + 2.42, FZ + 0.3], [3.9, 0.08, 0.6], roofC);
         if (f > 0) {
           add("roof", h, [1.3, y0 - 0.12, FZ + 0.65], [3.9, 0.18, 1.3], roofC);
-          add("dark", h, [1.3, y0 + 0.06, FZ + 1.27], [3.9, 0.9, 0.06], "#334155");
+          add("rail", h, [1.3, y0 + 0.06, FZ + 1.27], [3.9, 0.95, 0.06], "#ffffff");
         }
       }
       add("trim", h, [-1.9, 0.5, FZ + 0.02], [1.1, 2.2, 0.12], "#7c4a24");
       add("trim", h, [-3.1, 0, FZ + 0.25], [0.9, H + 0.35, 0.5], accent);
       if (floors >= 2 && r() < 0.5) add("solar", h, [1.4, H + 0.35, -1.5], [3.4, 0.08, 2.2], "#ffffff", { mode: "u", rotX: -0.22 });
+    };
+
+    // Style B: gable (sloping tiled) roof, front porch with posts
+    const gabled = (h, r, body, accent) => {
+      const floors = r() < 0.45 ? 1 : 2;
+      const H = 0.5 + floors * 3.2;
+      add("body", h, [0, 0, -1.4], [7.0, H, 8.4], body);
+      add("gable", h, [0, H, -1.4], [7.8, 2.3 + r() * 0.5, 9.6], pick(r, TILE));
+      for (let f = 0; f < floors; f++) windows(h, r, 0.5 + f * 3.2);
+      add("roof", h, [-1.2, 3.0, FZ + 1.1], [3.4, 0.2, 2.2], "#e7ddcc");
+      add("trim", h, [-2.7, 0.5, FZ + 2.0], [0.2, 2.5, 0.2], accent);
+      add("trim", h, [0.3, 0.5, FZ + 2.0], [0.2, 2.5, 0.2], accent);
+      add("trim", h, [-1.2, 0.5, FZ + 0.02], [1.1, 2.2, 0.12], "#7c4a24");
+    };
+
+    // Style C: duplex with a set-back upper floor, glass terrace railing and a wooden pergola
+    const duplex = (h, r, body, accent) => {
+      add("body", h, [0, 0, -1.2], [7.2, 3.7, 8.8], body);
+      add("roof", h, [0, 3.7, -1.2], [7.6, 0.22, 9.2], "#d8d3cb");
+      add("body", h, [0, 3.92, -2.6], [7.2, 3.1, 6.0], pick(r, BODY));
+      add("roof", h, [0, 7.02, -2.6], [7.8, 0.3, 6.6], accent);
+      add(r() < 0.7 ? "glassLit" : "glassDark", h, [0.6, 4.6, 0.42], [5.2, 2.0, 0.12], "#ffffff");
+      windows(h, r, 0.5, true);
+      add("rail", h, [0, 3.92, FZ - 0.05], [7.2, 1.0, 0.06], "#ffffff");
+      for (let i = 0; i < 5; i++) add("trim", h, [-2.8 + i * 1.4, 6.5, 1.4], [0.14, 0.14, 2.4], "#8a5a36", u);
+      add("trim", h, [-3.3, 3.92, 2.3], [0.16, 2.6, 0.16], "#8a5a36");
+      add("trim", h, [3.3, 3.92, 2.3], [0.16, 2.6, 0.16], "#8a5a36");
+      add("trim", h, [-1.9, 0.5, FZ + 0.02], [1.1, 2.2, 0.12], "#7c4a24");
+    };
+
+    // Style D: single-storey bungalow with a hipped tiled roof and a verandah
+    const bungalow = (h, r, body, accent) => {
+      add("body", h, [0, 0, -1.4], [7.4, 3.7, 8.6], body);
+      add("hip", h, [0, 3.7, -1.2], [8.6, 2.4, 10.2], pick(r, TILE));
+      windows(h, r, 0.5);
+      for (const x of [-3.2, -1.1, 1.1, 3.2]) add("trim", h, [x, 0.5, FZ + 1.5], [0.2, 3.1, 0.2], "#f3ede2");
+      add("roof", h, [0, 3.55, FZ + 0.9], [7.6, 0.18, 2.0], "#e7ddcc");
+      add("trim", h, [-1.9, 0.5, FZ + 0.02], [1.1, 2.2, 0.12], accent);
+    };
+
+    const styles = [modern, gabled, duplex, bungalow];
+    for (const pl of P.plots) {
+      if (pl === heroPlot) continue;
+      const r = rng(pl.n * 131 + 7);
+      const h = this.houses.length;
+      const dist = Math.hypot(pl.cx - heroPlot.cx, pl.cz - heroPlot.cz);
+      // Houses are modelled for a 9 m frontage × 15 m depth plot: squeeze to the plot's frontage and push deep plots' houses to the front
+      this.houses.push({ plot: pl, delay: Math.min(1, dist / maxD) * 0.62 + r() * 0.05, angle: P.plotAngle(pl), fx: Math.min(1, pl.w / 9), dz: Math.max(0, (pl.d - 15) / 2) });
+      const roll = r();
+      const style = roll < 0.34 ? 0 : roll < 0.6 ? 1 : roll < 0.82 ? 2 : 3;
+      styles[style](h, r, pick(r, BODY), pick(r, ACCENT));
+
+      // Compound: boundary walls, gate, driveway, front lawn, car and a tree
       const e = { phase: "e" };
-      add("wall", h, [-3.3, 0, 7.35], [2.2, 1.3, 0.2], "#ece4d6", e);
-      add("wall", h, [3.3, 0, 7.35], [2.2, 1.3, 0.2], "#ece4d6", e);
-      add("wall", h, [-4.4, 0, 0], [0.2, 1.3, 14.9], "#ece4d6", e);
-      add("wall", h, [4.4, 0, 0], [0.2, 1.3, 14.9], "#ece4d6", e);
-      add("wall", h, [0, 0, -7.35], [8.8, 1.3, 0.2], "#ece4d6", e);
-      add("wall", h, [0.1, 0, 5.3], [4.0, 0.04, 4.1], "#b5aea3", e);
-      add("dark", h, [0.1, 0, 7.35], [4.2, 1.2, 0.06], "#1f2937", e);
-      if (r() < 0.42) {
-        add("carLower", h, [0.1, 0.3, 5.3], [1.75, 0.75, 3.9], CARS[Math.floor(r() * CARS.length)], { phase: "e", mode: "u" });
-        add("carUpper", h, [0.1, 1.05, 5.1], [1.58, 0.58, 2.1], "#1f2937", { phase: "e", mode: "u" });
+      const wallC = r() < 0.5 ? "#ece4d6" : "#e2d6c3";
+      add("wall", h, [-3.3, 0, 7.35], [2.2, 1.3, 0.2], wallC, e);
+      add("wall", h, [3.3, 0, 7.35], [2.2, 1.3, 0.2], wallC, e);
+      add("wall", h, [-4.4, 0, 0], [0.2, 1.3, 14.9], wallC, e);
+      add("wall", h, [4.4, 0, 0], [0.2, 1.3, 14.9], wallC, e);
+      add("wall", h, [0, 0, -7.35], [8.8, 1.3, 0.2], wallC, e);
+      add("wall", h, [0.9, 0, 5.3], [3.4, 0.04, 4.1], "#b5aea3", e);
+      add("lawn", h, [-2.6, 0, 5.4], [3.2, 0.05, 3.6], "#ffffff", e);
+      add("dark", h, [0.9, 0, 7.35], [3.6, 1.2, 0.06], "#1f2937", e);
+      if (r() < 0.45) {
+        add("carLower", h, [0.9, 0.3, 5.3], [1.75, 0.75, 3.9], CARS[Math.floor(r() * CARS.length)], { phase: "e", mode: "u" });
+        add("carUpper", h, [0.9, 1.05, 5.1], [1.58, 0.58, 2.1], "#1f2937", { phase: "e", mode: "u" });
       }
-      if (r() < 0.6) {
-        const ts = 0.13 + r() * 0.04;
-        add("tree", h, [3.2, 0, 5.6], [ts, ts, ts], "#ffffff", { phase: "e", mode: "u" });
+      if (r() < 0.7) {
+        const ts = 0.12 + r() * 0.05;
+        add("tree", h, [-2.8, 0, 5.4], [ts, ts, ts], "#ffffff", { phase: "e", mode: "u" });
       }
     }
     this.societyParts = [];
@@ -1349,12 +1528,12 @@ export default class LayoutScene {
         _q.setFromAxisAngle(Y_AXIS, h.angle);
         if (it.rotX) _q.multiply(_q2.setFromAxisAngle(_v2.set(1, 0, 0), it.rotX));
         const py = it.mode === "y" || it.phase === "b" ? it.pos.y * ks : it.pos.y;
-        _v.set(it.pos.x, py, it.pos.z).applyAxisAngle(Y_AXIS, h.angle);
+        _v.set(it.pos.x * h.fx, py, it.pos.z + h.dz).applyAxisAngle(Y_AXIS, h.angle);
         _v.x += h.plot.cx;
         _v.y += BLOCK_H;
         _v.z += h.plot.cz;
-        if (it.mode === "y") _s.set(it.scl.x, it.scl.y * ks, it.scl.z);
-        else _s.copy(it.scl).multiplyScalar(ks);
+        if (it.mode === "y") _s.set(it.scl.x * h.fx, it.scl.y * ks, it.scl.z);
+        else _s.copy(it.scl).multiplyScalar(ks).setX(it.scl.x * ks * h.fx);
         _m.compose(_v, _q, _s);
         part.mesh.setMatrixAt(i, _m);
       });
@@ -1366,7 +1545,8 @@ export default class LayoutScene {
   buildHero() {
     const hero = new THREE.Group();
     hero.position.set(heroPlot.cx, BLOCK_H, heroPlot.cz);
-    hero.rotation.y = heroPlot.face > 0 ? 0 : Math.PI;
+    hero.rotation.y = P.plotAngle(heroPlot);
+    hero.scale.x = Math.min(1, heroPlot.w / 7.9); // fit the frontage
     this.scene.add(hero);
     this.hero = hero;
 
@@ -1795,11 +1975,12 @@ export default class LayoutScene {
   buildMarkers() {
     const g = new THREE.Group();
     g.position.set(heroPlot.cx, BLOCK_H + 0.03, heroPlot.cz);
+    g.rotation.y = P.plotAngle(heroPlot);
     this.scene.add(g);
     this.marker = g;
     this.markerOutlineMat = new THREE.MeshBasicMaterial({ color: "#f97316", transparent: true, opacity: 0, toneMapped: false, depthWrite: false });
     this.markerFillMat = new THREE.MeshBasicMaterial({ color: "#fb923c", transparent: true, opacity: 0, toneMapped: false, depthWrite: false, blending: THREE.AdditiveBlending });
-    const w = P.PW - 0.2, d = P.PD - 0.2;
+    const w = heroPlot.w - 0.2, d = heroPlot.d - 0.2; // local x = frontage, z = depth
     for (const [bw, bd, x, z] of [[w, 0.35, 0, -d / 2], [w, 0.35, 0, d / 2], [0.35, d, -w / 2, 0], [0.35, d, w / 2, 0]]) {
       const m = new THREE.Mesh(new THREE.BoxGeometry(bw, 0.12, bd), this.markerOutlineMat);
       m.position.set(x, 0.06, z);

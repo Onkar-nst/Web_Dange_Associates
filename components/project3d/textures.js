@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import {
-  SITE_TEX, SITE, ewRoads, nsRoads, ENTRANCE, OUT_W, OUT_E, OUT_N, OUT_S,
-  PARK, PLAY, CLUB, DECK, POOL, COURT, PW, PD, rng,
+  SITE_TEX, SITE_POLY, roads, FP, onRoad, GATE, WALL_N, MAIN_ROAD, WIDENING,
+  PARK, PARK2, PLAY, CLUB, TEMPLE, rng,
 } from "./layoutPlan";
 
 // The ground is shaded with real photographic PBR textures (see public/flythrough/tex).
@@ -49,6 +49,35 @@ function painter(canvas, x0, z0, ppm) {
       g.arc(X(x), Z(z), rad * ppm, 0, Math.PI * 2);
       g.fill();
     },
+    poly(pts, color) {
+      g.fillStyle = color;
+      g.beginPath();
+      pts.forEach(([x, z], i) => (i ? g.lineTo(X(x), Z(z)) : g.moveTo(X(x), Z(z))));
+      g.closePath();
+      g.fill();
+    },
+    // Stroke a polyline with a width in metres (butt ends, mitred corners)
+    line(pts, width, color, dash = null) {
+      g.strokeStyle = color;
+      g.lineWidth = width * ppm;
+      g.lineCap = "butt";
+      g.lineJoin = "miter";
+      g.setLineDash(dash ? dash.map((d) => d * ppm) : []);
+      g.beginPath();
+      pts.forEach(([x, z], i) => (i ? g.lineTo(X(x), Z(z)) : g.moveTo(X(x), Z(z))));
+      g.stroke();
+      g.setLineDash([]);
+    },
+    clipTo(pts) {
+      g.save();
+      g.beginPath();
+      pts.forEach(([x, z], i) => (i ? g.lineTo(X(x), Z(z)) : g.moveTo(X(x), Z(z))));
+      g.closePath();
+      g.clip();
+    },
+    unclip() {
+      g.restore();
+    },
   };
 }
 
@@ -73,158 +102,131 @@ export function sitePlanMasks(renderer, size) {
 
   m.rect(SITE_TEX.x0, SITE_TEX.z0, SITE_TEX.x1, SITE_TEX.z1, NONE);
   m2.rect(SITE_TEX.x0, SITE_TEX.z0, SITE_TEX.x1, SITE_TEX.z1, NONE);
+
+  // Road-widening strip between the Shiv Pandan Road and the compound wall: paved verge
+  m.rect(SITE_TEX.x0, WIDENING.z0, SITE_TEX.x1, WIDENING.z1 - 0.4, PAVE);
+
   // Manicured lawn inside the compound wall
-  m2.rect(SITE.x0, SITE.z0, SITE.x1, SITE.z1, "rgb(255,0,0)");
+  m2.poly(SITE_POLY, "rgb(255,0,0)");
 
-  // --- Roads: footpath (paver) → curb → asphalt
-  const roads = [];
-  for (const z of ewRoads) roads.push({ x0: OUT_W, x1: OUT_E, z0: z - 5, z1: z + 5, dir: "x" });
-  for (const r of nsRoads) roads.push({ x0: r.x - r.w / 2, x1: r.x + r.w / 2, z0: OUT_N, z1: OUT_S, dir: "z", median: r.median });
-  const ent = { x0: ENTRANCE.x0 - 1, x1: ENTRANCE.x1, z0: ENTRANCE.z - ENTRANCE.w / 2, z1: ENTRANCE.z + ENTRANCE.w / 2, dir: "x" };
-  const all = [...roads, ent];
-  const FP = 1.6;
-  for (const r of all) {
-    m.rect(r.x0, r.z0, r.x1, r.z1, PAVE);
-    m2.rect(r.x0, r.z0, r.x1, r.z1, NONE);
+  // --- Roads: footpath (paver) → curb → asphalt, clipped to the compound
+  m.clipTo(SITE_POLY);
+  m2.clipTo(SITE_POLY);
+  for (const r of roads) {
+    m.line(r.pts, r.w, PAVE);
+    m2.line(r.pts, r.w, NONE);
   }
-  for (const r of all) {
-    const cx0 = r.x0 + (r.dir === "z" ? FP - 0.25 : 0), cx1 = r.x1 - (r.dir === "z" ? FP - 0.25 : 0);
-    const cz0 = r.z0 + (r.dir === "x" ? FP - 0.25 : 0), cz1 = r.z1 - (r.dir === "x" ? FP - 0.25 : 0);
-    m.rect(cx0, cz0, cx1, cz1, NONE);
-    m2.rect(cx0, cz0, cx1, cz1, "rgb(0,255,0)");
+  for (const r of roads) {
+    m.line(r.pts, r.w - 2 * FP + 0.5, NONE);
+    m2.line(r.pts, r.w - 2 * FP + 0.5, "rgb(0,255,0)");
   }
-  for (const r of all) {
-    const ax0 = r.dir === "z" ? r.x0 + FP : r.x0, ax1 = r.dir === "z" ? r.x1 - FP : r.x1;
-    const az0 = r.dir === "x" ? r.z0 + FP : r.z0, az1 = r.dir === "x" ? r.z1 - FP : r.z1;
-    m.rect(ax0, az0, ax1, az1, ASPH);
-    m2.rect(ax0, az0, ax1, az1, NONE);
+  for (const r of roads) {
+    m.line(r.pts, r.w - 2 * FP, ASPH);
+    m2.line(r.pts, r.w - 2 * FP, NONE);
   }
-  m.rect(OUT_E - 5, ENTRANCE.z - ENTRANCE.w / 2 + FP, OUT_E + 1, ENTRANCE.z + ENTRANCE.w / 2 - FP, ASPH);
-  m2.rect(OUT_E - 5, ENTRANCE.z - ENTRANCE.w / 2 + FP, OUT_E + 1, ENTRANCE.z + ENTRANCE.w / 2 - FP, NONE);
+  // Gate mouth through the wall onto the main road
+  m.rect(GATE.x0 + 1.5, WALL_N - 1, GATE.x1 - 1.5, WALL_N + 2, ASPH);
+  m.unclip();
+  m2.unclip();
+  m.rect(GATE.x0 + 1.5, WIDENING.z0, GATE.x1 - 1.5, WALL_N + 0.5, ASPH);
 
-  // --- Markings
-  const inJunctionX = (x, pad) => nsRoads.some((n) => Math.abs(x - n.x) < n.w / 2 + pad);
-  const inJunctionZ = (z, pad) => ewRoads.some((e) => Math.abs(z - e) < 5 + pad);
-  const dash = 3, gap = 3, lw = 0.15;
-  for (const z of ewRoads) {
-    for (let x = OUT_W; x < OUT_E; x += dash + gap) {
-      if (inJunctionX(x, 5) || inJunctionX(x + dash, 5) || x < OUT_W + 6 || x + dash > OUT_E - 6) continue;
-      m.rect(x, z - lw / 2, x + dash, z + lw / 2, PAINT);
-    }
-  }
-  for (const n of nsRoads) {
-    if (n.median) continue;
-    for (let z = OUT_N; z < OUT_S; z += dash + gap) {
-      if (inJunctionZ(z, 5) || inJunctionZ(z + dash, 5) || z < OUT_N + 6 || z + dash > OUT_S - 6) continue;
-      m.rect(n.x - lw / 2, z, n.x + lw / 2, z + dash, PAINT);
-    }
-  }
-  // Avenue + boulevard medians (lawn with a concrete curb)
-  const av = nsRoads.find((n) => n.median);
-  const median = (xa, za, xb, zb, rad) => {
-    m.rrect(xa, za, xb, zb, rad, NONE);
-    m2.rrect(xa, za, xb, zb, rad, "rgb(0,255,0)");
-    m2.rrect(xa + 0.2, za + 0.2, xb - 0.2, zb - 0.2, rad, "rgb(255,0,0)");
-  };
-  for (let i = 0; i < ewRoads.length - 1; i++) median(av.x - 1.2, ewRoads[i] + 9, av.x + 1.2, ewRoads[i + 1] - 9, 1.2);
-  median(ENTRANCE.median[0], ENTRANCE.z - 1.2, ENTRANCE.median[1], ENTRANCE.z + 1.2, 1.2);
-  for (let x = ENTRANCE.x0 + 2; x < ENTRANCE.x1 - 2; x += dash + gap) {
-    if (x > ENTRANCE.median[0] - 2 && x < ENTRANCE.median[1]) continue;
-    m.rect(x, ENTRANCE.z - lw / 2, x + dash, ENTRANCE.z + lw / 2, PAINT);
-  }
-  m.rect(ENTRANCE.x0 + 4, ENTRANCE.z - ENTRANCE.w / 2 + FP + 0.4, ENTRANCE.x1, ENTRANCE.z - ENTRANCE.w / 2 + FP + 0.55, PAINT);
-  m.rect(ENTRANCE.x0 + 4, ENTRANCE.z + ENTRANCE.w / 2 - FP - 0.55, ENTRANCE.x1, ENTRANCE.z + ENTRANCE.w / 2 - FP - 0.4, PAINT);
-
-  // Zebra crossings
-  const zebraAcrossZ = (xa, xb, zc, halfW) => {
-    for (let z = zc - halfW + 0.4; z < zc + halfW - 0.5; z += 1) m.rect(xa, z, xb, z + 0.5, PAINT);
-  };
-  const zebraAcrossX = (za, zb, xc, halfW) => {
-    for (let x = xc - halfW + 0.4; x < xc + halfW - 0.5; x += 1) m.rect(x, za, x + 0.5, zb, PAINT);
-  };
-  for (const z of ewRoads) {
-    for (const n of nsRoads) {
-      const aw = 5 - FP;
-      for (const s of [-1, 1]) {
-        const xa = n.x + s * (n.w / 2 + 1), xb = xa + s * 2.6;
-        if (Math.min(xa, xb) > OUT_W && Math.max(xa, xb) < OUT_E) zebraAcrossZ(Math.min(xa, xb), Math.max(xa, xb), z, aw);
+  // --- Centre-line dashes (broken at junctions)
+  const lw = 0.15;
+  m.clipTo(SITE_POLY);
+  for (const r of roads) {
+    const L = r.pts.slice(1).reduce((acc, p, i) => acc + Math.hypot(p[0] - r.pts[i][0], p[1] - r.pts[i][1]), 0);
+    const steps = Math.floor(L / 6);
+    for (let k = 0; k < steps; k++) {
+      // walk the polyline
+      let t = k * 6 + 1.5, i = 0;
+      while (i < r.pts.length - 2 && t > Math.hypot(r.pts[i + 1][0] - r.pts[i][0], r.pts[i + 1][1] - r.pts[i][1])) {
+        t -= Math.hypot(r.pts[i + 1][0] - r.pts[i][0], r.pts[i + 1][1] - r.pts[i][1]);
+        i++;
       }
-      const nw = n.w / 2 - FP;
-      for (const s of [-1, 1]) {
-        const za = z + s * (5 + 1), zb = za + s * 2.6;
-        if (Math.min(za, zb) > OUT_N && Math.max(za, zb) < OUT_S) zebraAcrossX(Math.min(za, zb), Math.max(za, zb), n.x, nw);
+      const [ax, az] = r.pts[i];
+      const [bx, bz] = r.pts[i + 1];
+      const sl = Math.hypot(bx - ax, bz - az) || 1;
+      const ux = (bx - ax) / sl, uz = (bz - az) / sl;
+      const x0 = ax + ux * t, z0 = az + uz * t;
+      const x1 = x0 + ux * 3, z1 = z0 + uz * 3;
+      if (onRoad(x0, z0, 1, r) || onRoad(x1, z1, 1, r)) continue;
+      m.line([[x0, z0], [x1, z1]], lw, PAINT);
+    }
+  }
+  // Zebra crossing at the gate
+  for (let x = GATE.x0 + 2; x < GATE.x1 - 2; x += 1) m.rect(x, WALL_N + 3, x + 0.5, WALL_N + 5.6, PAINT);
+  m.unclip();
+
+  // --- Open Space-1: garden with a walking track, fountain plaza and flower beds
+  const garden = (A, beds, seed) => {
+    const pc = { x: (A.x0 + A.x1) / 2, z: (A.z0 + A.z1) / 2 };
+    o.g.save();
+    o.g.beginPath();
+    o.g.roundRect(o.X(A.x0), o.Z(A.z0), (A.x1 - A.x0) * ppm2, (A.z1 - A.z0) * ppm2, 4 * ppm2);
+    o.g.clip();
+    o.g.translate(o.X(pc.x), o.Z(pc.z));
+    o.g.rotate(Math.PI / 4);
+    o.g.fillStyle = "rgba(210,235,160,0.16)";
+    for (let s = -80; s < 80; s += 8) o.g.fillRect(s * ppm2, -80 * ppm2, 4 * ppm2, 160 * ppm2);
+    o.g.restore();
+    const track = { x0: A.x0 + 2.5, x1: A.x1 - 2.5, z0: A.z0 + 2.5, z1: A.z1 - 2.5 };
+    o.g.lineWidth = 2.2 * ppm2;
+    o.g.strokeStyle = "rgb(168,82,58)";
+    o.g.beginPath();
+    o.g.roundRect(o.X(track.x0), o.Z(track.z0), (track.x1 - track.x0) * ppm2, (track.z1 - track.z0) * ppm2, 7 * ppm2);
+    o.g.stroke();
+    o.g.lineWidth = 0.12 * ppm2;
+    o.g.strokeStyle = "rgb(235,232,225)";
+    o.g.stroke();
+    // Cross paths + central plaza
+    for (const [xa, za, xb, zb] of [[pc.x - 1, track.z0, pc.x + 1, track.z1], [track.x0, pc.z - 1, track.x1, pc.z + 1]]) {
+      m.rect(xa, za, xb, zb, PAVE);
+      m2.rect(xa, za, xb, zb, NONE);
+    }
+    m.circle(pc.x, pc.z, 5.5, PAVE);
+    m2.circle(pc.x, pc.z, 5.5, NONE);
+    const fr = rng(seed);
+    const bedColors = ["#e8641b", "#f2c230", "#d6337a", "#c42b2b", "#f08a3c", "#ffffff"];
+    for (const [bx, bz] of beds) {
+      o.g.fillStyle = "rgb(62,92,36)";
+      o.g.beginPath(); o.g.ellipse(o.X(bx), o.Z(bz), 4 * ppm2, 2.2 * ppm2, 0, 0, Math.PI * 2); o.g.fill();
+      for (let i = 0; i < 180; i++) {
+        const a = fr() * Math.PI * 2, rr = Math.sqrt(fr());
+        o.circle(bx + Math.cos(a) * rr * 3.6, bz + Math.sin(a) * rr * 1.9, 0.18, bedColors[Math.floor(fr() * bedColors.length)]);
       }
     }
-  }
-  zebraAcrossZ(OUT_E + 1.5, OUT_E + 4.1, ENTRANCE.z, ENTRANCE.w / 2 - FP);
-  zebraAcrossZ(126.5, 129, ENTRANCE.z, ENTRANCE.w / 2 - FP);
+    return pc;
+  };
+  const pc1 = { x: (PARK.x0 + PARK.x1) / 2, z: (PARK.z0 + PARK.z1) / 2 };
+  garden(PARK, [[pc1.x - 11, pc1.z - 5], [pc1.x + 11, pc1.z - 5], [pc1.x - 11, pc1.z + 5], [pc1.x + 11, pc1.z + 5]], 21);
+  const pc2 = { x: (PARK2.x0 + PARK2.x1) / 2, z: (PARK2.z0 + PARK2.z1) / 2 };
+  garden(PARK2, [[pc2.x - 10, pc2.z + 5], [pc2.x + 10, pc2.z - 5]], 37);
+  // Lawn area around Plot 141 at the west end of Open Space-1 stays plain grass
 
-  // --- Central park
-  const pc = { x: (PARK.x0 + PARK.x1) / 2, z: (PARK.z0 + PARK.z1) / 2 + 2 };
-  o.g.save();
-  o.g.beginPath();
-  o.g.roundRect(o.X(PARK.x0), o.Z(PARK.z0), (PARK.x1 - PARK.x0) * ppm2, (PARK.z1 - PARK.z0) * ppm2, 4 * ppm2);
-  o.g.clip();
-  o.g.translate(o.X(pc.x), o.Z(pc.z));
-  o.g.rotate(Math.PI / 4);
-  o.g.fillStyle = "rgba(210,235,160,0.16)";
-  for (let s = -80; s < 80; s += 8) o.g.fillRect(s * ppm2, -80 * ppm2, 4 * ppm2, 160 * ppm2);
-  o.g.restore();
-  const track = { x0: PARK.x0 + 3.5, x1: PARK.x1 - 3.5, z0: PARK.z0 + 3.5, z1: PARK.z1 - 3.5 };
-  o.g.lineWidth = 2.6 * ppm2;
-  o.g.strokeStyle = "rgb(168,82,58)";
-  o.g.beginPath();
-  o.g.roundRect(o.X(track.x0), o.Z(track.z0), (track.x1 - track.x0) * ppm2, (track.z1 - track.z0) * ppm2, 12 * ppm2);
-  o.g.stroke();
-  o.g.lineWidth = 0.14 * ppm2;
-  o.g.strokeStyle = "rgb(235,232,225)";
-  o.g.stroke();
-  for (const [xa, za, xb, zb] of [[pc.x - 1.2, track.z0, pc.x + 1.2, track.z1], [track.x0, pc.z - 1.2, track.x1, pc.z + 1.2], [PARK.x0 + 10, PLAY.z1, PARK.x0 + 12, PARK.z0 + 4]]) {
-    m.rect(xa, za, xb, zb, PAVE);
-    m2.rect(xa, za, xb, zb, NONE);
-  }
-  m.circle(pc.x, pc.z, 9, PAVE);
-  m2.circle(pc.x, pc.z, 9, NONE);
-  const fr = rng(21);
-  const bedColors = ["#e8641b", "#f2c230", "#d6337a", "#c42b2b", "#f08a3c", "#ffffff"];
-  for (const [bx, bz] of [[pc.x - 14, pc.z - 16], [pc.x + 14, pc.z - 16], [pc.x - 14, pc.z + 18], [pc.x + 14, pc.z + 18]]) {
-    o.g.fillStyle = "rgb(62,92,36)";
-    o.g.beginPath(); o.g.ellipse(o.X(bx), o.Z(bz), 5 * ppm2, 3 * ppm2, 0, 0, Math.PI * 2); o.g.fill();
-    for (let i = 0; i < 260; i++) {
-      const a = fr() * Math.PI * 2, rr = Math.sqrt(fr());
-      o.circle(bx + Math.cos(a) * rr * 4.6, bz + Math.sin(a) * rr * 2.7, 0.18, bedColors[Math.floor(fr() * bedColors.length)]);
-    }
-  }
+  // --- Amenity Space-1: kids' play area (rubber floor); the rest stays open lawn
+  const plx = (PLAY.x0 + PLAY.x1) / 2, plz = (PLAY.z0 + PLAY.z1) / 2;
+  o.circle(plx - 5, plz - 1, 6.5, "rgb(40,98,200)");
+  o.circle(plx + 6, plz + 2, 5.5, "rgb(226,104,30)");
+  o.circle(plx + 5, plz - 7, 3, "rgb(214,196,150)");
+  // --- Amenity Space-2: clubhouse plaza, temple courtyard
+  m.rect(CLUB.x0 - 2, CLUB.z0 - 1, CLUB.x1 + 2, CLUB.z1 + 3, PAVE);
+  m2.rect(CLUB.x0 - 2, CLUB.z0 - 1, CLUB.x1 + 2, CLUB.z1 + 3, NONE);
+  // Temple courtyard: stone paving with a path from the gate road
+  m.rect(TEMPLE.x0, TEMPLE.z0, TEMPLE.x1, TEMPLE.z1, PAVE);
+  m2.rect(TEMPLE.x0, TEMPLE.z0, TEMPLE.x1, TEMPLE.z1, NONE);
+  o.rect(TEMPLE.x0 + 1, TEMPLE.z0 + 1, TEMPLE.x1 - 1, TEMPLE.z1 - 1, "rgb(226,214,190)");
+  o.g.strokeStyle = "rgb(196,150,92)";
+  o.g.lineWidth = 0.5 * ppm2;
+  o.g.strokeRect(o.X(TEMPLE.x0 + 1.5), o.Z(TEMPLE.z0 + 1.5), (TEMPLE.x1 - TEMPLE.x0 - 3) * ppm2, (TEMPLE.z1 - TEMPLE.z0 - 3) * ppm2);
 
-  // --- Play area: rubber flooring in brand colours
-  o.circle(89, 5, 8, "rgb(40,98,200)");
-  o.circle(108, 4, 7, "rgb(226,104,30)");
-  o.circle(121, 10, 4, "rgb(214,196,150)");
-
-  // --- Clubhouse plaza, pool deck, courts
-  m.rect(CLUB.x0 - 2, CLUB.z0 - 2, CLUB.x1 + 2, ENTRANCE.z - ENTRANCE.w / 2, PAVE);
-  m2.rect(CLUB.x0 - 2, CLUB.z0 - 2, CLUB.x1 + 2, ENTRANCE.z - ENTRANCE.w / 2, NONE);
-  o.rect(DECK.x0, DECK.z0, DECK.x1, DECK.z1, "rgb(222,212,192)");
-  o.rect(POOL.x0 - 0.6, POOL.z0 - 0.6, POOL.x1 + 0.6, POOL.z1 + 0.6, "rgb(245,245,240)");
-  o.rect(COURT.x0, COURT.z0, COURT.x1, COURT.z1, "rgb(52,112,78)");
-  for (const cz of [COURT.z0 + 9, COURT.z1 - 9]) {
-    const cx = (COURT.x0 + COURT.x1) / 2;
-    o.rect(cx - 15, cz - 7.5, cx + 15, cz + 7.5, "rgb(34,76,160)");
-    o.g.strokeStyle = "#ffffff";
-    o.g.lineWidth = Math.max(1, 0.1 * ppm2);
-    o.g.strokeRect(o.X(cx - 11.9), o.Z(cz - 5.5), 23.8 * ppm2, 11 * ppm2);
-    o.g.strokeRect(o.X(cx - 11.9), o.Z(cz - 4.1), 23.8 * ppm2, 8.2 * ppm2);
-    o.g.beginPath(); o.g.moveTo(o.X(cx - 6.4), o.Z(cz - 4.1)); o.g.lineTo(o.X(cx - 6.4), o.Z(cz + 4.1)); o.g.stroke();
-    o.g.beginPath(); o.g.moveTo(o.X(cx + 6.4), o.Z(cz - 4.1)); o.g.lineTo(o.X(cx + 6.4), o.Z(cz + 4.1)); o.g.stroke();
-    o.g.beginPath(); o.g.moveTo(o.X(cx - 6.4), o.Z(cz)); o.g.lineTo(o.X(cx + 6.4), o.Z(cz)); o.g.stroke();
-  }
   // Walkway along the inside of the compound wall
-  m.g.strokeStyle = PAVE;
-  m.g.lineWidth = 1.4 * ppm;
-  m.g.strokeRect(m.X(SITE.x0 + 1.6), m.Z(SITE.z0 + 1.6), (SITE.x1 - SITE.x0 - 3.2) * ppm, (SITE.z1 - SITE.z0 - 3.2) * ppm);
-  m2.g.strokeStyle = NONE;
-  m2.g.lineWidth = 1.4 * ppm2;
-  m2.g.strokeRect(m2.X(SITE.x0 + 1.6), m2.Z(SITE.z0 + 1.6), (SITE.x1 - SITE.x0 - 3.2) * ppm2, (SITE.z1 - SITE.z0 - 3.2) * ppm2);
+  m.clipTo(SITE_POLY);
+  m2.clipTo(SITE_POLY);
+  const inner = SITE_POLY;
+  m.line([...inner, inner[0]], 1.4 * 2 + 0.6, PAVE);
+  m2.line([...inner, inner[0]], 1.4 * 2 + 0.6, NONE);
+  m.unclip();
+  m2.unclip();
 
   return {
     mask: toTexture(maskC, renderer),
@@ -243,37 +245,32 @@ export function blockMask(renderer, block, ppm) {
   g.fillRect(0, 0, w, h);
   g.strokeStyle = "rgb(255,0,0)";
   g.lineWidth = Math.max(2, 0.14 * ppm);
-  for (let cx = 0; cx <= block.cols; cx++) {
-    g.beginPath(); g.moveTo(cx * PW * ppm, 0); g.lineTo(cx * PW * ppm, h); g.stroke();
-  }
-  g.beginPath(); g.moveTo(0, h / 2); g.lineTo(w, h / 2); g.stroke();
+  for (const p of block.plots) g.strokeRect((p.x0 - block.x0) * ppm, (p.z0 - block.z0) * ppm, (p.x1 - p.x0) * ppm, (p.z1 - p.z0) * ppm);
   g.strokeStyle = "rgb(0,0,255)";
   g.lineWidth = 0.9 * ppm;
   g.strokeRect(0, 0, w, h);
   g.textAlign = "center";
   g.textBaseline = "middle";
-  g.font = `700 ${Math.round(2.6 * ppm)}px Poppins, "Segoe UI", Arial, sans-serif`;
+  g.font = `700 ${Math.round(2.4 * ppm)}px Poppins, "Segoe UI", Arial, sans-serif`;
   g.fillStyle = "rgb(0,255,0)";
   for (const p of block.plots) g.fillText(String(p.n), (p.cx - block.x0) * ppm, (p.cz - block.z0) * ppm);
   return toTexture(c, renderer);
 }
 
-// ---- Highway tile mask (one 40 m slice, repeated): R asphalt, G gravel shoulder, B paint -----
-export function highwayMask(renderer, lengthRepeat) {
+// ---- Main road tile mask (15 m Shiv Pandan Road, one 40 m slice repeated along x): R asphalt, G gravel shoulder, B paint
+export function mainRoadMask(renderer, lengthRepeat) {
   const ppm = 12;
-  const W = 32, L = 40;
-  const c = makeCanvas(W * ppm, L * ppm);
+  const W = 15, L = 40;
+  const c = makeCanvas(L * ppm, W * ppm);
   const g = c.getContext("2d");
-  const rect = (x0, x1, color, z0 = 0, z1 = L) => { g.fillStyle = color; g.fillRect(x0 * ppm, z0 * ppm, (x1 - x0) * ppm, (z1 - z0) * ppm); };
-  rect(0, 32, "rgb(0,255,0)");
-  rect(2, 13, ASPH);
-  rect(17, 28, ASPH);
-  rect(13, 17, NONE);
-  for (const x of [2.4, 12.5, 17.3, 27.4]) rect(x, x + 0.18, PAINT);
-  for (const x of [5.9, 9.3, 20.8, 24.2]) for (let z = 0; z < L; z += 10) rect(x - 0.08, x + 0.08, PAINT, z, z + 4);
+  const rect = (z0, z1, color, x0 = 0, x1 = L) => { g.fillStyle = color; g.fillRect(x0 * ppm, z0 * ppm, (x1 - x0) * ppm, (z1 - z0) * ppm); };
+  rect(0, W, "rgb(0,255,0)");
+  rect(1.2, W - 1.2, ASPH);
+  for (const z of [1.5, W - 1.68]) rect(z, z + 0.18, PAINT);
+  for (let x = 0; x < L; x += 10) rect(W / 2 - 0.08, W / 2 + 0.08, PAINT, x, x + 4);
   const tex = toTexture(c, renderer);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(1, lengthRepeat);
+  tex.repeat.set(lengthRepeat, 1);
   return tex;
 }
 
